@@ -2,6 +2,7 @@ package newwater.com.newwater.view;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.logging.Handler;
 
 import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.R;
@@ -76,6 +79,26 @@ public class Pop_RightOperate extends PopupWindow {
                         Toast.makeText(context,"停止取水",Toast.LENGTH_SHORT).show();
                         hotwater.setText("热水");
                         hotwater.setBackgroundResource(R.drawable.hotwater);
+
+                        //做假的数据弹出来余额不足
+                        final  MyHandler  handler = new MyHandler();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(4000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                Message msg =Message.obtain();
+                                msg.what=1;   //标志消息的标志
+                                handler.sendMessage(msg);
+                            }
+                        }).start();
+
+
+
+
                     }
                     else{
                         Pop_LeftOperate leftpop = new Pop_LeftOperate(context);
@@ -95,5 +118,28 @@ public class Pop_RightOperate extends PopupWindow {
         }
 
     };
+
+    /**
+     * 为避免handler造成的内存泄漏
+     * 1、使用静态的handler，对外部类不保持对象的引用
+     * 2、但Handler需要与Activity通信，所以需要增加一个对Activity的弱引用
+     */
+    public   class MyHandler extends android.os.Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {    //获取消息，更新UI
+                case 1:
+                    //进行uI操作
+                    Toast.makeText(context,"余额不足处理",Toast.LENGTH_SHORT).show();
+                    Pop_Buy popbug = new Pop_Buy(context,"test");
+                    popbug.showPopupWindow(new View(context));
+
+                    break;
+            }
+        }
+    }
+
+
 
 }

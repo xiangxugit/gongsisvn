@@ -20,9 +20,11 @@ import newwater.com.newwater.utils.Create2QR2;
 public class Pop_Buy extends PopupWindow {
     private Activity context;
     private ImageView middleico;
-    public Pop_Buy(Activity context) {
+    private String payurl;
+    public Pop_Buy(Activity context,String payurl) {
         // 通过layout的id找到布局View
         this.context = context;
+        this.payurl = payurl;
 
         View contentView = LayoutInflater.from(context).inflate(R.layout.no_money_pop, null);
         // 获取PopupWindow的宽高
@@ -49,7 +51,7 @@ public class Pop_Buy extends PopupWindow {
 
 
         //根据用户信息生成充值二维码
-        String payurl = TestJSON.getWeiXinQcode();
+        payurl = payurl;
         Bitmap paymoneybitm = Create2QR2.createBitmap(payurl);
         middleico.setImageBitmap(paymoneybitm);
 
@@ -60,7 +62,6 @@ public class Pop_Buy extends PopupWindow {
         if (!this.isShowing()) {
             // showAsDropDown方法，在parent下方的(x,y)位置显示，x、y是第二和第三个参数
             // this.showAsDropDown(parent, parent.getWidth() / 2 - 400, 18);
-
             // showAtLocation方法，在parent的某个位置参数，具体哪个位置由后三个参数决定
             this.showAtLocation(parent, Gravity.CENTER, 0, 0);
         } else {
