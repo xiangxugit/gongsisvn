@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey"
+    android:layout_margin="@dimen/margintop"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/waringico"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text="!"
+            android:textColor="@color/red"
+            android:gravity="center"
+
+            />
+        <TextView
+            android:layout_toRightOf="@+id/waringico"
+            android:id="@+id/right_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/getwaterwarning"
+            android:textColor="@color/red"
+            android:gravity="center"
+            android:padding="@dimen/margintop" />
+        <!--操作按钮-->
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        >
+
+        <RelativeLayout
+            android:id="@+id/outcupleft"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circlebuttonred"
+            android:layout_gravity="center"
+            android:gravity="center"
+            >
+
+            <TextView
+                android:id="@+id/topsure"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="13dp"
+                android:text="√"
+                android:textSize="@dimen/verybig"
+                android:gravity="center"
+                android:textColor="@color/whitercolor"
+
+                />
+            <TextView
+                android:id="@+id/bottomsure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sure"
+                android:layout_below="@+id/topsure"
+                android:gravity="center"
+                android:textColor="@color/whitercolor"
+                />
+
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circlebuttonblue"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/margintop"
+            android:id="@+id/outcupright"
+            >
+
+            <TextView
+                android:id="@+id/topcancelimage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="13dp"
+                android:textColor="@color/whitercolor"
+                android:gravity="center"
+                android:text="X"
+                android:textSize="@dimen/verybig"
+
+                />
+            <TextView
+                android:id="@+id/bottomcancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:layout_below="@+id/topcancelimage"
+                android:gravity="center"
+                />
+
+
+        </RelativeLayout>
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
