@@ -3,7 +3,6 @@ package newwater.com.newwater.utils;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
@@ -42,25 +41,18 @@ public  class TimeRun {
 //                msg.what = what;
 //                handler.sendMessage(msg);
 
-
                 //进行数据库上传
 
                 List<DeiviceParams> list = null;
                 try {
-
                     list = App.db.findAll(DeiviceParams.class);
-                    if(null==list){
-
-                    }else{
-                        Log.e("---",""+ list.toString());
-                    }
                 } catch (DbException e) {
                     e.printStackTrace();
                 }
 
-
-//                UploadLocalData uploadLocalData = new UploadLocalData();
-//                uploadLocalData.upload("",list.toString());
+                LogUtil.i("---" + list.toString());
+                UploadLocalData uploadLocalData = new UploadLocalData();
+                uploadLocalData.upload("",list.toString());
 
 
 

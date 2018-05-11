@@ -32,5 +32,6 @@ dependencies {
     compile 'com.google.zxing:core:3.3.0'
     //Zxing 生成二维码依赖
     compile 'com.journeyapps:zxing-android-embedded:3.3.0'  //生成二维码依赖
+    compile 'org.xutils:xutils:3.5.0' //xutils 主要用于大数据上传和断点下载视频，操作数据库，比自己写节省工作量
 
 }

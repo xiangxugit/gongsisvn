@@ -1,0 +1,34 @@
+package newwater.com.newwater.utils;
+
+import org.xutils.common.Callback;
+import org.xutils.http.HttpMethod;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+/**
+ * Created by Administrator on 2018/5/10 0010.
+ */
+
+public class UploadLocalData {
+    public  void upload(String localdata){
+        RequestParams params = new RequestParams();
+        params.addParameter("postdata",localdata);
+        x.http().request(HttpMethod.PUT, params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                //TODO 删除本地数据库存储的文件
+            }
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                // TODO 不做处理
+
+            }
+            @Override
+            public void onCancelled(CancelledException cex) {
+            }
+            @Override
+            public void onFinished() {
+            }
+        });
+    }
+}

@@ -1,0 +1,47 @@
+package newwater.com.newwater.beans;
+
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
+/**
+ * Created by Administrator on 2018/5/10 0010.
+ */
+@Table(name = "Deviceparams'")
+public class DeiviceParams {
+    //xutls规定必须要有一个无参的构造方法
+    public DeiviceParams(){
+
+    }
+
+    @Column(name = "id", isId = true)
+    private int id;
+    @Column(name = "waterquality")
+    private String waterquality;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getWaterquality() {
+        return waterquality;
+    }
+
+    public void setWaterquality(String waterquality) {
+        this.waterquality = waterquality;
+    }
+
+    @Override
+    public String toString() {
+        return "DeiviceParams{" +
+                "id=" + id +
+                ", waterquality='" + waterquality + '\'' +
+                '}';
+    }
+
+
+}

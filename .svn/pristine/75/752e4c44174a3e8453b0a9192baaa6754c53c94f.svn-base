@@ -9,7 +9,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private HttpProxyCacheServer proxy;
     private final static  int DATADELETE = 2;
 
-    Pop_WantWater pop_wantWater = null;
+
 
 
     @Override
@@ -120,13 +119,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(null==popChooseWater){
-            Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
-            pop_wantWater.showPopupWindow(new View(this));
-        }else{
-            pop_wantWater.showPopupWindow(new View(this));
-        }
-
+        Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
+        pop_wantWater.showPopupWindow(new View(this));
     }
 
         public void playVideo(){
@@ -268,25 +262,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //闹钟定时播放视频
         // TODO 此处应该是读取本地的配置，本地的配置应该是在服务器获取的
         //开机器隔一段时间去监听查询
-
-
-        Time t=new Time();
-        t.setToNow();
-        int hout = t.hour;
-        int minute = t.minute;
-        int second = t.second;
-
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hout); //凌晨1点
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, second);
+        calendar.set(Calendar.HOUR_OF_DAY, 15); //凌晨1点
+        calendar.set(Calendar.MINUTE, 35);
+        calendar.set(Calendar.SECOND, 0);
         Date date=calendar.getTime(); //第一次执行定时任务的时间
-
         //        TimeRun timeRun = new TimeRun();
         //此时要在 第一次执行定时任务的时间加一天，以便此任务在下个时间点执行。如果不加一天，任务会立即执行。
-       /* if(date.before(new Date())){
+        if(date.before(new Date())){
             date = this.addDay(date, 1);
-        }*/
+        }
         Timer timer = new Timer();
         final MyHandler myHandler = new MyHandler();
 
@@ -294,9 +279,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
 
-                Message msg = new Message();
-                msg.what =0;
-                myHandler.sendMessage(msg);
+//                Message msg = new Message();
+//                msg.what =0;
+//                myHandler.sendMessage(msg);
 
                  //获取设备参数
                 String quality = "好";
@@ -310,27 +295,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         };
-        final long PERIOD_DAY =20 * 1000;
+        final long PERIOD_DAY =5 * 1000;
         timer.schedule(task,date,PERIOD_DAY);
 
 
-        Time tupload=new Time();
-        tupload.setToNow();
-        int houtupload = t.hour;
-        int minuteupload = t.minute+1;
-        int seconduplod = t.second;
-
-        if(houtupload>24){
-            houtupload = 0;
-        }
-        if(minuteupload>60){
-            minuteupload = 0;
-        }
         //获取数据库的数据在特定的时候上传到服务端并且删除数据库里面的内容
-        Date updatetime = TimeRun.tasktime(houtupload,minuteupload,seconduplod);
-//        if(updatetime.before(new Date())){
-//            updatetime = this.addDay(updatetime, 1);
-//        }
+        Date updatetime = TimeRun.tasktime(0,0,0);
         TimeRun  timeRun = new TimeRun(MainActivity.this,updatetime,myHandler,60*60*24*1000,DATADELETE);
 
 

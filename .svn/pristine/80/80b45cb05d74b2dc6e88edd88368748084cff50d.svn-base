@@ -19,7 +19,6 @@ import java.io.File;
 public class App extends Application {
 
     private HttpProxyCacheServer proxy;
-    public static    DbManager db;
 
 
     public static HttpProxyCacheServer getProxy(Context context) {
@@ -77,11 +76,8 @@ public class App extends Application {
                //设置是否允许事务，默认true
                 //.setAllowTransaction(true)
 
-               db = x.getDb(daoConfig);
-    }
+                 DbManager db = x.getDb(daoConfig);
 
-    public static  DbManager getdb(){
-        return db;
-    }
 
+    }
 }
