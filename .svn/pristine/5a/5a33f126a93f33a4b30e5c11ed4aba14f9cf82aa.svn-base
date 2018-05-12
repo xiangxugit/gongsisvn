@@ -20,7 +20,6 @@ import newwater.com.newwater.App;
 import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.beans.person;
 import newwater.com.newwater.utils.TimeRun;
-import newwater.com.newwater.utils.VideoUtils;
 
 /**
  * Created by Administrator on 2018/5/11 0011.
@@ -63,10 +62,6 @@ public class Service1 extends Service {
 
         final long PERIOD_DAY =10 * 1000;
         timer.schedule(task,date,PERIOD_DAY);
-
-        //如果是空闲开始下载
-
-
 
 
     }

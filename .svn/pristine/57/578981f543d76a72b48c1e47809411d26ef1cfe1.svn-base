@@ -41,7 +41,6 @@ import newwater.com.newwater.beans.DeiviceParams;
 import newwater.com.newwater.beans.person;
 import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
-import newwater.com.newwater.utils.VideoUtils;
 import newwater.com.newwater.view.CustomerVideoView;
 import newwater.com.newwater.view.PopWindow;
 import newwater.com.newwater.view.PopWindowChooseWaterGetWay;
@@ -116,13 +115,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        listenDevice();
 
         //缓存视频 https://blog.csdn.net/qingwenje2008/article/details/76186727
-        //监控设备
         startService(new Intent(MainActivity.this, Service1.class));
 //        String ACTION = "com.ryantang.service.PollingService";
 //        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
 
-        VideoUtils videodownload = new VideoUtils(MainActivity.this);
-        videodownload.downloadvideo();
+
 
     }
     /**
