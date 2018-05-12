@@ -90,7 +90,7 @@ public class App extends DaemonApplication {
                CrashRestart.getInstance().initCrashRestart(this);
 
 
-               //https://dev.mi.com/console/doc/detail?pId=41  小米推送 
+               //https://dev.mi.com/console/doc/detail?pId=41  小米推送
 
     }
 
