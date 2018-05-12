@@ -1,5 +1,6 @@
 package newwater.com.newwater;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
@@ -33,6 +34,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import newwater.com.newwater.Processpreserving.PollingUtils;
+import newwater.com.newwater.Processpreserving.Service1;
 import newwater.com.newwater.adapter.VideoAdapter;
 import newwater.com.newwater.beans.DeiviceParams;
 import newwater.com.newwater.beans.person;
@@ -109,11 +112,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //视频播放
         playVideo();
         //监控设备
-        listenDevice();
+//        listenDevice();
 
         //缓存视频 https://blog.csdn.net/qingwenje2008/article/details/76186727
-
-
+        startService(new Intent(MainActivity.this, Service1.class));
+//        String ACTION = "com.ryantang.service.PollingService";
+//        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
 
 
 

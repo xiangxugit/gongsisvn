@@ -23,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="newwater.com.newwater.Processpreserving.Service1" android:process=":process1"/>
+        <receiver android:name="newwater.com.newwater.Processpreserving.Receiver1" android:process=":process1"/>
+        <service android:name="newwater.com.newwater.Processpreserving.Service2" android:process=":process2"/>
+        <receiver android:name="newwater.com.newwater.Processpreserving.Receiver2" android:process=":process2"/>
+
     </application>
 
 </manifest>

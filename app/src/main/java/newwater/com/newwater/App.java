@@ -14,6 +14,12 @@ import org.xutils.x;
 
 import java.io.File;
 
+import newwater.com.newwater.Processpreserving.Receiver1;
+import newwater.com.newwater.Processpreserving.Receiver2;
+import newwater.com.newwater.Processpreserving.Service1;
+import newwater.com.newwater.Processpreserving.Service2;
+import newwater.com.newwater.utils.CrashRestart;
+
 /**
  * Created by Administrator on 2018/4/26 0026.
  */
@@ -80,6 +86,8 @@ public class App extends DaemonApplication {
                 //.setAllowTransaction(true)
 
                db = x.getDb(daoConfig);
+               //app挂掉重启
+               CrashRestart.getInstance().initCrashRestart(this);
     }
 
     public static  DbManager getdb(){
@@ -89,6 +97,35 @@ public class App extends DaemonApplication {
 
     @Override
     protected DaemonConfigurations getDaemonConfigurations() {
-        return null;
+        DaemonConfigurations.DaemonConfiguration configuration1 = new DaemonConfigurations.DaemonConfiguration(
+                "newwater.com.newwater.Processpreserving::process1",
+                Service1.class.getCanonicalName(),
+                Receiver1.class.getCanonicalName());
+
+        DaemonConfigurations.DaemonConfiguration configuration2 = new DaemonConfigurations.DaemonConfiguration(
+                "newwater.com.newwater.Processpreserving::process2",
+                Service2.class.getCanonicalName(),
+                Receiver2.class.getCanonicalName());
+
+        DaemonConfigurations.DaemonListener listener = new MyDaemonListener();
+        //return new DaemonConfigurations(configuration1, configuration2);//listener can be null
+        return new DaemonConfigurations(configuration1, configuration2, listener);
+    }
+
+
+
+    class MyDaemonListener implements DaemonConfigurations.DaemonListener{
+        @Override
+        public void onPersistentStart(Context context) {
+        }
+
+        @Override
+        public void onDaemonAssistantStart(Context context) {
+        }
+
+        @Override
+        public void onWatchDaemonDaed() {
+        }
     }
 }
+
