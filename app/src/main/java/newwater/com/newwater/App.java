@@ -88,10 +88,6 @@ public class App extends DaemonApplication {
                db = x.getDb(daoConfig);
                //app挂掉重启
                CrashRestart.getInstance().initCrashRestart(this);
-
-
-               //https://dev.mi.com/console/doc/detail?pId=41  小米推送
-
     }
 
     public static  DbManager getdb(){
