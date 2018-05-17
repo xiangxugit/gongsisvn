@@ -1,4 +1,4 @@
-package purewater.com.leadapp.utils;
+package newwater.com.newwater.utils;
 
 /**
  * Created by Administrator on 2018/5/14 0014.
