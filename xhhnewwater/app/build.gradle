@@ -36,4 +36,7 @@ dependencies {
     compile 'org.xutils:xutils:3.5.0'
     //xutils 主要用于大数据上传和断点下载视频，操作数据库，比自己写节省工作量
     implementation project(':LibMarsdaemon')
+
+//    https://github.com/Coolerfall/Android-AppDaemon
+    compile 'com.coolerfall:android-app-daemon:1.2.0'
 }

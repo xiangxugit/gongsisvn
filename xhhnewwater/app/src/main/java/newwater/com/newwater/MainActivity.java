@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import newwater.com.newwater.Processpreserving.DaemonService;
 import newwater.com.newwater.Processpreserving.PollingUtils;
 import newwater.com.newwater.Processpreserving.Service1;
 import newwater.com.newwater.adapter.VideoAdapter;
@@ -117,7 +118,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //缓存视频 https://blog.csdn.net/qingwenje2008/article/details/76186727
         //监控设备
-        startService(new Intent(MainActivity.this, Service1.class));
+//        startService(new Intent(MainActivity.this, Service1.class));
+
+        startService(new Intent(this, DaemonService.class));
 //        String ACTION = "com.ryantang.service.PollingService";
 //        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
           //下载视频
@@ -144,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
         public void playVideo(){
+
+
           //是否需要播放的资源
         final int maxloop;
         String testa = TestJSON.strategy();
@@ -280,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //https://www.jianshu.com/p/7d3ff0a11ab8  数据库操作
 
         //闹钟定时播放视频
+
         // TODO 此处应该是读取本地的配置，本地的配置应该是在服务器获取的
         //开机器隔一段时间去监听查询
 

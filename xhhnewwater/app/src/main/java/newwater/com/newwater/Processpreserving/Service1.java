@@ -98,6 +98,10 @@ public class Service1 extends Service {
                 case 0:
                     Toast.makeText(Service1.this,"定时检测水质",Toast.LENGTH_SHORT).show();
 
+                    //水质等的监控
+
+                    //存入到数据库
+
                     break;
             }
 
