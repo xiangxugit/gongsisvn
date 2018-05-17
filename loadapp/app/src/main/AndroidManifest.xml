@@ -58,11 +58,8 @@
         </receiver>
 
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 150e3cebf49071b664da5e273faf87b58266c36a
     </application>
 
 
@@ -74,10 +71,6 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="com.xiaomi.mipushdemo.permission.MIPUSH_RECEIVE" android:protectionLevel="signature" />
     <!--这里com.xiaomi.mipushdemo改成app的包名-->
-<<<<<<< HEAD
-=======
-    <uses-permission android:name="com.xiaomi.mipushdemo.permission.MIPUSH_RECEIVE" />
->>>>>>> 150e3cebf49071b664da5e273faf87b58266c36a
 
     <!--小米推送,推送服务所需的服务和receiver-->
 
