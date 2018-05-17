@@ -30,7 +30,10 @@
   <component name="ProjectType">
     <option name="id" value="Android" />
   </component>
+<<<<<<< HEAD
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
+=======
+>>>>>>> 150e3cebf49071b664da5e273faf87b58266c36a
 </project>
