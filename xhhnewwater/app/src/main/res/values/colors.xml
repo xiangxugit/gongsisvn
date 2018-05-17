@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="red">#561217</color>
+    <color name="whitercolor">#ffffff</color>
+    <color name="blue">#303769</color>
+    <color name="black">#000000</color>
+    <color name="unicom_general_button_press">#f56415</color>
+    <color name="loginBtnSelectborder50">#7f6bcab2</color>
+    <color name="unicom_general_button">#FF0033</color>
+    <color name="grey">#bf9e98</color>
+    <color name="scanqcode">#14c3fd</color>
+    <color name="redindex">#f95d5e</color>
+    <color name="blueindex">#479fde</color>
+
+
+</resources>
