@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <!-- The width that is used when creating thumbnails of applications. -->
+        <dimen name="margins">50dp</dimen>
+</resources>
