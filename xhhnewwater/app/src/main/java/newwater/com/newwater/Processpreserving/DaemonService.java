@@ -110,7 +110,7 @@ public class DaemonService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                AlarmManagerUtil.setAlarms(); 定时的播放视频  用闹钟实现
+                AlarmManagerUtil.setAlarms(); //定时的播放视频  用闹钟实现
 
             }
         }).start();
