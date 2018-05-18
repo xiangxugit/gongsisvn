@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        String ACTION = "com.ryantang.service.PollingService";
 //        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
           //下载视频
-        VideoUtils videodownload = new VideoUtils(MainActivity.this);
-        videodownload.downloadvideo();
+//        VideoUtils videodownload = new VideoUtils(MainActivity.this);
+//        videodownload.downloadvideo();
 
     }
     /**
@@ -148,36 +148,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         public void playVideo(){
 
-
           //是否需要播放的资源
         final int maxloop;
         String testa = TestJSON.strategy();
-        Log.e("test","test"+testa);
         JSONArray alldata = JSON.parseArray(testa);
-
         String test = alldata.getString(0);
         com.alibaba.fastjson.JSONObject testobj = JSON.parseObject(test);
         String videoListString = testobj.getString("videoList");
-        Log.e("videoListString","videoListString"+videoListString);
         final JSONArray videolist = JSON.parseArray(videoListString);
         //循环
         maxloop = videolist.size();
         String proxyUrl = proxy.getProxyUrl(videolist.getString(0));
         videoplay.setVideoPath(proxyUrl);
         videoplay.start();
-
-
-
-             final int videoflag = 0;//标志播放次数
+            final int videoflag = 0;//标志播放次数
             videoplay.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
             @Override
             public void onCompletion(MediaPlayer mPlayer) {
-                // TODO Auto-generated method stub
                 pos = pos+1;
-                Log.e("pos","pos"+pos);
-                Log.e("maxloop","maxloop"+maxloop);
-
                 if(pos==maxloop){
                     pos =0;
                     String proxyUrl = proxy.getProxyUrl(videolist.getString(pos));
@@ -187,9 +176,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     videoplay.setVideoPath(videolist.getString(pos));
                     videoplay.start();
                 }
-//                mPlayer.start();
-//                mPlayer.setLooping(true);
-
             }
         });
 
@@ -201,9 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     if(what==MediaPlayer.MEDIA_ERROR_SERVER_DIED){
                         //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
-                        Toast.makeText(MainActivity.this,
-                                "网络服务错误",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"网络服务错误",Toast.LENGTH_LONG).show();
                     }else if(what==MediaPlayer.MEDIA_ERROR_UNKNOWN){
                         if(extra==MediaPlayer.MEDIA_ERROR_IO){
                             //文件不存在或错误，或网络不可访问错误
@@ -217,25 +201,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     Toast.LENGTH_LONG).show();
                         }
                     }
-
-
                     videoplay.stopPlayback();//释放VideoView原来的MediaPlayer
-
                     videoplay.resume();//VideoView内部重新new MediaPlayer
-
                     videoplay.setVideoPath(videolist.getString(0));
-
                     videoplay.start();//播放
-
-
                     return false;
                 }
             });
 
 
 
-        popChooseWater = new PopWindow(MainActivity.this);
-        contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.free_pay_pop, null);
+//        popChooseWater = new PopWindow(MainActivity.this);
+//        contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.free_pay_pop, null);
+
+//            https://blog.csdn.net/qq_35952946/article/details/78863871  串口通信
 
 
     }
