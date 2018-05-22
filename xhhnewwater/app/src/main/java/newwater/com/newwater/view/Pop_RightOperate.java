@@ -17,6 +17,8 @@ import java.util.logging.Handler;
 import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.R;
 
+import static newwater.com.newwater.Processpreserving.DaemonService.comThread;
+
 /**
  * 自定义的PopupWindow
  */
@@ -80,21 +82,27 @@ public class Pop_RightOperate extends PopupWindow {
                         hotwater.setText("热水");
                         hotwater.setBackgroundResource(R.drawable.hotwater);
 
+
+//                      取水
+
+
+
+
                         //做假的数据弹出来余额不足
-                        final  MyHandler  handler = new MyHandler();
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(4000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                Message msg =Message.obtain();
-                                msg.what=1;   //标志消息的标志
-                                handler.sendMessage(msg);
-                            }
-                        }).start();
+//                        final  MyHandler  handler = new MyHandler();
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    Thread.sleep(4000);
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                Message msg =Message.obtain();
+//                                msg.what=1;   //标志消息的标志
+//                                handler.sendMessage(msg);
+//                            }
+//                        }).start();
 
 
 

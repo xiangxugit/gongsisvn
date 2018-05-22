@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
+import android.serialport.ComUtil;
+import android.serialport.DevUtil;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +34,7 @@ import org.xutils.ex.DbException;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView qrcode;
 
     //VideoView
-    private VideoView videoplay;
+    private CustomerVideoView videoplay;
 
 
     //viewpager 视频
@@ -90,6 +94,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Pop_WantWater pop_wantWater = null;
 
+    //付工那边的代码start
+
+    private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
+
+
+    private DevUtil devUtil=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void initView() {
         root = (RelativeLayout) findViewById(R.id.root);
 
-        videoplay = (VideoView) findViewById(R.id.playvideo);
+        videoplay = (CustomerVideoView) findViewById(R.id.playvideo);
         videoplay.setZOrderOnTop(true);
         //视频播放
         proxy = App.getProxy(MainActivity.this);
@@ -120,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //监控设备
 //        startService(new Intent(MainActivity.this, Service1.class));
 
-        startService(new Intent(this, DaemonService.class));
+        startService(new Intent(MainActivity.this, DaemonService.class));
 //        String ACTION = "com.ryantang.service.PollingService";
 //        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
           //下载视频
@@ -128,6 +139,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        videodownload.downloadvideo();
 
     }
+
+    //付工begin
+
+
+
+
+    //付工end
+
     /**
      * 这个函数在Activity创建完成之后会调用。购物车悬浮窗需要依附在Activity上，如果Activity还没有完全建好就去
      * 调用showCartFloatView()，则会抛出异常
@@ -214,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        popChooseWater = new PopWindow(MainActivity.this);
 //        contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.free_pay_pop, null);
 
-//            https://blog.csdn.net/qq_35952946/article/details/78863871  串口通信
+//        https://blog.csdn.net/qq_35952946/article/details/78863871  串口通信
 
 
     }

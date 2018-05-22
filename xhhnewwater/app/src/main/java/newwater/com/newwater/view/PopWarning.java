@@ -2,6 +2,7 @@ package newwater.com.newwater.view;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.serialport.DevUtil;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,7 +16,10 @@ import android.widget.Toast;
 
 import java.util.logging.Handler;
 
+import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.R;
+
+import static newwater.com.newwater.Processpreserving.DaemonService.comThread;
 
 /**
  * 自定义的PopupWindow
@@ -25,6 +29,7 @@ public class PopWarning extends PopupWindow {
     private RelativeLayout outcupleft;
     private RelativeLayout outcupright;
     private TextView bottomsure;
+    private DevUtil devUtil;
     public PopWarning(Activity context) {
         // 通过layout的id找到布局View
         this.context = context;
@@ -81,6 +86,12 @@ public class PopWarning extends PopupWindow {
                 case R.id.outcupleft:
 //                    PopWindow popWindow = new PopWindow(context);
 //                    popWindow.showPopupWindow(new View(context));
+                    if(comThread == null){
+                        Toast.makeText(context, "通讯未启动", Toast.LENGTH_SHORT).show();
+                    }else{
+                        comThread.setActive(false);
+                    }
+
 
                     String hotwatertext = Pop_RightOperate.hotwater.getText().toString();
                     if("热水".equals(hotwatertext)){
@@ -91,6 +102,23 @@ public class PopWarning extends PopupWindow {
                     }
 
                     Toast.makeText(context,"出热水",Toast.LENGTH_SHORT).show();
+//                    int sw=devUtil.get_run_hotWaterSW_value()?2:1;//取反：当前为开，则发送关
+//                    String s;
+//                    if(sw==1)
+//                        s="出热水指令执行";
+//                    else
+//                        s="停止出热水执行";
+                    String s = "出热水指令执行";
+                    int sw = 1;
+
+
+                    if (devUtil.do_ioWater(1, sw) == 0) {
+                        Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                    } else{
+                        Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                    }
+
+
                     // 延迟15秒
                     break;
                 case R.id.outcupright:

@@ -38,10 +38,12 @@ public class GetDeviceInfo extends App{
             }
         } else {
             //如果SDK小于6.0则不去动态申请权限
-            getImei(context);
+            TelephonyManager tm = (TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE);
+            str = tm.getDeviceId();
+            String mtype = android.os.Build.MODEL;
         }
 
-        return "";
+        return str;
 
     }
 
@@ -67,9 +69,7 @@ public class GetDeviceInfo extends App{
 
 
     public void getImei(Activity context){
-//        TelephonyManager tm = (TelephonyManager)this.getSystemService(this.TELEPHONY_SERVICE);
-//        IMEI = tm.getDeviceId();
-//        String mtype = android.os.Build.MODEL;
+
 //        Log.d("Main",mtype);
 //        Toast.makeText(this,"IMEI的值为："+mtype,Toast.LENGTH_SHORT).show();
     }
