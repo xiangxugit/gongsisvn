@@ -22,5 +22,6 @@
     <string name="accoutnomoney">账户余额不足</string>
     <string name="tobuy">请到微信公众号充值</string>
     <string name="stopgetwater">停止取水</string>
+    <string name="getcup">取纸杯</string>
 
 </resources>

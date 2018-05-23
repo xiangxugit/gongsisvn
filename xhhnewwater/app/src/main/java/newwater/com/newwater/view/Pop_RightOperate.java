@@ -25,9 +25,10 @@ import static newwater.com.newwater.Processpreserving.DaemonService.comThread;
  * 自定义的PopupWindow
  */
 public class Pop_RightOperate extends PopupWindow {
-    public static TextView hotwater;
+    public static TextView hotwater;//取热水
     private TextView warmwater;//温水
     private TextView coolwater;//冷水
+    private TextView dixieccup;//取纸杯
     private Activity context;
     private DevUtil devUtil;
     public Pop_RightOperate(final Activity context) {
@@ -164,11 +165,60 @@ public class Pop_RightOperate extends PopupWindow {
                     }else{
                         comThread.setActive(false);
                     }
-                    String s = "出冷水指令执行";
-                    int sw = 1;
-                    warmwater.setBackgroundResource(R.drawable.hotwaterstop);
 
+                    if(coolwater.getText().toString().equals(context.getString(R.string.coolwater))){
+                        //取水
+                        String s = "出冷水";
+                        int sw = 1;
+                        coolwater.setBackgroundResource(R.drawable.hotwaterstop);
+                        if (devUtil.do_ioWater(3, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+                        coolwater.setText(context.getString(R.string.stopgetwater));
+                    }
+
+                    else{
+                        String s = "停止出水";
+                        int sw = 2;
+                        coolwater.setBackgroundResource(R.drawable.coolwater);
+                        if (devUtil.do_ioWater(3, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+                        coolwater.setText(context.getString(R.string.coolwater));
+                    }
+                    break;
+                case R.id.dixieccup:
+
+                    if(null==comThread){
+                        Toast.makeText(context,"通讯未启动",Toast.LENGTH_SHORT).show();
+                    }else{
+                        comThread.setActive(false);
+                    }
+
+                    if(dixieccup.getText().toString().equals(context.getString(R.string.getcup))){
+                        //取水
+                        String s = "出冷水";
+                        int sw = 1;
+                        coolwater.setBackgroundResource(R.drawable.hotwaterstop);
+                        if (devUtil.do_ioWater(3, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+                        coolwater.setText(context.getString(R.string.stopgetwater));
+                    }else{
+
+                    }
+
+
+
+                    break;
             }
+
         }
 
     };
