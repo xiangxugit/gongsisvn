@@ -84,35 +84,41 @@ public class PopWarning extends PopupWindow {
             switch (v.getId()) {
 
                 case R.id.outcupleft:
-//                    PopWindow popWindow = new PopWindow(context);
-//                    popWindow.showPopupWindow(new View(context));
+                    devUtil = new DevUtil(null);
                     if(comThread == null){
                         Toast.makeText(context, "通讯未启动", Toast.LENGTH_SHORT).show();
                     }else{
                         comThread.setActive(false);
                     }
-
-
                     String hotwatertext = Pop_RightOperate.hotwater.getText().toString();
                     if("热水".equals(hotwatertext)){
                         Pop_RightOperate.hotwater.setText("停止取水");
                         Pop_RightOperate.hotwater.setBackgroundResource(R.drawable.hotwaterstop);
+
+                        String s = "出热水指令执行";
+                        int sw = 1;
+
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
                     }else{
+
+                        //关闭取热水
                         Pop_RightOperate.hotwater.setText("热水");
+                        String s = "出热水指令执行";
+                        int sw = 2;
+
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
 
-//                    Toast.makeText(context,"出热水",Toast.LENGTH_SHORT).show();
-//                    int sw=devUtil.get_run_hotWaterSW_value()?2:1;//取反：当前为开，则发送关
-//                    String s;
-//                    if(sw==1)
-//                        s="出热水指令执行";
-//                    else
-//                        s="停止出热水执行";
-                    String s = "出热水指令执行";
-                    int sw = 1;
-
-                    devUtil = new DevUtil(null);
-                    if(devUtil.isComOpened()==true){
+                   /* if(devUtil.isComOpened()==true){
                         if (devUtil.do_ioWater(1, sw) == 0) {
                             Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
                         } else{
@@ -126,13 +132,15 @@ public class PopWarning extends PopupWindow {
                             Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
                         }
 
-                    }
+                    }*/
 
 
 
                     // 延迟15秒
                     break;
                 case R.id.outcupright:
+
+
                     Toast.makeText(context,"取消水",Toast.LENGTH_SHORT).show();
                     break;
             }

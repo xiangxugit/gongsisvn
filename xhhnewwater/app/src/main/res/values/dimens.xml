@@ -10,6 +10,24 @@
     <dimen name="little">10sp</dimen>
 
 
+    <!--图标大小right-->
+    <dimen name="righticowidth">200dp</dimen>
+    <dimen name="righticoheight">200dp</dimen>
+
+    <!--左边的操作界面的东西-->
+    <dimen name="leftonewidth">200dp</dimen>
+    <dimen name="rightoneheight">160dp</dimen>
+    <!--dts高度 -->
+    <dimen name="dtsheight">50dp</dimen>
+    <dimen name="shuidiheightall">300dp</dimen>
+    <dimen name="shuidiheight">250dp</dimen>
+
+
+    <!--左边下面的小图标-->
+    <dimen name="littleico">50dp</dimen>
+
+
+
 
 
 </resources>

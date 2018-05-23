@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">newwater</string>
+    <string name="hotwater">热水</string>
+    <string name="warmwater">温水</string>
+    <string name="coolwater">冷水</string>
+    <string name="dixieccup">纸杯</string>
+    <string name="exit">退出(20s)</string>
+    <string name="Dts">出水DTS</string>
+    <string name="jiare">加热</string>
+    <string name="zhileng">制冷</string>
+    <string name="zhishui">制水</string>
+    <string name="chongxi">冲洗</string>
+    <string name="openorclose">退出（30）</string>
+    <string name="freedrink">免费饮水</string>
+    <string name = "paydrink">支付饮水</string>
+    <string name="seeadtodrink">(需观看广告后才可取水)</string>
+    <string name="scan">扫描二维码</string>
+    <string name="getwater">方可取水</string>
+    <string name="getwaterwarning">请放置好被子,小心烫伤！请按确认</string>
+    <string name="sure">确认</string>
+    <string name="cancel">取消</string>
+    <string name="accoutnomoney">账户余额不足</string>
+    <string name="tobuy">请到微信公众号充值</string>
+    <string name="stopgetwater">停止取水</string>
+
+</resources>

@@ -49,7 +49,7 @@ public class Pop_TimeBack extends PopupWindow {
             // this.showAsDropDown(parent, parent.getWidth() / 2 - 400, 18);
 
             // showAtLocation方法，在parent的某个位置参数，具体哪个位置由后三个参数决定
-            this.showAtLocation(parent, Gravity.CENTER, 0, 0);
+            this.showAtLocation(parent, Gravity.TOP, 0, 0);
         } else {
             this.dismiss();
         }

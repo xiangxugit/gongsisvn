@@ -6,8 +6,8 @@
 
     <LinearLayout
         android:id="@+id/rightoperate"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="2"
         android:layout_gravity="center"
         android:gravity="center"
@@ -15,8 +15,8 @@
 
         <TextView
             android:id="@+id/hotwater"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/righticowidth"
+            android:layout_height="@dimen/righticoheight"
             android:background="@drawable/hotwater"
             android:layout_gravity="center"
             android:gravity="center"
@@ -28,20 +28,22 @@
         <TextView
             android:id="@+id/warmwater"
             android:background="@drawable/wenshui"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/righticowidth"
             android:layout_gravity="center"
             android:gravity="center"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/righticoheight"
             android:layout_marginTop="5dp"
+            android:textSize="0sp"
+            android:text="@string/warmwater"
             />
 
         <TextView
             android:id="@+id/coolwater"
             android:background="@drawable/coolwater"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/righticowidth"
             android:layout_gravity="center"
             android:gravity="center"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/righticoheight"
             android:layout_marginTop="5dp"
             android:text="冷水"
             android:textSize="0sp"
@@ -51,10 +53,10 @@
         <TextView
             android:id="@+id/dixieccup"
             android:background="@drawable/getcup"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/righticowidth"
             android:layout_gravity="center"
             android:gravity="center"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/righticoheight"
             android:layout_marginTop="5dp"
             />
 

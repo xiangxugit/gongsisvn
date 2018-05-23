@@ -12,7 +12,8 @@
         android:text="30S"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />
+        android:textSize="@dimen/verybig"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
 
 </LinearLayout>
