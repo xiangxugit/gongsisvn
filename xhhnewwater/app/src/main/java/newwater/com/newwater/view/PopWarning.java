@@ -101,7 +101,7 @@ public class PopWarning extends PopupWindow {
                         Pop_RightOperate.hotwater.setText("热水");
                     }
 
-                    Toast.makeText(context,"出热水",Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context,"出热水",Toast.LENGTH_SHORT).show();
 //                    int sw=devUtil.get_run_hotWaterSW_value()?2:1;//取反：当前为开，则发送关
 //                    String s;
 //                    if(sw==1)
@@ -111,12 +111,23 @@ public class PopWarning extends PopupWindow {
                     String s = "出热水指令执行";
                     int sw = 1;
 
+                    devUtil = new DevUtil(null);
+                    if(devUtil.isComOpened()==true){
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
 
-                    if (devUtil.do_ioWater(1, sw) == 0) {
-                        Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
-                    } else{
-                        Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
+
 
 
                     // 延迟15秒

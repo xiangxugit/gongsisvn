@@ -35,7 +35,7 @@ public class DevUtil {
     public static final byte ERR_SERIAL=0x0F;//串口故障
 
     //class member
-    private ComUtil mComUtil=null;
+    private static ComUtil mComUtil=null;
     private Handler mHandler=null;
     private int mErrCount=0;
 
