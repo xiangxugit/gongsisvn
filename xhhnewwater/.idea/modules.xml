@@ -3,9 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LibMarsdaemon/LibMarsdaemon.iml" filepath="$PROJECT_DIR$/LibMarsdaemon/LibMarsdaemon.iml" />
+      <module fileurl="file://C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\LibMarsdaemon\LibMarsdaemon.iml" filepath="C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\LibMarsdaemon\LibMarsdaemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\app\app.iml" filepath="C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\app\app.iml" />
       <module fileurl="file://E:\gongsisvn\xhhnewwater\gongsisvn.iml" filepath="E:\gongsisvn\xhhnewwater\gongsisvn.iml" />
       <module fileurl="file://$PROJECT_DIR$/xhhnewwater.iml" filepath="$PROJECT_DIR$/xhhnewwater.iml" />
+      <module fileurl="file://C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\xhhnewwater.iml" filepath="C:\Users\Administrator\Desktop\gongsisvn\xhhnewwater\xhhnewwater.iml" />
     </modules>
   </component>
 </project>

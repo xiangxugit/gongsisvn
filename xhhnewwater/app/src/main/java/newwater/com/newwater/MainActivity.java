@@ -18,6 +18,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,7 +58,6 @@ import newwater.com.newwater.view.Pop_LeftOperate;
 import newwater.com.newwater.view.Pop_WantWater;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private TextView exit;
     private TextView dixieccup;//纸杯和我要饮水按钮
     private Boolean operateornot  = false;
     public static  LinearLayout leftoperate;//左边操作区域
@@ -110,7 +110,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //左边操作窗口的组件
 
     private TextView hotwatertext;
+    private TextView coolwatertext;
+    private TextView ppmvalue;
+    private TextView ppm;//下方的
 
+    //四个使能按钮
+
+    private LinearLayout tobehot;
+    private LinearLayout tobecool;
+    private LinearLayout zhishui;
+    private LinearLayout chongxi;
+    private Button exit;
 
 
     @Override
@@ -134,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void updateUI(String i) {
 //                tip.setText(i);
                 hotwatertext.setText(i);
+                coolwatertext.setText(i);
+                ppmvalue.setText(i);
+                ppm.setText(i);
 //                Toast.makeText(MainActivity.this,"aaa"+i,Toast.LENGTH_SHORT).show();
             }
         });
@@ -175,6 +188,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         View view = layoutInflater.inflate(R.layout.left_pop, null);
 
         hotwatertext = view.findViewById(R.id.hotwatertext);
+        coolwatertext = view.findViewById(R.id.coolwatertext);
+        ppmvalue = view.findViewById(R.id.ppmvalue);
+        ppm = view.findViewById(R.id.ppm);
+
+        tobehot = view.findViewById(R.id.tobehot);
+        tobecool = view.findViewById(R.id.tobecool);
+        zhishui = view.findViewById(R.id.zhishui);
+        chongxi = view.findViewById(R.id.chongxi);
+        exit = view.findViewById(R.id.exit);
+
+        tobehot.setOnClickListener(this);
+        tobecool.setOnClickListener(this);
+        zhishui.setOnClickListener(this);
+        chongxi.setOnClickListener(this);
+        exit.setOnClickListener(this);
+
 //        lv_group = (ListView) view.findViewById(R.id.lvGroup);
 
 
@@ -283,14 +312,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.exit:
-                //
                 TimeBack timeback = new TimeBack(exit,30000,1000);
                 break;
-
-           /* case R.id.dixieccup:
-                PopWindow popWindow = new PopWindow(MainActivity.this);
-                popWindow.showPopupWindow(new View(MainActivity.this));
-                break;*/
 
             case R.id.leftpop:
                 //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面
@@ -301,21 +324,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rightpop:
                 //弹出二维码
 
-
+                break;
+            case R.id.wantwater:
+                popChooseWater.showPopupWindow(new View(MainActivity.this));
+                break;
+            case R.id.tobehot:
+                //加热使能
                 break;
 
-            case R.id.wantwater:
-//                if(false ==operateornot){
-//                    operateornot = true;
-//                    leftoperate.setVisibility(View.GONE);
-//                    rightoperate.setVisibility(View.GONE);
-//                }else{
-//                    operateornot = false;
-//                    leftoperate.setVisibility(View.VISIBLE);
-//                    rightoperate.setVisibility(View.VISIBLE);
-//                }
+            case R.id.tobecool:
+                //制冷使能
+                break;
+            case R.id.chongxi:
 
-                popChooseWater.showPopupWindow(new View(MainActivity.this));
+                //冲洗使能
+                break;
+
         }
 
     }
