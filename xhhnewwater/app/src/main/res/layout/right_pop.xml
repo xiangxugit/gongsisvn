@@ -56,7 +56,7 @@
             android:layout_width="@dimen/righticowidth"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@string/coolwater"
+            android:text="@string/getcup"
             android:layout_height="@dimen/righticoheight"
             android:layout_marginTop="5dp"
             />

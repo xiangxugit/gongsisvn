@@ -97,27 +97,37 @@ public class PopWarning extends PopupWindow {
 
                         String s = "出热水指令执行";
                         int sw = 1;
-
+                        try {
                         if (devUtil.do_ioWater(1, sw) == 0) {
                             Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
                         } else{
                             Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
                         }
-                    }else{
+                        }catch (Exception e){
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                        finally {
+                            comThread.setActive(true);
+                        }
+                    }else {
 
                         //关闭取热水
                         Pop_RightOperate.hotwater.setText("热水");
                         String s = "出热水指令执行";
                         int sw = 2;
+                        try {
+                            if (devUtil.do_ioWater(1, sw) == 0) {
+                                Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                            }
 
-                        if (devUtil.do_ioWater(1, sw) == 0) {
-                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
-                        } else{
-                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                        } finally {
+                            comThread.setActive(true);
                         }
-
                     }
-
                    /* if(devUtil.isComOpened()==true){
                         if (devUtil.do_ioWater(1, sw) == 0) {
                             Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
@@ -138,11 +148,11 @@ public class PopWarning extends PopupWindow {
 
                     // 延迟15秒
                     break;
-                case R.id.outcupright:
+//                case R.id.outcupright:
 
 
-                    Toast.makeText(context,"取消水",Toast.LENGTH_SHORT).show();
-                    break;
+//                    Toast.makeText(context,"取消水",Toast.LENGTH_SHORT).show();
+//                    break;
             }
         }
 

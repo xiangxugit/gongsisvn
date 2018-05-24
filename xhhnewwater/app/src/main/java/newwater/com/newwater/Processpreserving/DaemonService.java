@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import newwater.com.newwater.MainActivity;
+
 /**
  * Created by Administrator on 2018/5/17 0017.
  */
@@ -93,9 +95,10 @@ public class DaemonService extends Service {
         File dev = new File(DevPath);
         devUtil = new DevUtil(null);
         boolean r = devUtil.openCOM(dev, Baudrate, 0);
+        MyHandler myHandler = new MyHandler();
         if(r) {
             if (comThread == null) {
-                comThread = new ComThread();
+                comThread = new ComThread(this,myHandler);
                 comThread.start();
 
             }
@@ -119,9 +122,17 @@ public class DaemonService extends Service {
             // TODO Auto-generated method stub
             switch (msg.what){
                 case 0:
-                    Toast.makeText(DaemonService.this,"定时检测水质",Toast.LENGTH_SHORT).show();
+
+                    //https://www.cnblogs.com/chenyingzhong/archive/2011/03/07/1973234.html通知主界面
+//                    Toast.makeText(DaemonService.this,"定时检测水质",Toast.LENGTH_SHORT).show();
 
                     //水质等的监控
+
+                    Intent it = new Intent();
+                    it.setAction(MainActivity.FLAG);
+
+                    it.putExtra("progress", System.currentTimeMillis()+"");
+                    sendBroadcast(it);
 
                     //存入到数据库
 
@@ -160,6 +171,7 @@ public class DaemonService extends Service {
         @Override
         public void onDestroy() {
             super.onDestroy();
+//            unregisterReceiver(upd);
         }
     }
 

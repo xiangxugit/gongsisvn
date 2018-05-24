@@ -27,8 +27,8 @@
             android:id="@+id/wantwater"
             android:visibility="gone"
             android:background="@drawable/wantwater"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             />
     </RelativeLayout>
 

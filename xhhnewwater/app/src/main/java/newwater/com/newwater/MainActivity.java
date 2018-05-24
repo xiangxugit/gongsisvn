@@ -1,6 +1,7 @@
 package newwater.com.newwater;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
@@ -44,6 +45,8 @@ import newwater.com.newwater.Processpreserving.Service1;
 import newwater.com.newwater.adapter.VideoAdapter;
 import newwater.com.newwater.beans.DeiviceParams;
 import newwater.com.newwater.beans.person;
+import newwater.com.newwater.broadcast.UpdateBroadcast;
+import newwater.com.newwater.interfaces.OnUpdateUI;
 import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
 import newwater.com.newwater.utils.VideoUtils;
@@ -101,14 +104,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private DevUtil devUtil=null;
 
+    public static final String FLAG = "UPDATE";
+
+    private UpdateBroadcast myBroadcast;
+    //左边操作窗口的组件
+
+    private TextView hotwatertext;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        initbroadcast();
     }
 
+
+    public void initbroadcast(){
+        myBroadcast = new UpdateBroadcast();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(FLAG);
+        registerReceiver(myBroadcast, intentFilter);
+
+
+        myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
+            @Override
+            public void updateUI(String i) {
+//                tip.setText(i);
+                hotwatertext.setText(i);
+//                Toast.makeText(MainActivity.this,"aaa"+i,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
     public void initView() {
         root = (RelativeLayout) findViewById(R.id.root);
 
@@ -137,6 +168,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           //下载视频
 //        VideoUtils videodownload = new VideoUtils(MainActivity.this);
 //        videodownload.downloadvideo();
+         //左边的操作界面组件获得
+
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE);
+
+        View view = layoutInflater.inflate(R.layout.left_pop, null);
+
+        hotwatertext = view.findViewById(R.id.hotwatertext);
+//        lv_group = (ListView) view.findViewById(R.id.lvGroup);
+
+
+
 
     }
 
@@ -245,10 +287,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 TimeBack timeback = new TimeBack(exit,30000,1000);
                 break;
 
-            case R.id.dixieccup:
+           /* case R.id.dixieccup:
                 PopWindow popWindow = new PopWindow(MainActivity.this);
                 popWindow.showPopupWindow(new View(MainActivity.this));
-                break;
+                break;*/
 
             case R.id.leftpop:
                 //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面

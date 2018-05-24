@@ -29,10 +29,11 @@
         <service android:name="newwater.com.newwater.Processpreserving.Service2" android:process=":process2"/>
         <receiver android:name="newwater.com.newwater.Processpreserving.Receiver2" android:process=":process2"/>
         <!--android:process=":daemon"-->
+        <!--android:exported="true"-->
         <service
             android:name="newwater.com.newwater.Processpreserving.DaemonService"
 
-            android:exported="true" >
+             >
         </service>
 
     </application>

@@ -19,6 +19,7 @@ package android.serialport;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -169,6 +170,8 @@ public class ComUtil {
 
     //用于调试显示报文
     private void sendMessage(int msg, String s){
+
+        Log.e("通讯会来东西咯","通讯会来东西咯");
         if(hMain==null)
             return;
 

@@ -47,7 +47,7 @@ public class App extends DaemonApplication {
         //初始化xutils
         //
         x.Ext.init(this);
-        x.Ext.setDebug(true);
+        x.Ext.setDebug(false);
 
         //配置本地数据库
         /**

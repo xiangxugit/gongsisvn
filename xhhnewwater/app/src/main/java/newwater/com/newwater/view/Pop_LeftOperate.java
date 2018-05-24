@@ -1,5 +1,6 @@
 package newwater.com.newwater.view;
 import android.app.Activity;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -7,13 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import newwater.com.newwater.R;
+import newwater.com.newwater.broadcast.UpdateBroadcast;
+import newwater.com.newwater.interfaces.OnUpdateUI;
 
 /**
  * 自定义的PopupWindow
  */
 public class Pop_LeftOperate extends PopupWindow {
+    public UpdateBroadcast myBroadcast;
+    public static final String FLAG = "UPDATE";
+    private TextView hotwatertext;
 
     public Pop_LeftOperate(Activity context) {
         // 通过layout的id找到布局View
@@ -37,7 +44,20 @@ public class Pop_LeftOperate extends PopupWindow {
         // 设置PopupWindow弹出窗体动画效果
         this.setAnimationStyle(R.style.PopWindowAnimStyle);
 
+
+        myBroadcast = new UpdateBroadcast();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(FLAG);
+        context.registerReceiver(myBroadcast, intentFilter);
         // 这里也可以从contentView中获取到控件，并为它们绑定控件
+        hotwatertext = (TextView) contentView.findViewById(R.id.hotwatertext);
+        myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
+            @Override
+            public void updateUI(String i) {
+                hotwatertext.setText(i);
+            }
+        });
+
     }
 
     // 显示PopupWindow，有两种方法：showAsDropDown、showAtLocation
