@@ -45,6 +45,7 @@ import newwater.com.newwater.Processpreserving.PollingUtils;
 import newwater.com.newwater.Processpreserving.Service1;
 import newwater.com.newwater.adapter.VideoAdapter;
 import newwater.com.newwater.beans.DeiviceParams;
+import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.beans.person;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.interfaces.OnUpdateUI;
@@ -122,13 +123,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout chongxi;
     private Button exit;
 
+    private ImageView hotico;//是否加热的imageview
+    private TextView hotornot;//是否加热text
+
+    private ImageView coolico;//是否制冷的imageView
+    private TextView cooltext;//是否制冷text
+
+    private ImageView zhishuiico;//是否制水的imageView
+    private TextView zhishuitext;//是佛止水的text
+
+    private ImageView chongxiimage;//冲洗imageView
+    private TextView  chongxitext;//冲洗text;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        initbroadcast();
+//        initbroadcast();
     }
 
 
@@ -141,12 +156,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
             @Override
-            public void updateUI(String i) {
-//                tip.setText(i);
-                hotwatertext.setText(i);
-                coolwatertext.setText(i);
-                ppmvalue.setText(i);
-                ppm.setText(i);
+            public void updateUI(ViewShow data) {
+                hotwatertext.setText("cao");
+//                hotwatertext.setText(data.getHotwatertextvalue());
+//                coolwatertext.setText(data.getCoolwatertextvalue());
+//                ppmvalue.setText(data.getPpmvalue());
+//                ppm.setText(data.getPpm());
+//                hotornot.setText(data.getHotornot());
+//                cooltext.setText(data.getCooltext());
+//                zhishuitext.setText(data.getZhishuitext());
+//                chongxitext.setText(data.getChongxitext());
+//                chongxitext.setText("aaaaaaa   ");
 //                Toast.makeText(MainActivity.this,"aaa"+i,Toast.LENGTH_SHORT).show();
             }
         });
@@ -187,36 +207,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         View view = layoutInflater.inflate(R.layout.left_pop, null);
 
-        hotwatertext = view.findViewById(R.id.hotwatertext);
-        coolwatertext = view.findViewById(R.id.coolwatertext);
-        ppmvalue = view.findViewById(R.id.ppmvalue);
-        ppm = view.findViewById(R.id.ppm);
+        hotwatertext = (TextView) view.findViewById(R.id.hotwatertext);
+        coolwatertext = (TextView)view.findViewById(R.id.coolwatertext);
+        ppmvalue = (TextView)view.findViewById(R.id.ppmvalue);
+        ppm = (TextView)view.findViewById(R.id.ppm);
 
-        tobehot = view.findViewById(R.id.tobehot);
-        tobecool = view.findViewById(R.id.tobecool);
-        zhishui = view.findViewById(R.id.zhishui);
-        chongxi = view.findViewById(R.id.chongxi);
-        exit = view.findViewById(R.id.exit);
 
-        tobehot.setOnClickListener(this);
-        tobecool.setOnClickListener(this);
-        zhishui.setOnClickListener(this);
-        chongxi.setOnClickListener(this);
-        exit.setOnClickListener(this);
+//        tobehot = view.findViewById(R.id.tobehot);
+//        tobecool = view.findViewById(R.id.tobecool);
+//        zhishui = view.findViewById(R.id.zhishui);
+//        chongxi = view.findViewById(R.id.chongxi);
+//        exit = view.findViewById(R.id.exit);
+//
+//        tobehot.setOnClickListener(this);
+//        tobecool.setOnClickListener(this);
+//        zhishui.setOnClickListener(this);
+//        chongxi.setOnClickListener(this);
+//        exit.setOnClickListener(this);
+
+//        hotico = view.findViewById(R.id.hotico);
+//        hotornot = (TextView)view.findViewById(R.id.hotornot);
+//        coolico = view.findViewById(R.id.coolico);
+//        cooltext = (TextView)view.findViewById(R.id.cooltext);
+//        zhishui = view.findViewById(R.id.zhishui);
+//        zhishuitext =(TextView) view.findViewById(R.id.zhishuitext);
+//        chongxiimage = view.findViewById(R.id.chongxiimage);
+//        chongxitext = (TextView)view.findViewById(R.id.chongxitext);
 
 //        lv_group = (ListView) view.findViewById(R.id.lvGroup);
-
-
-
-
     }
-
-    //付工begin
-
-
-
-
-    //付工end
 
     /**
      * 这个函数在Activity创建完成之后会调用。购物车悬浮窗需要依附在Activity上，如果Activity还没有完全建好就去
@@ -330,6 +349,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.tobehot:
                 //加热使能
+
+
                 break;
 
             case R.id.tobecool:
@@ -438,7 +459,12 @@ public class MyHandler extends Handler{
             // TODO Auto-generated method stub
             switch (msg.what){
                 case 0:
-                    Toast.makeText(MainActivity.this,"定时检测水质",Toast.LENGTH_SHORT).show();
+
+
+//                    byte[] data = (byte[])msg.obj
+
+
+                    Toast.makeText(MainActivity.this,"定时   String[][] data = msg.getData().ge;检测水质",Toast.LENGTH_SHORT).show();
 
 
                     break;

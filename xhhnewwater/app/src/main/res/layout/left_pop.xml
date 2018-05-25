@@ -161,6 +161,7 @@
 
 
                 <TextView
+                    android:id="@+id/hotornot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/jiare"
@@ -182,12 +183,14 @@
                 >
 
                 <ImageView
+                    android:id="@+id/coolico"
                     android:layout_width="@dimen/littleico"
                     android:layout_height="@dimen/littleico"
                     android:background="@drawable/cool"
                     />
 
                 <TextView
+                    android:id="@+id/cooltext"
                     android:layout_width="wrap_content"
                     android:text="@string/zhileng"
                     android:textColor="@color/blueindex"
@@ -208,13 +211,14 @@
                 >
 
                 <ImageView
+                    android:id="@+id/zhishuiico"
                     android:layout_width="@dimen/littleico"
                     android:layout_height="@dimen/littleico"
                     android:background="@drawable/zhishui"
                     />
 
                 <TextView
-
+                    android:id="@+id/zhishuitext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/zhishui"
@@ -233,11 +237,13 @@
                 android:layout_below="@+id/tobecool"
                 >
                 <ImageView
+                    android:id="@+id/chongxiimage"
                     android:layout_width="@dimen/littleico"
                     android:layout_height="@dimen/littleico"
                     android:background="@drawable/clean"
                     />
                 <TextView
+                    android:id="@+id/chongxitext"
                     android:layout_width="wrap_content"
                     android:text="@string/chongxi"
                     android:textColor="@color/blueindex"

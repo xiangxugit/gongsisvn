@@ -7,10 +7,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import newwater.com.newwater.R;
+import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.interfaces.OnUpdateUI;
 
@@ -21,6 +24,23 @@ public class Pop_LeftOperate extends PopupWindow {
     public UpdateBroadcast myBroadcast;
     public static final String FLAG = "UPDATE";
     private TextView hotwatertext;
+
+    private TextView coolwatertext;
+    private TextView ppmvalue;
+    private TextView ppm;//下方的
+    private Button exit;
+
+    private ImageView hotico;//是否加热的imageview
+    private TextView hotornot;//是否加热text
+
+    private ImageView coolico;//是否制冷的imageView
+    private TextView cooltext;//是否制冷text
+
+    private ImageView zhishuiico;//是否制水的imageView
+    private TextView zhishuitext;//是佛止水的text
+
+    private ImageView chongxiimage;//冲洗imageView
+    private TextView  chongxitext;//冲洗text;
 
     public Pop_LeftOperate(Activity context) {
         // 通过layout的id找到布局View
@@ -51,10 +71,31 @@ public class Pop_LeftOperate extends PopupWindow {
         context.registerReceiver(myBroadcast, intentFilter);
         // 这里也可以从contentView中获取到控件，并为它们绑定控件
         hotwatertext = (TextView) contentView.findViewById(R.id.hotwatertext);
+        coolwatertext = (TextView)contentView.findViewById(R.id.coolwatertext);
+        ppmvalue = (TextView)contentView.findViewById(R.id.ppmvalue);
+        ppm = (TextView)contentView.findViewById(R.id.ppm);
+
+        hotico = (ImageView) contentView.findViewById(R.id.hotico);
+        hotornot = (TextView)contentView.findViewById(R.id.hotornot);
+        coolico = (ImageView) contentView.findViewById(R.id.coolico);
+        cooltext = (TextView)contentView.findViewById(R.id.cooltext);
+        zhishuiico = (ImageView) contentView.findViewById(R.id.zhishuiico);
+        zhishuitext =(TextView) contentView.findViewById(R.id.zhishuitext);
+        chongxiimage = (ImageView)contentView.findViewById(R.id.chongxiimage);
+        chongxitext = (TextView)contentView.findViewById(R.id.chongxitext);
+
+
         myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
             @Override
-            public void updateUI(String i) {
-                hotwatertext.setText(i);
+            public void updateUI(ViewShow data ) {
+                hotwatertext.setText(data.getHotwatertextvalue());
+                coolwatertext.setText(data.getCoolwatertextvalue());
+                ppmvalue.setText(data.getPpmvalue());
+                ppm.setText(data.getPpm());
+                hotornot.setText(data.getHotornot());
+                cooltext.setText(data.getCooltext());
+                zhishuitext.setText(data.getZhishuitext());
+                chongxitext.setText(data.getChongxitext());
             }
         });
 

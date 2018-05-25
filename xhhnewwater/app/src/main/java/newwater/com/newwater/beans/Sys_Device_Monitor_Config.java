@@ -3,13 +3,14 @@ package newwater.com.newwater.beans;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Administrator on 2018/5/21 0021.
  */
 @Table(name = "Sys_Device_Monitor_Config")
-public class Sys_Device_Monitor_Config {
+public class Sys_Device_Monitor_Config implements Serializable {
 
     @Column(name = "mot_cfg_id", isId = true, autoGen = true)
     public int mot_cfg_id;

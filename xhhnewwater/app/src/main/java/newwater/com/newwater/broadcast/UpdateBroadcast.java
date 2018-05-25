@@ -3,7 +3,9 @@ package newwater.com.newwater.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
+import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.interfaces.OnUpdateUI;
 
 /**
@@ -17,8 +19,15 @@ public class UpdateBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String progress = intent.getStringExtra("progress");
-        onUpdateUI.updateUI(progress);
+
+
+        ViewShow viewShow = (ViewShow)intent.getSerializableExtra("progress");;
+        if(null==viewShow||null==onUpdateUI){
+            Log.e("one","one");
+        }else{
+            onUpdateUI.updateUI(viewShow);
+        }
+
     }
 
 

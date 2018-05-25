@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -26,6 +27,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import newwater.com.newwater.MainActivity;
+import newwater.com.newwater.beans.ViewShow;
 
 /**
  * Created by Administrator on 2018/5/17 0017.
@@ -130,8 +132,11 @@ public class DaemonService extends Service {
 
                     Intent it = new Intent();
                     it.setAction(MainActivity.FLAG);
+                    ViewShow viewShow = (ViewShow)msg.obj;
 
-                    it.putExtra("progress", System.currentTimeMillis()+"");
+                    Bundle b = new Bundle();
+                    b.putSerializable("progress", viewShow);
+                    it.putExtras(b);
                     sendBroadcast(it);
 
                     //存入到数据库

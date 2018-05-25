@@ -3,11 +3,13 @@ package newwater.com.newwater.beans;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2018/5/10 0010.
  */
 @Table(name = "DeiviceParams'")
-public class DeiviceParams {
+public class DeiviceParams implements Serializable {
     //xutls规定必须要有一个无参的构造方法
     public DeiviceParams(){
         this.id = id;

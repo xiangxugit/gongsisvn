@@ -1,6 +1,7 @@
 package newwater.com.newwater.Processpreserving;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -9,6 +10,8 @@ import android.serialport.DevUtil;
 import android.util.Log;
 
 import java.util.HashMap;
+
+import newwater.com.newwater.beans.ViewShow;
 
 /**
  * Created by Administrator on 2018/5/22 0022.
@@ -88,6 +91,19 @@ public   class ComThread extends Thread {
             sOff = "Offline";
         }
         Message msg = new Message();
+        Bundle b = new Bundle();
+        ViewShow viewShow = new ViewShow();
+        viewShow.setChongxitext(data[9][1]);
+        viewShow.setCooltext(data[7][1]);//是否制冷
+        viewShow.setCoolwatertextvalue(data[5][1]);//
+        viewShow.setHotornot(data[6][0]);//是否加热
+        viewShow.setHotwatertextvalue(data[4][1]);
+        viewShow.setPpmvalue("未知");
+        viewShow.setPpm(data[2][1]);
+        viewShow.setZhishuitext(data[8][1]);
+//        b.putSerializable("viewShowa", viewShow);
+//        msg.setData(b);
+        msg.obj = viewShow;
         msg.what =0;
         myhandler.sendMessage(msg);
 //        for (int i = 0; i < data.length;i++) {
