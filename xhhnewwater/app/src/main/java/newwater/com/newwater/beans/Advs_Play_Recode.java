@@ -1,17 +1,26 @@
 package newwater.com.newwater.beans;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
 /**
  * Created by Administrator on 2018/5/25 0025.
  */
-
+@Table(name = "Advs_Play_Recode")
 public class Advs_Play_Recode {
-
+     @Column(name = "advs_id", isId = true, autoGen = true)
      private int  advs_id;
+     @Column(name = "device_id")
      private int  device_id;
+     @Column(name = "advs_play_time")
      private int advs_play_time;
+     @Column(name = "advs_play_length_of_time")
      private int advs_play_length_of_time;
+     @Column(name = "advs_play_device_charg_mode")
      private int advs_play_device_charg_mode;
+     @Column(name = "advs_play_device_industry")
      private int advs_play_device_industry;
+     @Column(name = "advs_play_scene")
      private int advs_play_scene;
 
     public int getAdvs_id() {
@@ -69,4 +78,15 @@ public class Advs_Play_Recode {
     public void setAdvs_play_scene(int advs_play_scene) {
         this.advs_play_scene = advs_play_scene;
     }
+
+    @Override
+    public String toString() {
+        return "Advs_Play_Recode [advs_id=" + advs_id + ", device_id=" + device_id + ", advs_play_time=" + advs_play_time + ", advs_play_length_of_time=" + advs_play_length_of_time +
+
+                ",advs_play_device_charg_mode="+advs_play_device_charg_mode+
+                ",advs_play_device_industry="+advs_play_device_industry+
+                ",advs_play_scene="+advs_play_scene+"]";
+    }
+
+
 }

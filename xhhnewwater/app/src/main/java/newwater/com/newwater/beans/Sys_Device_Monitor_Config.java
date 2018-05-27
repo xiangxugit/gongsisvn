@@ -206,8 +206,20 @@ public class Sys_Device_Monitor_Config implements Serializable {
 
     @Override
     public String toString() {
-        return "person [mot_cfg_id=" + mot_cfg_id + ", device_id=" + device_id + ", mot_cfg_network_time=" + mot_cfg_network_time + ", mot_cfg_network_times=" + mot_cfg_network_times +
-                ",mot_cfg_ pp_time="+mot_cfg_pp_time+",mot_cfg_ pp_flow="+mot_cfg_pp_flow+"]";
+        return "Sys_Device_Monitor_Config [mot_cfg_id=" + mot_cfg_id + ", device_id=" + device_id + ", mot_cfg_network_time=" + mot_cfg_network_time + ", mot_cfg_network_times=" + mot_cfg_network_times +
+                ",mot_cfg_ pp_time="+mot_cfg_pp_time+",mot_cfg_ pp_flow="+mot_cfg_pp_flow+
+                ",mot_cfg_pp_change_time="+mot_cfg_pp_change_time+
+                ",mot_cfg_grain_carbon_flow="+mot_cfg_grain_carbon_flow+
+                ",mot_cfg_grain_carbon_change_time="+mot_cfg_grain_carbon_change_time+
+                ",mot_cfg_press_carbon_time="+mot_cfg_press_carbon_time+
+                ",mot_cfg_press_carbon_change_time="+mot_cfg_press_carbon_change_time+
+                ",mot_cfg_pose_carbon_time="+mot_cfg_pose_carbon_time+
+                ",mot_cfg_pose_carbon_flow="+mot_cfg_pose_carbon_flow+
+                ",mot_cfg_pose_carbon_change_time="+mot_cfg_pose_carbon_change_time+
+                ",mot_cfg_ro_time="+mot_cfg_ro_time+
+                ",mot_cfg_ro_change_time="+mot_cfg_ro_change_time+
+                ",mot_cfg_up_time="+mot_cfg_up_time+
+                "]";
     }
 
 

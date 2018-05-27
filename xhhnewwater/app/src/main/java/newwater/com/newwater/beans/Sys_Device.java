@@ -1,17 +1,28 @@
 package newwater.com.newwater.beans;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
 /**
  * Created by Administrator on 2018/5/25 0025.
  */
-
+@Table(name = "Sys_Device")
 public class Sys_Device {
+    @Column(name = "device_id")
     private int device_id;
+    @Column(name = "work_id")
     private int work_id;
+    @Column(name = "order_id")
     private int order_id;
+    @Column(name = "device_identification")
     private String device_identification;
+    @Column(name = "device_number")
     private String device_number;//设备编号（激活时上报或自动生成）
+    @Column(name = "device_location")
     private String device_location;
+    @Column(name = "device_install_time")
     private String device_install_time;
+    @Column(name = "device_status")
     private String device_status;
 
     public int getDevice_id() {
@@ -76,5 +87,15 @@ public class Sys_Device {
 
     public void setDevice_status(String device_status) {
         this.device_status = device_status;
+    }
+
+    @Override
+    public String toString() {
+        return "Sys_Device [device_id=" + device_id + ", work_id=" + work_id + ", order_id=" + order_id+",device_identification=" + device_identification +
+                ",device_number=" +device_number+
+                ",device_location="+device_location+
+                ",device_install_time="+device_install_time+
+                ",device_status="+device_status+
+                 "]";
     }
 }

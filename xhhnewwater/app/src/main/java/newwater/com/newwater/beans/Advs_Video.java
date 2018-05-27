@@ -1,29 +1,50 @@
 package newwater.com.newwater.beans;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
 /**
  * Created by Administrator on 2018/5/25 0025.
  */
-
+@Table(name = "Advs_Video")
 public class Advs_Video {
-
+    @Column(name = "advs_id", isId = true, autoGen = true)
     private int advs_id;
+    @Column(name = "creat_admin_user_id")
     private int creat_admin_user_id;
+    @Column(name = "pass_admin_user_id")
     private int pass_admin_user_id;
+    @Column(name = "advs_industry")
     private int advs_industry;
+    @Column(name = "advs_charg_mode")
     private int advs_charg_mode;
+    @Column(name = "advs_is_point_device")
     private int advs_is_point_device;
+    @Column(name = "advs_title")
     private String advs_title;
+    @Column(name = "advs_video_download_path")
     private String advs_video_download_path;
+    @Column(name = "advs_video_localtion_path")
     private String advs_video_localtion_path;
+    @Column(name = "advs_video_length_of_time")
     private String advs_video_length_of_time;
+    @Column(name = "advs_video_size")
     private double advs_video_size;
+    @Column(name = "advs_creat_time")
     private String advs_creat_time;
+    @Column(name = "advs_pass_time")
     private String advs_pass_time;
+    @Column(name = "advs_play_begin_time")
     private String advs_play_begin_time;
+    @Column(name = "advs_play_end_time")
     private String advs_play_end_time;
+    @Column(name = "advs_play_interval_time")
     private String advs_play_interval_time;
+    @Column(name = "advs_play_require_time")
     private int advs_play_require_time;
+    @Column(name = "advs_status")
     private int advs_status;
+    @Column(name = "advs_play_times")
     private int advs_play_times;
 
     public int getAdvs_id() {
@@ -177,4 +198,31 @@ public class Advs_Video {
     public void setAdvs_play_times(int advs_play_times) {
         this.advs_play_times = advs_play_times;
     }
+
+    @Override
+    public String toString() {
+        return "Advs_Video [advs_id=" + advs_id + ",creat_admin_user_id="+creat_admin_user_id+
+                ",pass_admin_user_id="+pass_admin_user_id+
+                ",advs_industry="+advs_industry+
+                ",advs_charg_mode="+advs_charg_mode+
+                ",advs_is_point_device="+advs_is_point_device+
+                ",advs_title="+advs_title+
+                ",advs_video_download_path="+advs_video_download_path+
+                ",advs_video_localtion_path="+advs_video_localtion_path+
+                ",advs_video_length_of_time="+advs_video_length_of_time+
+                ",advs_video_size="+advs_video_size+
+                ",advs_creat_time="+advs_creat_time+
+                ",advs_pass_time="+advs_pass_time+
+                ",advs_play_begin_time="+advs_play_begin_time+
+                ",advs_play_end_time="+"advs_play_end_time"+
+                ",advs_play_interval_time="+advs_play_interval_time+
+                ",advs_play_require_time="+advs_play_require_time+
+                ",advs_status="+advs_status+
+                ",advs_play_times="+advs_play_times+
+                "]";
+    }
+
+
+
+
 }
