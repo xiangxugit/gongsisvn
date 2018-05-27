@@ -1,10 +1,14 @@
 package newwater.com.newwater.beans;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
 /**
  * Created by Administrator on 2018/5/25 0025.
  */
-
+@Table(name = "Water_Sale_Record")
 public class Water_Sale_Record {
+    @Column(name = "water_record_id", isId = true, autoGen = true)
     private int  water_record_id;
     private int  user_id;
     private int device_id;
