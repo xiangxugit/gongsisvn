@@ -10,15 +10,25 @@ import org.xutils.db.annotation.Table;
 public class Water_Sale_Record {
     @Column(name = "water_record_id", isId = true, autoGen = true)
     private int  water_record_id;
+    @Column(name = "user_id")
     private int  user_id;
+    @Column(name = "device_id")
     private int device_id;
+    @Column(name = "department_id")
     private int  department_id;
+    @Column(name = "product_charg_mode")
     private int product_charg_mode;
+    @Column(name = "water_record_type")
     private int water_record_type;
+    @Column(name = "water_record_is_cup")
     private int water_record_is_cup;
+    @Column(name = "water_flow")
     private int water_flow;
+    @Column(name = "water_record_cup_num")
     private int water_record_cup_num;
+    @Column(name = "water_record_money")
      private double  water_record_money;
+    @Column(name = "water_record_time")
     private String water_record_time;
 
     public int getWater_record_id() {
@@ -108,4 +118,20 @@ public class Water_Sale_Record {
     public void setWater_record_time(String water_record_time) {
         this.water_record_time = water_record_time;
     }
+
+
+    @Override
+    public String toString() {
+        return "Water_Sale_Record [water_record_id=" + water_record_id + ", user_id=" + user_id +", device_id=" + device_id + ", department_id=" + department_id
+                +",product_charg_mode="+product_charg_mode+
+                ",water_record_type="+water_record_type+
+                ",water_record_is_cup="+water_record_is_cup+
+                ",water_record_is_cup="+water_record_is_cup+
+                ",water_record_cup_num="+water_record_cup_num+
+                ",water_record_money="+water_record_money+
+                ",water_record_time="+water_record_time+
+                "]";
+    }
+
+
 }
