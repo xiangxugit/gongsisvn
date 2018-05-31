@@ -1,0 +1,261 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+MERGED from [com.danikula:videocache:2.6.4] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\videocache-2.6.4.aar\2693e9c996cb908dbb712b3118e23a7c\AndroidManifest.xml:2:1-14:12
+MERGED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:17:1-55:12
+MERGED from [org.xutils:xutils:3.5.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\xutils-3.5.0.aar\a09fa22d509abc498a735d043dc635a8\AndroidManifest.xml:2:1-14:12
+MERGED from [com.coolerfall:android-app-daemon:1.2.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\android-app-daemon-1.2.0.aar\7f99ead488a0266b3935eb1b4fb8ceb1\AndroidManifest.xml:2:1-15:12
+MERGED from [tv.danmaku.ijk.media:ijkplayer-java:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-java-0.8.8.aar\fca7a134a314afc59246dc4552cf7d00\AndroidManifest.xml:2:1-9:12
+MERGED from [tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-armv7a-0.8.8.aar\8cca224620c96ce4f420f6d4ad891d38\AndroidManifest.xml:2:1-9:12
+MERGED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-17:12
+MERGED from [com.android.support:design:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\71db1c416ad7ee7085c2ae7574a29225\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\72598324b35fec38b2c6fa655d39ec1d\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\07b4bd354257dc54f2a14459bb687f51\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\583c4e6bf43adc42d3f3d742013538d2\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\915146dce65ce0c178b239899c83c15f\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:transition:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\29bb9daa8461c5a9fc455a7f88363c11\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\d43fdf17b9ae5867286ce4e2feaf6a2d\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-27.1.1.aar\5a0cd21e254b32a8da5d65582fafa17d\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-ui-27.1.1.aar\a26a2d0ec18ec2f29299f18f06f7cbe0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-utils-27.1.1.aar\49a062b7feae34f28e2a3ec33c41c5b2\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\0bafae3c2a500905435d7c09559d3ff6\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\b35af5311777f079ea36c322b8eb30b4\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\6f71fd425ae072233dc0c94b1f8dc0f9\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f28488abc5fc477989401ae83237cc5\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\14ccc979197515dd26a4ebe71790c0f5\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\16404b43580e7c979b77800efc2f3bc0\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5e67ed66cad7a4c25c12d2664a067295\AndroidManifest.xml:17:1-22:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+	package
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:3:5-36
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:1-57:12
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:5:5-81
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:5:22-78
+uses-permission#android.permission.MOUNT_UNMOUNT_FILESYSTEMS
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:6:5-84
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:6:22-81
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:7:5-75
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:7:22-72
+uses-permission#android.permission.INTERNET
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:8:5-67
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:8:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:9:5-79
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:9:22-76
+application
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:11:5-55:19
+MERGED from [com.danikula:videocache:2.6.4] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\videocache-2.6.4.aar\2693e9c996cb908dbb712b3118e23a7c\AndroidManifest.xml:12:5-20
+MERGED from [com.danikula:videocache:2.6.4] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\videocache-2.6.4.aar\2693e9c996cb908dbb712b3118e23a7c\AndroidManifest.xml:12:5-20
+MERGED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:45:5-53:19
+MERGED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:45:5-53:19
+MERGED from [org.xutils:xutils:3.5.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\xutils-3.5.0.aar\a09fa22d509abc498a735d043dc635a8\AndroidManifest.xml:12:5-20
+MERGED from [org.xutils:xutils:3.5.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\xutils-3.5.0.aar\a09fa22d509abc498a735d043dc635a8\AndroidManifest.xml:12:5-20
+MERGED from [com.coolerfall:android-app-daemon:1.2.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\android-app-daemon-1.2.0.aar\7f99ead488a0266b3935eb1b4fb8ceb1\AndroidManifest.xml:12:5-13:19
+MERGED from [com.coolerfall:android-app-daemon:1.2.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\android-app-daemon-1.2.0.aar\7f99ead488a0266b3935eb1b4fb8ceb1\AndroidManifest.xml:12:5-13:19
+MERGED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-15:19
+MERGED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-15:19
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\07b4bd354257dc54f2a14459bb687f51\AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\07b4bd354257dc54f2a14459bb687f51\AndroidManifest.xml:9:5-20
+	android:supportsRtl
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:16:9-35
+	android:label
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:14:9-41
+	android:roundIcon
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:15:9-54
+	android:allowBackup
+		ADDED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:12:9-35
+	android:icon
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:13:9-43
+	android:theme
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:17:9-40
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:12:9-28
+activity#newwater.com.newwater.MainActivity
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:18:9-27:20
+	android:screenOrientation
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:20:13-50
+	android:theme
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:21:13-56
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:19:13-41
+service#newwater.com.newwater.Processpreserving.Service1
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:29:9-31:43
+	android:process
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:31:13-40
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:30:13-55
+receiver#newwater.com.newwater.Processpreserving.Receiver1
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:33:9-35:43
+	android:process
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:35:13-40
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:34:13-56
+service#newwater.com.newwater.Processpreserving.Service2
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:37:9-39:43
+	android:process
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:39:13-40
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:38:13-55
+receiver#newwater.com.newwater.Processpreserving.Receiver2
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:41:9-43:43
+	android:process
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:43:13-40
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:42:13-56
+service#newwater.com.newwater.Processpreserving.DaemonService
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:46:9-76
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:46:18-65
+activity#newwater.com.newwater.TestActivity
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:48:9-54:20
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:48:19-47
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:49:13-53:29
+action#android.intent.action.MAIN
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:50:17-69
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:50:25-66
+category#android.intent.category.LAUNCHER
+ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:52:17-77
+	android:name
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml:52:27-74
+uses-sdk
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+MERGED from [com.danikula:videocache:2.6.4] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\videocache-2.6.4.aar\2693e9c996cb908dbb712b3118e23a7c\AndroidManifest.xml:8:5-10:41
+MERGED from [com.danikula:videocache:2.6.4] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\videocache-2.6.4.aar\2693e9c996cb908dbb712b3118e23a7c\AndroidManifest.xml:8:5-10:41
+MERGED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:19:5-43
+MERGED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:19:5-43
+MERGED from [org.xutils:xutils:3.5.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\xutils-3.5.0.aar\a09fa22d509abc498a735d043dc635a8\AndroidManifest.xml:8:5-10:41
+MERGED from [org.xutils:xutils:3.5.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\xutils-3.5.0.aar\a09fa22d509abc498a735d043dc635a8\AndroidManifest.xml:8:5-10:41
+MERGED from [com.coolerfall:android-app-daemon:1.2.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\android-app-daemon-1.2.0.aar\7f99ead488a0266b3935eb1b4fb8ceb1\AndroidManifest.xml:8:5-10:41
+MERGED from [com.coolerfall:android-app-daemon:1.2.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\android-app-daemon-1.2.0.aar\7f99ead488a0266b3935eb1b4fb8ceb1\AndroidManifest.xml:8:5-10:41
+MERGED from [tv.danmaku.ijk.media:ijkplayer-java:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-java-0.8.8.aar\fca7a134a314afc59246dc4552cf7d00\AndroidManifest.xml:5:5-7:41
+MERGED from [tv.danmaku.ijk.media:ijkplayer-java:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-java-0.8.8.aar\fca7a134a314afc59246dc4552cf7d00\AndroidManifest.xml:5:5-7:41
+MERGED from [tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-armv7a-0.8.8.aar\8cca224620c96ce4f420f6d4ad891d38\AndroidManifest.xml:5:5-7:41
+MERGED from [tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\ijkplayer-armv7a-0.8.8.aar\8cca224620c96ce4f420f6d4ad891d38\AndroidManifest.xml:5:5-7:41
+MERGED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:LibMarsdaemon] E:\WaterDispenser\Program\xhhnewwater\LibMarsdaemon\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:design:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\71db1c416ad7ee7085c2ae7574a29225\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:design:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\71db1c416ad7ee7085c2ae7574a29225\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\72598324b35fec38b2c6fa655d39ec1d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\72598324b35fec38b2c6fa655d39ec1d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\07b4bd354257dc54f2a14459bb687f51\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\07b4bd354257dc54f2a14459bb687f51\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\583c4e6bf43adc42d3f3d742013538d2\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\583c4e6bf43adc42d3f3d742013538d2\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\915146dce65ce0c178b239899c83c15f\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\915146dce65ce0c178b239899c83c15f\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\29bb9daa8461c5a9fc455a7f88363c11\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\29bb9daa8461c5a9fc455a7f88363c11\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\d43fdf17b9ae5867286ce4e2feaf6a2d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\d43fdf17b9ae5867286ce4e2feaf6a2d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-27.1.1.aar\5a0cd21e254b32a8da5d65582fafa17d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-27.1.1.aar\5a0cd21e254b32a8da5d65582fafa17d\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-ui-27.1.1.aar\a26a2d0ec18ec2f29299f18f06f7cbe0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-ui-27.1.1.aar\a26a2d0ec18ec2f29299f18f06f7cbe0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-utils-27.1.1.aar\49a062b7feae34f28e2a3ec33c41c5b2\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-core-utils-27.1.1.aar\49a062b7feae34f28e2a3ec33c41c5b2\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\0bafae3c2a500905435d7c09559d3ff6\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\0bafae3c2a500905435d7c09559d3ff6\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\b35af5311777f079ea36c322b8eb30b4\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\b35af5311777f079ea36c322b8eb30b4\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\6f71fd425ae072233dc0c94b1f8dc0f9\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:27.1.1] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\6f71fd425ae072233dc0c94b1f8dc0f9\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f28488abc5fc477989401ae83237cc5\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f28488abc5fc477989401ae83237cc5\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\14ccc979197515dd26a4ebe71790c0f5\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\14ccc979197515dd26a4ebe71790c0f5\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\16404b43580e7c979b77800efc2f3bc0\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\16404b43580e7c979b77800efc2f3bc0\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5e67ed66cad7a4c25c12d2664a067295\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5e67ed66cad7a4c25c12d2664a067295\AndroidManifest.xml:20:5-44
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		ADDED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+		INJECTED from E:\WaterDispenser\Program\xhhnewwater\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.CAMERA
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:21:5-65
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:21:22-62
+uses-feature#android.hardware.camera
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:24:5-26:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:26:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:25:9-47
+uses-feature#android.hardware.camera.front
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:27:5-29:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:29:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:28:9-53
+uses-feature#android.hardware.camera.autofocus
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:32:5-34:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:34:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:33:9-57
+uses-feature#android.hardware.camera.flash
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:35:5-37:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:37:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:36:9-53
+uses-feature#android.hardware.screen.landscape
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:38:5-40:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:40:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:39:9-57
+uses-feature#android.hardware.wifi
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:41:5-43:36
+	android:required
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:43:9-33
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:42:9-45
+activity#com.journeyapps.barcodescanner.CaptureActivity
+ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:46:9-52:63
+	android:screenOrientation
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:49:13-56
+	android:clearTaskOnLaunch
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:48:13-45
+	android:stateNotNeeded
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:50:13-42
+	android:windowSoftInputMode
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:52:13-60
+	android:theme
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:51:13-54
+	android:name
+		ADDED from [com.journeyapps:zxing-android-embedded:3.3.0] C:\Users\Administrator\.gradle\caches\transforms-1\files-1.1\zxing-android-embedded-3.3.0.aar\a7ef610235cd0567c1c37f326df74f8b\AndroidManifest.xml:47:13-74

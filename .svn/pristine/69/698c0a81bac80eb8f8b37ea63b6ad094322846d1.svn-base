@@ -1,0 +1,86 @@
+package newwater.com.newwater.utils;
+
+import android.util.Log;
+
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Created by Administrator on 2018/4/28 0028.
+ */
+
+public class TimeUtils {
+    private static final String TAG = "TimeUtils";
+
+    public static String getCurrentTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date curDate = new Date(System.currentTimeMillis());
+        return formatter.format(curDate);
+    }
+
+    public static Date strToDateLong(String strDate) {
+        Log.d(TAG, "strToDateLong: strDate = " + strDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        ParsePosition pos = new ParsePosition(0);
+        return formatter.parse(strDate, pos);
+    }
+
+    /**
+     * 某个时间段的结束时间是否是在当前时间以后
+     * @param period 某个时间段（yyyyMMddHHmmssyyyyMMddHHmmss）
+     * @param curTimeStr 当前时间（yyyyMMddHHmmss），由getCurrentTime获得
+     * @return
+     */
+    public static boolean isFuturePeriod(String period, String curTimeStr) {
+        Log.d(TAG, "isFutureTime: period = " + period + ", curTimeStr = " + curTimeStr);
+        if (28 != period.length()) {
+            Log.d(TAG, "isFutureTime: 时间段格式错误");
+            return false;
+        }
+        return isFutureTime(period.substring(14, 28), curTimeStr);
+    }
+
+    /**
+     * 某个特定时间是否是在当前时间以后
+     * @param spTime 某个特定时间（yyyyMMddHHmmss）
+     * @param curTimeStr 当前时间（yyyyMMddHHmmss），由getCurrentTime获得
+     * @return
+     */
+    private static boolean isFutureTime(String spTime, String curTimeStr) {
+        if (14 != spTime.length() || 14 != curTimeStr.length()) {
+            Log.d(TAG, "isFutureTime: 时间格式错误");
+            return false;
+        }
+
+        boolean isFuture = false;
+        Date currentTime;
+        currentTime = strToDateLong(curTimeStr);
+        if (spTime.substring(0, 8).equals("00000000")) {
+            // 不要求日期的时间段，则将当前日期付给时间段；要求日期的时间段，则直接整体比较
+            spTime = curTimeStr.substring(0, 8) + spTime.substring(8, 14);
+        }
+        Date endDate = strToDateLong(spTime);
+        if (null != endDate) {
+            Log.d(TAG, "isFutureTime: Date为空！");
+            isFuture = endDate.getTime() > currentTime.getTime();
+        }
+        return isFuture;
+    }
+
+    /**
+     * 当前时间是否在播放时间段内
+     * @param period 播放时间段
+     * @param curTimeStr 当前时间
+     * @return
+     */
+    public static boolean isCurrentTimeInPeriod(String period, String curTimeStr) {
+        Log.d(TAG, "isFutureTime: period = " + period + ", curTimeStr = " + curTimeStr);
+        if (28 != period.length()) {
+            Log.d(TAG, "isFutureTime: 时间段格式错误");
+            return false;
+        }
+        return isFuturePeriod(period,curTimeStr) &&
+                !isFutureTime(period.substring(0,14), curTimeStr);
+    }
+}

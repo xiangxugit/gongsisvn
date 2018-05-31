@@ -1,0 +1,61 @@
+package newwater.com.newwater.utils;
+
+import android.util.Log;
+
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Created by Administrator on 2018/4/28 0028.
+ */
+
+public class TimeUtils {
+    private static final String TAG = "TimeUtils";
+
+    public static String getCurrentTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date curDate = new Date(System.currentTimeMillis());
+        return formatter.format(curDate);
+    }
+
+    public static Date strToDateLong(String strDate) {
+        Log.d(TAG, "strToDateLong: strDate = " + strDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos = new ParsePosition(0);
+        return formatter.parse(strDate, pos);
+    }
+
+    /**
+     *
+     * @param period 播放时间段（yyyyMMddHHmmssyyyyMMddHHmmss）
+     * @param curTimeStr 当前时间（yyyyMMddHHmmss），由getCurrentTime获得
+     * @return
+     */
+    public static boolean isFuturePeriod(String period, String curTimeStr) {
+        Log.d(TAG, "isFuturePeriod: period = " + period + ", curTimeStr = " + curTimeStr);
+        if (28 != period.length()) {
+            Log.d(TAG, "isFuturePeriod: 时间段格式错误");
+            return false;
+        }
+
+        boolean isFuture = false;
+        Date currentTime;
+        String endTimeString = period.substring(14, 28);
+        if (endTimeString.substring(0, 8).equals("00000000")) {
+            // 不要求日期的时间段，则只比较时间
+            currentTime = strToDateLong(curTimeStr.substring(8, 14));
+            endTimeString = period.substring(22, 28);
+        } else {
+            // 要求日期的时间段，则整体比较
+            currentTime = strToDateLong(curTimeStr);
+        }
+        Date endDate = strToDateLong(endTimeString);
+        if (null != endDate) {
+            Log.d(TAG, "isFuturePeriod: Date为空！");
+            isFuture = endDate.getTime() > currentTime.getTime();
+        }
+        return isFuture;
+    }
+
+}
