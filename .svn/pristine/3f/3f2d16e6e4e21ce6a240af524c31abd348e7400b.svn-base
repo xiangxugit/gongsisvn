@@ -1,0 +1,673 @@
+package newwater.com.newwater;
+
+import android.content.Context;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Message;
+import android.serialport.DevUtil;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.format.Time;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.danikula.videocache.HttpProxyCacheServer;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
+
+import org.xutils.common.task.PriorityExecutor;
+import org.xutils.ex.DbException;
+import org.xutils.http.RequestParams;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
+import newwater.com.newwater.DataBaseUtils.XutilsInit;
+import newwater.com.newwater.beans.DeviceEntity;
+import newwater.com.newwater.beans.ViewShow;
+import newwater.com.newwater.beans.person;
+import newwater.com.newwater.broadcast.UpdateBroadcast;
+import newwater.com.newwater.interfaces.OnUpdateUI;
+import newwater.com.newwater.manager.IjkManager;
+import newwater.com.newwater.utils.BaseSharedPreferences;
+import newwater.com.newwater.utils.GetDeviceInfo;
+import newwater.com.newwater.utils.OkHttpUtils;
+import newwater.com.newwater.utils.TimeBack;
+import newwater.com.newwater.utils.TimeRun;
+import newwater.com.newwater.utils.TimeUtils;
+import newwater.com.newwater.view.PopWindow;
+import newwater.com.newwater.view.PopWindowChooseWaterGetWay;
+import newwater.com.newwater.view.Pop_WantWater;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static newwater.com.newwater.utils.PermissionUtils.permissions;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IjkManager.PlayerStateListener {
+    private static final String TAG = "MainActivity";
+
+    public static final String filePath = "/sdcard/xutils/xUtils_1.avi";
+
+    private Context mContext;
+    private TextView dixieccup;//纸杯和我要饮水按钮
+    private Boolean operateornot = false;
+    public static LinearLayout leftoperate;//左边操作区域
+    public static LinearLayout rightoperate;//右边操作区域
+
+//    public static ImageView  wantwater;//我要饮水
+
+    //popwindow操作
+    private View contentView;
+    private LinearLayout leftpop;
+    private LinearLayout rightpop;
+
+
+    //出杯子的提示
+    private View outCupView;
+    private RelativeLayout outcupleft;
+    private RelativeLayout outcupright;
+
+    private PopWindow popChooseWater;
+    private PopWindowChooseWaterGetWay popChooseWatera;
+
+    private RelativeLayout root;
+    private ImageView qrcode;
+
+    //VideoView
+//    private CustomerVideoView videoplay;
+
+
+    //viewpager 视频
+    private ViewPager viewpager;
+
+    private Timer timer;//定时器，用于实现轮播
+
+    static int pos = 0;
+    private HttpProxyCacheServer proxy;
+    private final static int DATADELETE = 2;
+
+    Pop_WantWater pop_wantWater = null;
+
+    //付工那边的代码start
+    private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
+
+    private DevUtil devUtil = null;
+
+    public static final String FLAG = "UPDATE";
+
+    private UpdateBroadcast myBroadcast;
+
+    //左边操作窗口的组件
+    private TextView hotwatertext;
+    private TextView coolwatertext;
+    private TextView ppmvalue;
+    private TextView ppm;//下方的
+
+    //四个使能按钮
+    private LinearLayout tobehot;
+    private LinearLayout tobecool;
+    private LinearLayout zhishui;
+    private LinearLayout chongxi;
+    private Button exit;
+
+    private ImageView hotico;//是否加热的imageview
+    private TextView hotornot;//是否加热text
+
+    private ImageView coolico;//是否制冷的imageView
+    private TextView cooltext;//是否制冷text
+
+    private ImageView zhishuiico;//是否制水的imageView
+    private TextView zhishuitext;//是佛止水的text
+
+    private ImageView chongxiimage;//冲洗imageView
+    private TextView chongxitext;//冲洗text;
+
+
+    // 视频播放
+    private Map<String, JSONArray> adVideoMap;
+    private JSONArray curAdVideoList;
+    private IjkManager player;
+    //    private JSONArray videolist; // 视频url的list
+    private int playCount; // 播放次数
+    private int videoIndex; // 播放的视频在list中的index
+    private boolean isDownloading; // 是否正在下载
+    private String curPlayAdId; // 正在播放的视频的id
+    private String curDownAdId; //正在下载的视频的id
+    private String curTime;
+
+    // 权限集合
+    List<String> permissionList = new ArrayList<>();
+
+    private XutilsInit xutilsInit;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        PermissionsFragment fragment = new PermissionsFragment();
+//        transaction.replace(R.id.content_fragment, fragment);
+//        transaction.commit();
+        xutilsInit = new XutilsInit(MainActivity.this);
+        initPer();
+    }
+
+    /**
+     * 初始化权限
+     * 腾讯信鸽推送
+     */
+    private void initPer() {
+        int i;
+        for (i = 0; i < permissions.length; i++) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permissions[i]);
+            }
+        }
+        if (permissionList.isEmpty()) {//未授予的权限为空，表示都授予了
+            Toast.makeText(MainActivity.this, "已经授权", Toast.LENGTH_LONG).show();
+        } else {//请求权限方法
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);//将List转为数组
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, i);
+        }
+        initData();
+        initView();
+        initVideo();
+        getDevice_Monitor_Config();
+
+        // 开启logcat输出，方便debug，发布时请关闭
+        // XGPushConfig.enableDebug(this, true);
+        // 如果需要知道注册是否成功，请使用registerPush(getApplicationContext(), XGIOperateCallback)带callback版本
+        // 具体可参考详细的开发指南
+        // 传递的参数为ApplicationContext
+        XGPushConfig.enableDebug(this, true);
+        XGPushManager.registerPush(this, new XGIOperateCallback() {
+            @Override
+            public void onSuccess(Object data, int flag) {
+                //token在设备卸载重装的时候有可能会变
+                Log.i("TPush", "注册成功，设备token为：" + data);
+            }
+
+            @Override
+            public void onFail(Object data, int errCode, String msg) {
+                Log.i("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+            }
+        });
+
+        initToken();
+    }
+
+    private void initData() {
+        mContext = MainActivity.this;
+        // 视频播放
+        proxy = App.getProxy(mContext);
+        adVideoMap = new HashMap<>();
+        curTime = TimeUtils.getCurrentTime();
+        videoIndex = 0;
+        // 配置文件解析
+        String testa = TestJSON.strategy();
+        JSONArray alldata = JSON.parseArray(testa);
+        // 时段在未来则加入到map中
+        for (int i = 0; i < alldata.size(); i++) {
+            String string = alldata.getString(i);
+            JSONObject testobj = JSON.parseObject(string);
+            String videoplayTime = testobj.getString("videoplayTime");
+            String videoListString = testobj.getString("videoList");
+            Log.d(TAG, "initData: all: videoplayTime = " + videoplayTime + ", videoListString = " + videoListString);
+            if (TimeUtils.isFuturePeriod(videoplayTime, curTime)) {
+                Log.d(TAG, "initData: put: videoplayTime = " + videoplayTime + ", videoListString = " + videoListString);
+                JSONArray objects = JSON.parseArray(videoListString);
+//                List<Advs_Video> ads = JSONArray.parseArray(videoListString, Advs_Video.class);
+                adVideoMap.put(videoplayTime, objects);
+            }
+        }
+       /*
+        String test = alldata.getString(0);
+        com.alibaba.fastjson.JSONObject testobj = JSON.parseObject(test);
+        String videoListString = testobj.getString("videoList");
+        videolist = JSON.parseArray(videoListString);*/
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_main);
+        root = (RelativeLayout) findViewById(R.id.root);
+
+
+        // 获取当前设备是哪一种模式
+        int model = TestJSON.getModel();
+        if (model == 0) {
+            //售水模式
+        }
+
+        //监控设备
+//        listenDevice();
+
+        //监控设备
+//        startService(new Intent(mContext, Service1.class));
+
+//        startService(new Intent(mContext, DaemonService.class));
+//        String ACTION = "com.ryantang.service.PollingService";
+//        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
+        //下载视频
+//        VideoUtils videodownload = new VideoUtils(mContext);
+//        videodownload.downloadvideo();
+        //左边的操作界面组件获得
+
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE);
+
+        View view = layoutInflater.inflate(R.layout.left_pop, null);
+
+        hotwatertext = (TextView) view.findViewById(R.id.hotwatertext);
+        coolwatertext = (TextView) view.findViewById(R.id.coolwatertext);
+        ppmvalue = (TextView) view.findViewById(R.id.ppmvalue);
+        ppm = (TextView) view.findViewById(R.id.ppm);
+
+        //监控预警配置表的操作
+
+
+    }
+
+    public void initbroadcast() {
+        myBroadcast = new UpdateBroadcast();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(FLAG);
+        registerReceiver(myBroadcast, intentFilter);
+
+        myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
+            @Override
+            public void updateUI(ViewShow data) {
+                hotwatertext.setText("cao");
+//                hotwatertext.setText(data.getHotwatertextvalue());
+//                coolwatertext.setText(data.getCoolwatertextvalue());
+//                ppmvalue.setText(data.getPpmvalue());
+//                ppm.setText(data.getPpm());
+//                hotornot.setText(data.getHotornot());
+//                cooltext.setText(data.getCooltext());
+//                zhishuitext.setText(data.getZhishuitext());
+//                chongxitext.setText(data.getChongxitext());
+//                chongxitext.setText("aaaaaaa   ");
+//                Toast.makeText(mContext,"aaa"+i,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initVideo() {
+        player = new IjkManager(this, this);
+        player.setFullScreenOnly(true);
+        player.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
+        player.playInFullScreen(true);
+        player.setOnPlayerStateChangeListener(this);
+        loopPlayVideo();
+        downloadVideo();
+    }
+
+    private void initToken() {
+        try {
+            OkHttpUtils okHttpUtils = OkHttpUtils.getInstance();
+            String accessToken = BaseSharedPreferences.getString(App.getInstance(), "accessToken");
+            String url = "http://192.168.0.200:28301/api/v1/apk/new?authorizatio=" + accessToken;
+            Log.i("getToken", accessToken);
+            /*Map<String, String> params = new HashMap();
+            params.put("authorization", accessToken);*/
+            okHttpUtils.getAsyn(url,
+                    new OkHttpUtils.StringCallback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            Log.i("getApkInfo", request.body().toString());
+                        }
+
+                        @Override
+                        public void onResponse(String response) {
+                            Log.i("getApkInfo", response);
+                        }
+                    });
+        } catch (Exception e) {
+            Log.i("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    private void getDevice_Monitor_Config() {
+        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(MainActivity.this);
+        try {
+            sys_device_monitor_config_dbOperate.add(null);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        //查询数据
+//        try {
+//            List warningdata = sys_device_monitor_config_dbOperate.find();
+//            Log.e("waringdata",warningdata.toString());
+//        } catch (DbException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    private void loopPlayVideo() {
+        // 获取当前时段应播视频的列表
+        if (getCurrentVideoList()) {
+            // 有视频，则播放
+            playVideo();
+            // 无视频，
+        }
+    }
+
+    /**
+     * 返回值为当前时段是否有videoList
+     *
+     * @return
+     */
+    private boolean getCurrentVideoList() {
+        for (String period : adVideoMap.keySet()) {
+            if (TimeUtils.isCurrentTimeInPeriod(period, curTime)) {
+                curAdVideoList = adVideoMap.get(period);
+                Log.d(TAG, "getCurrentVideoList: 当前时段有视频：" + curAdVideoList);
+                return true;
+            }
+        }
+        Log.d(TAG, "getCurrentVideoList: 当前时段无视频！");
+        return false;
+    }
+
+    private void playVideo() {
+        String proxyUrl = proxy.getProxyUrl(curAdVideoList.getString(videoIndex % curAdVideoList.size()));
+        player.play(proxyUrl);
+    }
+
+    private void downloadVideo() {
+        //设置请求参数
+        RequestParams params = new RequestParams("http://abcde");
+        params.setAutoResume(true);//设置是否在下载是自动断点续传
+        params.setAutoRename(false);//设置是否根据头信息自动命名文件
+        params.setSaveFilePath("");
+        params.setExecutor(new PriorityExecutor(2, true));//自定义线程池,有效的值范围[1, 3], 设置为3时, 可能阻塞图片加载.
+        params.setCancelFast(false);//是否可以被立即停止.
+    }
+
+    /**
+     * 这个函数在Activity创建完成之后会调用。购物车悬浮窗需要依附在Activity上，如果Activity还没有完全建好就去
+     * 调用showCartFloatView()，则会抛出异常
+     *
+     * @param hasFocus
+     */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (null == popChooseWater) {
+            Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
+            pop_wantWater.showPopupWindow(new View(this));
+        } else {
+            Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
+            pop_wantWater.showPopupWindow(new View(this));
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.exit:
+                TimeBack timeback = new TimeBack(exit, 30000, 1000);
+                break;
+
+            case R.id.leftpop:
+                //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面
+                leftoperate.setVisibility(View.GONE);
+                rightoperate.setVisibility(View.GONE);
+                break;
+
+            case R.id.rightpop:
+                //弹出二维码
+
+                break;
+            case R.id.wantwater:
+                popChooseWater.showPopupWindow(new View(mContext));
+                break;
+            case R.id.tobehot:
+                //加热使能
+
+
+                break;
+
+            case R.id.tobecool:
+                //制冷使能
+                break;
+            case R.id.chongxi:
+
+                //冲洗使能
+                break;
+
+        }
+
+    }
+
+    // ------------ ijk 监听 start --------------
+    @Override
+    public void onComplete() {
+        Log.d(TAG, "onComplete: ");
+        curTime = TimeUtils.getCurrentTime();
+        videoIndex += 1;
+        loopPlayVideo();
+    }
+
+    /**
+     * 错误
+     * 暂时只有一种错误回调，即what = MediaPlayer.MEDIA_ERROR_UNKNOWN， extra = 0，后期可做修改（IjkVideoView中）
+     *
+     * @param what
+     */
+    @Override
+    public void onError(int what, int extra) {
+        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
+
+        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+            //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
+            Toast.makeText(mContext, "网络服务错误", Toast.LENGTH_LONG).show();
+        } else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
+            Toast.makeText(mContext, "文件不存在或错误，或网络不可访问错误", Toast.LENGTH_SHORT).show();
+        }
+        player.onDestroy();//释放
+        playVideo();//播放
+    }
+
+    @Override
+    public void onLoading() {
+
+    }
+
+    @Override
+    public void onPlay() {
+
+    }
+
+    @Override
+    public void onInfo(int what, int extra) {
+        Log.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
+    }
+
+    // ------------ ijk 监听 end --------------
+
+
+    public void listenDevice() {
+        //https://www.jianshu.com/p/7d3ff0a11ab8  数据库操作
+
+        //闹钟定时播放视频
+
+        // TODO 此处应该是读取本地的配置，本地的配置应该是在服务器获取的
+        //开机器隔一段时间去监听查询
+
+
+        Time t = new Time();
+        t.setToNow();
+        int hout = t.hour;
+        int minute = t.minute;
+        int second = t.second;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hout); //凌晨1点
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        Date date = calendar.getTime(); //第一次执行定时任务的时间
+
+        //        TimeRun timeRun = new TimeRun();
+        //此时要在 第一次执行定时任务的时间加一天，以便此任务在下个时间点执行。如果不加一天，任务会立即执行。
+       /* if(date.before(new Date())){
+            date = this.addDay(date, 1);
+        }*/
+        Timer timer = new Timer();
+        final MyHandler myHandler = new MyHandler();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+
+                Message msg = new Message();
+                msg.what = 0;
+                myHandler.sendMessage(msg);
+
+                //获取设备参数
+//                String quality = "好";
+//                DeiviceParams deviceparams = new DeiviceParams();
+//                deviceparams.setWaterquality(quality);
+                person p = new person();
+                p.setName("好");
+                try {
+                    xutilsInit.getDb().save(p);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        final long PERIOD_DAY = 20 * 1000;
+        timer.schedule(task, date, PERIOD_DAY);
+
+
+        Time tupload = new Time();
+        tupload.setToNow();
+        int houtupload = t.hour;
+        int minuteupload = t.minute + 1;
+        int seconduplod = t.second;
+
+        if (houtupload > 24) {
+            houtupload = 0;
+        }
+        if (minuteupload > 60) {
+            minuteupload = 0;
+        }
+        //获取数据库的数据在特定的时候上传到服务端并且删除数据库里面的内容
+        Date updatetime = TimeRun.tasktime(houtupload, minuteupload, seconduplod);
+//        if(updatetime.before(new Date())){
+//            updatetime = this.addDay(updatetime, 1);
+//        }
+        TimeRun timeRun = new TimeRun(mContext, updatetime, myHandler, 60 * 60 * 24 * 1000, DATADELETE);
+
+
+    }
+
+    public Date addDay(Date date, int num) {
+        Calendar startDT = Calendar.getInstance();
+        startDT.setTime(date);
+        startDT.add(Calendar.DAY_OF_MONTH, num);
+        return startDT.getTime();
+    }
+
+    public class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+                case 0:
+//                    byte[] data = (byte[])msg.obj
+                    Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
+
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 获取设备实体
+     * device_number：设备唯一标识ID
+     */
+    public void GetDeviceInfo() {
+        GetDeviceInfo deviceInfo = new GetDeviceInfo();
+        String str = deviceInfo.getIMEI(this);
+
+        DeviceEntity deviceEntity = new DeviceEntity();
+        deviceEntity.setDevice_number(str);
+
+        try {
+            xutilsInit.getDb().save(deviceEntity);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        /*if (requestCode == PermissionUtils.CODE_INTERNET) {
+            showToast("访问网络权限已申请");
+        }
+        if (requestCode == PermissionUtils.CODE_READ_PHONE_STATE) {
+            showToast("访问电话状态权限已申请");
+        }
+        if (requestCode == PermissionUtils.CODE_ACCESS_NETWORK_STATE) {
+            showToast("获取网络信息状态权限已申请");
+        }
+        if (requestCode == PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE) {
+            showToast("读取SD卡权限已申请");
+        }
+        if (requestCode == PermissionUtils.CODE_MOUNT_UNMOUNT_FILESYSTEMS) {
+            showToast("挂载、反挂载外部文件系统权限已申请");
+        }*/
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                //判断是否勾选禁止后不再询问
+                boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permissions[i]);
+                if (showRequestPermission) {
+                    showToast("权限未申请");
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void showToast(String string) {
+        Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
+    }
+
+}

@@ -1,0 +1,14 @@
+package newwater.com.newwater.constants;
+
+public class Constant {
+    public static final String DB_NAME = "xinhonghai.db";
+    public static final int DOWNLOAD_MAX_RETRY_TIME = 3;  //
+    public static final int IDLE_TIME_RECHECK_CIRCLE = 10;  // 空闲时检查当前时段是否有应播视频的周期（分钟）
+    public static final int MOT_CFG_PP_FLOW = 5000;//pp棉制水预警值
+    public static final int MOT_CFG_GRAIN_CARBON_FLOW=15000;//颗粒活性炭值水预警值
+    public static final int MOT_CFG_PRESS_CARBON_FLOW = 15000;//压缩活性炭预警值
+    public static final int MOT_CFG_POSE_CARBON_FLOW = 15000;//后置活性炭预警值
+    public static final int MOT_CFG_RO_FLOW = 15000;//反渗透模预警值
+    public static final double MOT_CFG_MAX_FLOW = 0.5;//单次取水量最大值
+
+}
