@@ -2,9 +2,12 @@ package newwater.com.newwater.constants;
 
 public class UriConstant {
 
-    public static String IP = "192.168.0.200";
+//    public static String IP = "192.168.0.200";//外网服务器
 
-    public static String PORT = "28301";
+    public static String IP="192.168.0.61";
+
+//    public static String PORT = "28301";
+    public static String PORT = "8080";
 
     public final static String LOGIN = "huapage/mobi/app/login/user";
 
@@ -15,6 +18,9 @@ public class UriConstant {
 
     //水质信息采集
     public final static String WATERQUALITY = "api/v1/device/data/waterQuality";
+
+    //获取临时二维码
+    public final static String GETTEMPQCODE = "api/v1/android/getSQ";
     // 根目录
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
 
