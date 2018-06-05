@@ -1,29 +1,55 @@
 package newwater.com.newwater.beans;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2018/4/27 0027.
  */
 
 public class Strategy {
-    private String VideoplayTime;
-    private ArrayList<String> VideoList;
+    private String upDate;
+    private String downDate;
+    private String playPeriod;
+    private ArrayList<String> videoList;
+    private Advs_Video ad;
+
+    public String getUpDate() {
+        return upDate;
+    }
+
+    public void setUpDate(String upDate) {
+        this.upDate = upDate;
+    }
+
+    public String getDownDate() {
+        return downDate;
+    }
+
+    public void setDownDate(String downDate) {
+        this.downDate = downDate;
+    }
+
+    public String getPlayPeriod() {
+        return playPeriod;
+    }
+
+    public void setPlayPeriod(String playPeriod) {
+        this.playPeriod = playPeriod;
+    }
 
     public ArrayList<String> getVideoList() {
-        return VideoList;
+        return videoList;
     }
 
     public void setVideoList(ArrayList<String> videoList) {
-        VideoList = videoList;
+        this.videoList = videoList;
     }
 
-    public String getVideoplayTime() {
-        return VideoplayTime;
+    public Advs_Video getAd() {
+        return ad;
     }
 
-    public void setVideoplayTime(String videoplayTime) {
-        VideoplayTime = videoplayTime;
+    public void setAd(Advs_Video ad) {
+        this.ad = ad;
     }
 }

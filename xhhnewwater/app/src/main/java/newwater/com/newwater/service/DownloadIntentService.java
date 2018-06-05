@@ -13,6 +13,7 @@ import android.widget.RemoteViews;
 
 import java.io.File;
 
+import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.manager.RetrofitHttp;
@@ -35,20 +36,14 @@ public class DownloadIntentService extends IntentService {
     }
 
     @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: ----");
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d(TAG, "onHandleIntent: ----");
-        String downloadUrl = intent.getExtras().getString("download_url");
-        final int downloadId = intent.getExtras().getInt("download_id");
-        mDownloadFileName = intent.getExtras().getString("download_file");
+        String downloadUrl = intent.getExtras().getString(Constant.VIDEO_DOWNLOAD_URL);
+        final int downloadId = intent.getExtras().getInt(Constant.VIDEO_DOWNLOAD_ID);
+        mDownloadFileName = intent.getExtras().getString(Constant.VIDEO_DOWNLOAD_FILE_NAME);
 
-        Log.d(TAG, "download_url --" + downloadUrl);
-        Log.d(TAG, "download_file --" + mDownloadFileName);
+        Log.d(TAG, "url --" + downloadUrl);
+        Log.d(TAG, "file_name --" + mDownloadFileName);
 
         final File file = new File(UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + mDownloadFileName);
         long range = 0;
@@ -84,6 +79,7 @@ public class DownloadIntentService extends IntentService {
         RetrofitHttp.getInstance().downloadFile(range, downloadUrl, mDownloadFileName, new DownloadCallback() {
             @Override
             public void onProgress(int progress) {
+                Log.d(TAG, "下载进度：" + progress);
                 /*remoteViews.setProgressBar(R.id.pb_progress, 100, progress, false);
                 remoteViews.setTextViewText(R.id.tv_progress, "已下载" + progress + "%");
                 mNotifyManager.notify(downloadId, mNotification);*/

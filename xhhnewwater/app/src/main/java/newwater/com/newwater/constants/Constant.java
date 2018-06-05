@@ -10,5 +10,11 @@ public class Constant {
     public static final int MOT_CFG_POSE_CARBON_FLOW = 15000;//后置活性炭预警值
     public static final int MOT_CFG_RO_FLOW = 15000;//反渗透模预警值
     public static final double MOT_CFG_MAX_FLOW = 0.5;//单次取水量最大值
+    public static final long UPLOAD_TIME = 60*1000;//没一分钟上报一次
+
+    /*intent和bundle的key*/
+    public static final String VIDEO_DOWNLOAD_URL = "video_download_url";
+    public static final String VIDEO_DOWNLOAD_ID = "video_download_id";
+    public static final String VIDEO_DOWNLOAD_FILE_NAME = "video_download_file_name";
 
 }

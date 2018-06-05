@@ -13,12 +13,16 @@ public class UriConstant {
     //获取最新的apk
     public final static String NEWAPK = "api/v1/apk/new";
 
-
+    //水质信息采集
+    public final static String WATERQUALITY = "api/v1/device/data/waterQuality";
     // 根目录
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
 
     // 视频文件夹
     public static final String VIDEO_DIR = "video/";
+
+    // 初始视频路径（不含前面公共部分）
+    public static final String INIT_VIDEO_PATH = "";
 
     // database文件夹
     public static final String DB_DIR = "db/";

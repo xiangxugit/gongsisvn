@@ -57,11 +57,17 @@ public class TokenInterceptor implements Interceptor {
      * @return
      */
     private boolean isTokenExpired(Response response) {
-        if (response.code() != 200) {
-            return true;
+        boolean test = false;
+        if (response.code() == 403) {
+            test = true;
         }
-        return false;
+        else{
+            test = false;
+        }
+//        test false;
+        return  test;
     }
+
 
     /**
      * 同步请求方式，获取最新的Token
@@ -71,7 +77,7 @@ public class TokenInterceptor implements Interceptor {
     private String getNewToken() throws IOException {
         String accessToken = "";
         OkHttpClient client = new OkHttpClient();
-        String url = RestUtils.getUrl(UriConstant.GETTOKEN);
+        String url = RestUtils.getUrl(UriConstant.GETTOKEN)+"?loginName=123&loginPassword=456";
 
         //Request是OkHttp中访问的请求，Builder是辅助类，Response即OkHttp中的响应
         final Request request = new Request.Builder()

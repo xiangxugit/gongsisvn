@@ -2,13 +2,11 @@ package newwater.com.newwater;
 
 import com.alibaba.fastjson.JSON;
 
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import newwater.com.newwater.beans.DeviceInitParams;
+import newwater.com.newwater.beans.Advs_Video;
 import newwater.com.newwater.beans.Strategy;
 import newwater.com.newwater.beans.Sys_Device_Monitor_Config;
 
@@ -22,6 +20,7 @@ public class TestJSON {
 
     public static String strategy() {
 
+        //下发的策略一
         ArrayList<Strategy> stragegyList = new ArrayList<Strategy>();
         strategy = new Strategy();
         ArrayList<String> VideList = new ArrayList<String>();
@@ -30,9 +29,9 @@ public class TestJSON {
 
 
         //封装播放时段
-        String videoplaytime = "0000000014000000000000190000";
+        String videoplaytime = "140000190000";
         strategy.setVideoList(VideList);
-        strategy.setVideoplayTime(videoplaytime);
+        strategy.setPlayPeriod(videoplaytime);
         stragegyList.add(strategy);
 
         //下发的策略二
@@ -42,9 +41,9 @@ public class TestJSON {
         VideList2.add("http://flv2.bn.netease.com/videolib3/1604/28/fVobI0704/SD/fVobI0704-mobile.mp4");
 
         //封装播放时段
-        String videoplaytime2 = "0000000019000000000000200000";
+        String videoplaytime2 = "190000200000";
         strategy2.setVideoList(VideList2);
-        strategy2.setVideoplayTime(videoplaytime2);
+        strategy2.setPlayPeriod(videoplaytime2);
         stragegyList.add(strategy2);
 
 
@@ -54,9 +53,9 @@ public class TestJSON {
         VideList3.add("http://mirror.aarnet.edu.au/pub/TED-talks/MalteSpitz_2012G.mp4");
 
         //封装播放时段
-        String videoplaytime3 = "0000000005000000000000070000";
+        String videoplaytime3 = "050000070000";
         strategy3.setVideoList(VideList3);
-        strategy3.setVideoplayTime(videoplaytime3);
+        strategy3.setPlayPeriod(videoplaytime3);
         stragegyList.add(strategy3);
 
 

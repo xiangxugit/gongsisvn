@@ -1,6 +1,8 @@
 package newwater.com.newwater;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -49,14 +51,17 @@ import java.util.TimerTask;
 
 import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.DataBaseUtils.XutilsInit;
+import newwater.com.newwater.beans.Advs_Video;
 import newwater.com.newwater.beans.DeviceEntity;
 import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.beans.person;
 import newwater.com.newwater.broadcast.ConnectionChangeReceiver;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
+import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.interfaces.OnUpdateUI;
 import newwater.com.newwater.manager.IjkManager;
+import newwater.com.newwater.service.DownloadIntentService;
 import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.GetDeviceInfo;
 import newwater.com.newwater.utils.OkHttpUtils;
@@ -80,6 +85,7 @@ import static newwater.com.newwater.utils.PermissionUtils.permissions;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IjkManager.PlayerStateListener {
     private static final String TAG = "MainActivity";
 
+    private static final int DOWNLOADAPK_ID = 10;
     public static final String filePath = "/sdcard/xutils/xUtils_1.avi";
 
     private Context mContext;
@@ -158,15 +164,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     // 视频播放
-    private Map<String, JSONArray> adVideoMap;
-    private JSONArray curAdVideoList;
+    /*播放器*/
     private IjkManager player;
-    //    private JSONArray videolist; // 视频url的list
-    private int playCount; // 播放次数
-    private int videoIndex; // 播放的视频在list中的index
-    private boolean isDownloading; // 是否正在下载
-    private String curPlayAdId; // 正在播放的视频的id
-    private String curDownAdId; //正在下载的视频的id
+    /*推送策略中的视频列表*/
+    private List<Advs_Video> pushAdVideoList;
+    /*所有要播放的视频的列表*/
+    private List<Advs_Video> adVideoList; //（同步后应该与push列表一致）
+    /*当前要播放的闲时广告列表*/
+    private List<Advs_Video> curAdVideoList;
+    /*当前已下载的要播放的闲时广告列表*/
+    private List<Advs_Video> curDownAdVideoList;
+    /*当前播放的视频在curDownAdVideoList中的index*/
+    private int videoIndex;
+    /*是否正在播放视频*/
+    private boolean isPlaying;
+    /*是否正在下载*/
+    private boolean isDownloading;
+    /*当前时段的是否全部下载完毕*/
+    private boolean hasDownCur;
+    /*正在播放的视频的id*/
+    private String curPlayAdId;
+    /*正在下载的视频的id*/
+    private String curDownAdId;
+    /*当前时间*/
     private String curTime;
 
     // 权限集合
@@ -227,31 +247,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        initToken();
+//        initToken();
     }
 
     private void initData() {
         mContext = MainActivity.this;
         // 视频播放
         proxy = App.getProxy(mContext);
-        adVideoMap = new HashMap<>();
+        adVideoList = new ArrayList<>();
         curTime = TimeUtils.getCurrentTime();
         videoIndex = 0;
         // 配置文件解析
+        getStrategy();
+    }
+
+    private void getStrategy() {
         String testa = TestJSON.strategy();
         JSONArray alldata = JSON.parseArray(testa);
-        // 时段在未来则加入到map中
+        // 下架在未来则加入到map中
         for (int i = 0; i < alldata.size(); i++) {
             String string = alldata.getString(i);
             JSONObject testobj = JSON.parseObject(string);
-            String videoplayTime = testobj.getString("videoplayTime");
+            String upDate = testobj.getString("upDate");
+            String downDate = testobj.getString("downDate");
+            String playPeriod = testobj.getString("playPeriod");
             String videoListString = testobj.getString("videoList");
-            Log.d(TAG, "initData: all: videoplayTime = " + videoplayTime + ", videoListString = " + videoListString);
-            if (TimeUtils.isFuturePeriod(videoplayTime, curTime)) {
-                Log.d(TAG, "initData: put: videoplayTime = " + videoplayTime + ", videoListString = " + videoListString);
-                JSONArray objects = JSON.parseArray(videoListString);
-//                List<Advs_Video> ads = JSONArray.parseArray(videoListString, Advs_Video.class);
-                adVideoMap.put(videoplayTime, objects);
+            String ad = testobj.getString("ad");
+            Advs_Video advs_video = JSONObject.parseObject(ad, Advs_Video.class);
+            Log.d(TAG, "initData: all: upDate = " + upDate + ", downDate = " + downDate
+                    + ", playPeriod = " + playPeriod + ", videoListString = " + videoListString);
+            if (TimeUtils.isFutureSchedule(upDate, downDate, curTime)) {
+                Log.d(TAG, "initData: put: upDate = " + upDate + ", downDate = " + downDate
+                        + ", playPeriod = " + playPeriod + ", videoListString = " + videoListString);
+//                JSONArray objects = JSON.parseArray(videoListString);
+                List<Advs_Video> objects = JSONArray.parseArray(videoListString, Advs_Video.class);
+                adVideoList.add(advs_video);
             }
         }
        /*
@@ -306,61 +336,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void initbroadcast() {
-        myBroadcast = new UpdateBroadcast();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(FLAG);
-        registerReceiver(myBroadcast, intentFilter);
-
-        myBroadcast.SetOnUpdateUI(new OnUpdateUI() {
-            @Override
-            public void updateUI(ViewShow data) {
-                hotwatertext.setText("cao");
-//                hotwatertext.setText(data.getHotwatertextvalue());
-//                coolwatertext.setText(data.getCoolwatertextvalue());
-//                ppmvalue.setText(data.getPpmvalue());
-//                ppm.setText(data.getPpm());
-//                hotornot.setText(data.getHotornot());
-//                cooltext.setText(data.getCooltext());
-//                zhishuitext.setText(data.getZhishuitext());
-//                chongxitext.setText(data.getChongxitext());
-//                chongxitext.setText("aaaaaaa   ");
-//                Toast.makeText(mContext,"aaa"+i,Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void initVideo() {
+        // 初始化播放器
         player = new IjkManager(this, this);
         player.setFullScreenOnly(true);
         player.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
         player.playInFullScreen(true);
         player.setOnPlayerStateChangeListener(this);
+        playInitVideo();
+        // 获取当前时段应播视频的列表
+        if (getCurrentVideoList()) {
+            // 有视频，则播放
+            playVideo();
+            // 无视频，
+        }
+        //
         loopPlayVideo();
+
         downloadVideo();
     }
 
-    private void initToken() {
-        try {
-            String url = RestUtils.getUrl(UriConstant.NEWAPK);
-            OkHttpUtils.getAsyn(url,
-                    new OkHttpUtils.StringCallback() {
-                        @Override
-                        public void onFailure(Request request, IOException e) {
-                            Log.i("getApkInfo", request.toString());
-                        }
-
-                        @Override
-                        public void onResponse(String response) {
-                            Log.e("getApkInfo", response);
-                        }
-                    });
-        } catch (Exception e) {
-            Log.i("Error", e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
+//    private void initToken() {
+//        try {
+//            String url = RestUtils.getUrl(UriConstant.NEWAPK);
+//            OkHttpUtils.getAsyn(url,
+//                    new OkHttpUtils.StringCallback() {
+//                        @Override
+//                        public void onFailure(Request request, IOException e) {
+//                            Log.i("getApkInfo", request.toString());
+//                        }
+//
+//                        @Override
+//                        public void onResponse(String response) {
+//                            Log.e("getApkInfo", response);
+//                        }
+//                    });
+//        } catch (Exception e) {
+//            Log.i("Error", e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
 
     private void getDevice_Monitor_Config() {
         Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(MainActivity.this);
@@ -394,30 +409,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @return
      */
     private boolean getCurrentVideoList() {
-        for (String period : adVideoMap.keySet()) {
+        boolean hasVideo = false;
+        curAdVideoList = new ArrayList<>();
+        // 方式一：用map存所有视频
+        /*for (String period : adVideoMap.keySet()) {
             if (TimeUtils.isCurrentTimeInPeriod(period, curTime)) {
                 curAdVideoList = adVideoMap.get(period);
                 Log.d(TAG, "getCurrentVideoList: 当前时段有视频：" + curAdVideoList);
-                return true;
+                hasVideo = true;
+            }
+        }*/
+        // 方式二：用list存所有视频
+        for (Advs_Video ad : adVideoList) {
+            if (TimeUtils.isCurrentDateInSchedule(
+                    ad.getAdvs_play_begin_date(), ad.getAdvs_play_end_date(), curTime) &&
+                    TimeUtils.isCurrentTimeInPeriod(ad.getAdvs_play_begin_time(),
+                            ad.getAdvs_play_end_time(), curTime)) {
+                curAdVideoList.add(ad);
+                hasVideo = true;
             }
         }
-        Log.d(TAG, "getCurrentVideoList: 当前时段无视频！");
-        return false;
+        if (!hasVideo)
+            Log.d(TAG, "getCurrentVideoList: 当前时段无视频！");
+        return hasVideo;
     }
 
+    /**
+     * 播放初始视频
+     */
+    private void playInitVideo() {
+        String proxyUrl = proxy.getProxyUrl(UriConstant.APP_ROOT_PATH +
+                UriConstant.VIDEO_DIR + UriConstant.INIT_VIDEO_PATH);
+        player.play(proxyUrl);
+    }
+
+    /**
+     * 播放curDownAdVideoList中的视频
+     */
     private void playVideo() {
-        String proxyUrl = proxy.getProxyUrl(curAdVideoList.getString(videoIndex % curAdVideoList.size()));
+        String proxyUrl = proxy.getProxyUrl(curAdVideoList.get(videoIndex % curAdVideoList.size())
+                .getAdvs_video_download_path());
         player.play(proxyUrl);
     }
 
     private void downloadVideo() {
-        //设置请求参数
-        RequestParams params = new RequestParams("http://abcde");
-        params.setAutoResume(true);//设置是否在下载是自动断点续传
-        params.setAutoRename(false);//设置是否根据头信息自动命名文件
-        params.setSaveFilePath("");
-        params.setExecutor(new PriorityExecutor(2, true));//自定义线程池,有效的值范围[1, 3], 设置为3时, 可能阻塞图片加载.
-        params.setCancelFast(false);//是否可以被立即停止.
+        if (isServiceRunning(DownloadIntentService.class.getName())) {
+            Toast.makeText(MainActivity.this, "正在下载", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, "downloadVideo: 开始下载广告视频");
+        Intent intent = new Intent(MainActivity.this, DownloadIntentService.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Constant.VIDEO_DOWNLOAD_ID, DOWNLOADAPK_ID);
+        for (Advs_Video ad : curAdVideoList) {
+            String downloadUrl = ad.getAdvs_video_download_path();
+            bundle.putString(Constant.VIDEO_DOWNLOAD_URL, downloadUrl);
+            bundle.putString(Constant.VIDEO_DOWNLOAD_FILE_NAME,
+                    downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1));
+            intent.putExtras(bundle);
+            startService(intent);
+        }
+        // 方式一
+//        String downloadUrl = "AditiShankardass_2009I_480.mp4";
+//        Intent intent = new Intent(MainActivity.this, DownloadIntentService.class);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("download_url", downloadUrl);
+//        bundle.putInt("download_id", DOWNLOADAPK_ID);
+//        bundle.putString("download_file", downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1));
+//        intent.putExtras(bundle);
+//        startService(intent);
     }
 
     /**
@@ -574,7 +634,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         Date updatetime = TimeRun.tasktime(houtupload, minuteupload, seconduplod);
 
-        TimeRun timeRun = new TimeRun(mContext, updatetime, myHandler, 10 * 1000, DATADELETE);
+        TimeRun timeRun = new TimeRun(MainActivity.this, updatetime, myHandler, Constant.UPLOAD_TIME, DATADELETE,1);
 
 
     }
@@ -596,7 +656,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
                     break;
                 case DATADELETE:
-                    Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
+                    String test = msg.obj.toString();
+                    Toast.makeText(mContext, "定时"+test, Toast.LENGTH_SHORT).show();
+
                     break;
 
             }
@@ -652,6 +714,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    /**
+     * 用来判断服务是否运行
+     * @param className 判断的服务名字
+     * @return true 在运行 false 不在运行
+     */
+    private boolean isServiceRunning(String className) {
+
+        boolean isRunning = false;
+        ActivityManager activityManager = (ActivityManager) this
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceList = activityManager
+                .getRunningServices(Integer.MAX_VALUE);
+        if (!(serviceList.size() > 0)) {
+            return false;
+        }
+        for (int i = 0; i < serviceList.size(); i++) {
+            if (serviceList.get(i).service.getClassName().equals(className) == true) {
+                isRunning = true;
+                break;
+            }
+        }
+        return isRunning;
     }
 
     private void showToast(String string) {
