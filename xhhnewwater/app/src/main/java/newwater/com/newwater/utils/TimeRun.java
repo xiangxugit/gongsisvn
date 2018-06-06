@@ -9,8 +9,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
-import org.json.JSONObject;
 import org.xutils.common.util.LogUtil;
 import org.xutils.ex.DbException;
 
@@ -59,13 +59,14 @@ public  class TimeRun {
         task = new TimerTask() {
             @Override
             public void run() {
-                if(1==operateflag){
+                if(Constant.TIME_OPERATE_UPDATEWATER==operateflag){
                     //上传水质
                     GetDeviceInfo getDeviceInfo = new GetDeviceInfo();
                     String deviceId = getDeviceInfo.getIMEI(context);
                     if(null==deviceId){
                         deviceId = "123456";
                     }
+                    deviceId = "123456";
                     SysDeviceWaterQualityAO sysDeviceWaterQualityAO = new SysDeviceWaterQualityAO();
                     sysDeviceWaterQualityAO.setDeviceId(Integer.parseInt(deviceId));
 //                    String[][] data=devUtil.toArray();
@@ -129,6 +130,26 @@ public  class TimeRun {
                         public void onResponse(String response) {Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
                         }
                     },postdata);
+                }
+
+                if(Constant.TIME_OPETATE_UPDATESCODE==operateflag){
+                    String sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE);
+
+                    OkHttpUtils.getAsyn(sCodeUrl, new OkHttpUtils.StringCallback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response) {
+                            JSONObject scodeobj = JSONObject.parseObject(response);
+                            if("0".equals(scodeobj.getString("code"))){
+                                String data = scodeobj.getString("date");
+                                BaseSharedPreferences.setString(context,Constant.SCODEKEY,data);
+                            }
+                        }
+                    });
                 }
                 //进行数据库上传
 

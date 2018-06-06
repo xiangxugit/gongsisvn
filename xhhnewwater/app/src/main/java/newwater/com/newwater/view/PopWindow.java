@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,18 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.R;
 import newwater.com.newwater.TestJSON;
+import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.utils.Create2QR2;
+import newwater.com.newwater.utils.OkHttpUtils;
+import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeUtils;
+import okhttp3.Request;
 
 /**
  * 自定义的PopupWindow
@@ -93,10 +100,23 @@ public class PopWindow extends PopupWindow {
                     PopWindowChooseWaterGetWay popChooseWatera = new PopWindowChooseWaterGetWay(context);
                     popChooseWatera.showPopupWindow(new View(context));
 
-                    ImageView qcode = PopWindowChooseWaterGetWay.qrcode;
-                    String qcodestring = TestJSON.getWeiXinQcode();
-                    Bitmap qcodebitmap = Create2QR2.createBitmap(qcodestring);
-                    qcode.setImageBitmap(qcodebitmap);
+//                    ImageView qcode = PopWindowChooseWaterGetWay.qrcode;
+//                    String qcodesurl = RestUtils.getUrl(UriConstant.GETTEMPQCODE);
+//                    OkHttpUtils.getAsyn(qcodesurl, new OkHttpUtils.StringCallback() {
+//                        @Override
+//                        public void onFailure(Request request, IOException e) {
+//                            Log.e("response",request.toString());
+//                        }
+//
+//                        @Override
+//                        public void onResponse(String response) {
+//                            Log.e("response",response);
+////                            String qcodestring = TestJSON.getWeiXinQcode();
+////                            Bitmap qcodebitmap = Create2QR2.createBitmap(qcodestring);
+////                            qcode.setImageBitmap(qcodebitmap);
+//                        }
+//                    });
+
 
                     TextView rightText = PopWindowChooseWaterGetWay.getwater;
                     rightText.setText("扫码关注，完成用户绑定");

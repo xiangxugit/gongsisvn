@@ -138,7 +138,7 @@ public class TimeUtils {
      * @param curTimeStr 当前时间（yyyy-MM-dd HH:mm:ss），由getCurrentTime获得
      * @return
      */
-    public static boolean isCurrentTimeInPeriod(String beginTime, String endTime, String curTimeStr) {
+    private static boolean isCurrentTimeInPeriod(String beginTime, String endTime, String curTimeStr) {
         Log.d(TAG, "isFutureTime: beginTime = " + beginTime + ", endTime = " + endTime
                 + ", curTimeStr = " + curTimeStr);
         if (TextUtils.isEmpty(beginTime) || TextUtils.isEmpty(endTime) || TextUtils.isEmpty(curTimeStr)) {
@@ -160,7 +160,7 @@ public class TimeUtils {
      * @param curTimeStr 当前时间（yyyy-MM-dd HH:mm:ss），由getCurrentTime获得
      * @return
      */
-    public static boolean isCurrentDateInSchedule(String upDate, String downDate, String curTimeStr) {
+    private static boolean isCurrentDateInSchedule(String upDate, String downDate, String curTimeStr) {
         Log.d(TAG, "isCurrentDateInSchedule: upDate = " + upDate + ", downDate = " + downDate
                 + ", curTimeStr = " + curTimeStr);
         if (TextUtils.isEmpty(upDate) || TextUtils.isEmpty(downDate) || TextUtils.isEmpty(curTimeStr)) {
@@ -173,5 +173,12 @@ public class TimeUtils {
         }
         return isAvailableDate(downDate, curTimeStr) &&
                 !isAvailableDate(upDate, curTimeStr);
+    }
+
+    public static boolean isCurrentDateTimeInPlan(String upDate, String downDate,
+                                                  String beginTime, String endTime,
+                                                  String curTimeStr) {
+        return isCurrentDateInSchedule(upDate, downDate, curTimeStr) &&
+                isCurrentTimeInPeriod(beginTime, endTime, curTimeStr);
     }
 }

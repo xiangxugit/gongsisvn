@@ -8,23 +8,31 @@ import android.os.SystemClock;
 import android.serialport.ComUtil;
 import android.serialport.DevUtil;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.xutils.ex.DbException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
+import newwater.com.newwater.TestJSON;
+import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.beans.Sys_Device_Monitor_Config;
 import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.constants.UriConstant;
+import newwater.com.newwater.utils.OkHttpUtils;
+import newwater.com.newwater.utils.RestUtils;
+import okhttp3.Request;
 
 /**
  * Created by Administrator on 2018/5/22 0022.
  */
 
 public   class ComThread extends Thread {
-
+    private SysDeviceNoticeAO sysDeviceNoticeAO;
     private final int LoopIdle = 50;//线程空闲时间ms
     private DevUtil devUtil=null;
     private final int MAXERR=5;
@@ -42,6 +50,9 @@ public   class ComThread extends Thread {
     public ComThread(Context context, Handler handler){
         this.context = context;
         this.myhandler = handler;
+        if(null == this.sysDeviceNoticeAO){
+            this.sysDeviceNoticeAO = new SysDeviceNoticeAO();
+        }
     }
     @Override
     public void run() {
@@ -113,6 +124,26 @@ public   class ComThread extends Thread {
         msg.what =0;
         myhandler.sendMessage(msg);
         //TODO  https://www.jianshu.com/p/7d3ff0a11ab8
+
+        String deviceNoticeUrl = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
+        String postdata = "";
+        if(DevUtil.ERR_TIMEOUT==1){
+            sysDeviceNoticeAO.setDeviceId(Integer.parseInt(TestJSON.getDeviceid()));
+        }
+
+        devUtil.get_run_normalWaterSW_value();
+
+
+        OkHttpUtils.postAsyn(deviceNoticeUrl, new OkHttpUtils.StringCallback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(String response) {Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
+            }
+        },postdata);
        //更新操作
 //        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
 //

@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import newwater.com.newwater.constants.Constant;
-import newwater.com.newwater.constants.UriConstant;
+import io.reactivex.schedulers.Schedulers;
+import newwater.com.newwater.downtemp.HttpProgressOnNextListener;
 import newwater.com.newwater.interfaces.ApiService;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.utils.SPDownloadUtil;
@@ -29,22 +29,23 @@ public class RetrofitHttp {
 
     private OkHttpClient okHttpClient;
 
-    public static String baseUrl = ApiService.BASE_URL;
+    public static String baseUrl;
 
     private static RetrofitHttp sIsntance;
 
-    public static RetrofitHttp getInstance() {
+    public static RetrofitHttp getInstance(String baseUrl) {
         if (sIsntance == null) {
             synchronized (RetrofitHttp.class) {
                 if (sIsntance == null) {
-                    sIsntance = new RetrofitHttp();
+                    sIsntance = new RetrofitHttp(baseUrl);
                 }
             }
         }
         return sIsntance;
     }
 
-    private RetrofitHttp() {
+    private RetrofitHttp(String baseUrl) {
+        this.baseUrl = baseUrl;
         okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                 .build();
@@ -57,15 +58,31 @@ public class RetrofitHttp {
         apiService = retrofit.create(ApiService.class);
     }
 
-    public void downloadFile(final long range, final String url, final String fileName, final DownloadCallback downloadCallback) {
+    /**
+     *
+     * @param range
+     * @param url 不含baseUrl
+     * @param fileDir 本地路径文件夹
+     * @param fileName 本地路径文件名
+     * @param downloadCallback
+     */
+    public void downloadFile(final long range, final String url,
+                             final String fileDir, final String fileName,
+                             final DownloadCallback downloadCallback,
+                             HttpProgressOnNextListener listener) {
         //断点续传时请求的总长度
-        File file = new File(UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR, fileName);
+        File file = new File(fileDir, fileName);
         String totalLength = "-";
         if (file.exists()) {
             totalLength += file.length();
         }
 
+        DownloadSubscriber downloadSubscriber = new DownloadSubscriber(listener);
+
+
         apiService.executeDownload("bytes=" + Long.toString(range) + totalLength, url)
+                .subscribeOn(Schedulers.io())
+//                .subscribe(downloadSubscriber);
                 .subscribe(new Observer<ResponseBody>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -83,7 +100,7 @@ public class RetrofitHttp {
                             int len = 0;
                             responseLength = responseBody.contentLength();
                             inputStream = responseBody.byteStream();
-                            String filePath = UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR;
+                            String filePath = fileDir;
                             File file = new File(filePath, fileName);
                             File dir = new File(filePath);
                             if (!dir.exists()) {
@@ -107,7 +124,7 @@ public class RetrofitHttp {
                                     downloadCallback.onProgress(progress);
                                 }
                             }
-                            downloadCallback.onCompleted();
+                            downloadCallback.onComplete(fileDir + fileName);
                         } catch (Exception e) {
                             Log.d(TAG, e.getMessage());
                             downloadCallback.onError(e.getMessage());
@@ -138,6 +155,12 @@ public class RetrofitHttp {
                     @Override
                     public void onComplete() {
                     }
+
                 });
     }
+
+
+
+
+
 }

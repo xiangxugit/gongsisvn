@@ -3,6 +3,7 @@ package newwater.com.newwater.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -28,6 +29,7 @@ import newwater.com.newwater.constants.UriConstant;
  */
 
 public class VideoUtils {
+    private static final String TAG = "VideoUtils";
     private Context context;
     private Callback.Cancelable cancelable;
 
@@ -82,27 +84,6 @@ public class VideoUtils {
 
         }
     }
-
-
-
-
-
-    //TODO 从服务器获取到播放列表
-
-
-    //TODO 根据播放视频的名称来检索 缓存文件夹是否有文件，如果没有的话加入到nocachelist 如果有的话加入到cacheList
-
-    //TODO 获取本地播放策略和网络播放策略进行对比，如果是一样的，就按照本地播放策略，如果不一样，更新本地播放策略
-
-    //TODO 播放处理
-
-    /**
-     *根据播放策略定闹钟，播放对应的视频
-     *
-     *
-     *
-     */
-
 
     /**
      * Returns the file extension or an empty string iff there is no
@@ -190,15 +171,51 @@ public class VideoUtils {
         return null;
     }
 
-    public static void addStrategy(XutilsInit manager, String period, Advs_Video ad) {
-        // 新增时段文件夹
-        FileUtil.mkdirs(UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + period + UriConstant.FILE_SEPARATE);
-        // 存入数据库
-        try {
-            manager.getDb().save(ad);
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
 
+    /**
+     * 获取视频在List中的下标
+     * @param ad 视频
+     * @param adVideoList 列表
+     * @return 存在返回下标，不存在返回-1，数据错误返回-100
+     */
+    public static int getAdIndexFromList(Advs_Video ad, List<Advs_Video> adVideoList) {
+        for (int i = 0; i < adVideoList.size(); i++) {
+            Advs_Video advsVideo = adVideoList.get(i);
+            if (null == advsVideo || null == ad) {
+                Log.d(TAG, "getAdIndexFromList: 数据为空");
+                return -100;
+            }
+            int advs_id = advsVideo.getAdvs_id();
+            if (0 != advs_id && advs_id == ad.getAdvs_id()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 获取视频在List是否存在并且是本地的
+     * @param ad 视频
+     * @param adVideoList 列表
+     * @return 存在并本地返回本地地址，非本地（正常没有这种情况）或不存在或数据错误返回null
+     */
+    public static String checkIfVideoIsLocal(Advs_Video ad, List<Advs_Video> adVideoList) {
+        for (int i = 0; i < adVideoList.size(); i++) {
+            Advs_Video advsVideo = adVideoList.get(i);
+            if (null == advsVideo || null == ad) {
+                Log.d(TAG, "checkIfVideoIsLocal: 数据为空");
+                return null;
+            }
+            int advs_id = advsVideo.getAdvs_id();
+            if (0 != advs_id && advs_id == ad.getAdvs_id()) {
+                if (advsVideo.isLocal()) {
+                    String localPath = advsVideo.getAdvs_video_localtion_path();
+                    return TextUtils.isEmpty(localPath) ? null : localPath;
+                } else {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 }

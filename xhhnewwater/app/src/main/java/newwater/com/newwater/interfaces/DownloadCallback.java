@@ -4,7 +4,7 @@ public interface DownloadCallback {
 
     void onProgress(int progress);
 
-    void onCompleted();
+    void onComplete(String localPath);
 
     void onError(String msg);
 }

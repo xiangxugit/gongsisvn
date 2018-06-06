@@ -8,7 +8,6 @@ import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
 public interface ApiService {
-    public static final String BASE_URL = "http://mirror.aarnet.edu.au/pub/TED-talks/";
     @Streaming
     @GET
     Observable<ResponseBody> executeDownload(@Header("Range") String range, @Url() String url);

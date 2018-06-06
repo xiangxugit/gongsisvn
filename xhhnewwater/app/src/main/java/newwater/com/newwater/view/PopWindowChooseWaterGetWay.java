@@ -1,7 +1,9 @@
 package newwater.com.newwater.view;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,9 @@ import android.widget.Toast;
 
 import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.R;
+import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.utils.BaseSharedPreferences;
+import newwater.com.newwater.utils.Create2QR2;
 
 /**
  * 自定义的PopupWindow
@@ -55,7 +60,11 @@ public class PopWindowChooseWaterGetWay extends PopupWindow {
 
         getwater = (TextView) contentView.findViewById(R.id.getwater);
 
-
+        //生成二维码
+        String scodestring  = BaseSharedPreferences.getString(context, Constant.SCODEKEY);
+        Log.e("scodestring","scodestring"+scodestring);
+        Bitmap qrcodebitmap = Create2QR2.createBitmap(scodestring);
+        qrcode.setImageBitmap(qrcodebitmap);
     }
 
     // 显示PopupWindow，有两种方法：showAsDropDown、showAtLocation

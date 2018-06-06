@@ -114,4 +114,9 @@ public class TestJSON {
 //        String  devicestring = com.alibaba.fastjson.JSONObject.
         return "";
     }
+
+
+    public  static String getDeviceid(){
+        return "1234587";
+    }
 }

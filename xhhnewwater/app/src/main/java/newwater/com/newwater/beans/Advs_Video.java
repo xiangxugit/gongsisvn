@@ -35,7 +35,7 @@ public class Advs_Video {
     /*下载路径 -----------------------------*/
     @Column(name = "advs_video_download_path")
     private String advs_video_download_path;
-    /*本地路径 -----------------------------*/
+    /*本地路径 -------~~~~~~~~~~~-------*/
     @Column(name = "advs_video_localtion_path")
     private String advs_video_localtion_path;
     /*视频时长 -----------------------------*/
@@ -65,9 +65,8 @@ public class Advs_Video {
     /*广告状态  0-未审核;1-已审核未上架;2-已审核已上架；3-已审核已下架*/
     @Column(name = "advs_status")
     private int advs_status;
-    /**
-     * 是否已下载到本地
-     */
+    /*是否已下载到本地 --------~~~~~~~~~~~~------*/
+    @Column(name = "is_local")
     private boolean isLocal;
 
     public int getAdvs_id() {
