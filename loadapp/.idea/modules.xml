@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://F:\ing\xinhonghai\gongsisvn\loadapp\app\app.iml" filepath="F:\ing\xinhonghai\gongsisvn\loadapp\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/loadapp.iml" filepath="$PROJECT_DIR$/loadapp.iml" />
+      <module fileurl="file://F:\ing\xinhonghai\gongsisvn\loadapp\loadapp.iml" filepath="F:\ing\xinhonghai\gongsisvn\loadapp\loadapp.iml" />
     </modules>
   </component>
 </project>

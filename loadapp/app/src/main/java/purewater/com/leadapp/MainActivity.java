@@ -326,11 +326,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void install(final String filePath) {
         new Thread() {
             public void run() {
-                if (ApkUtils.install(filePath, getApplicationContext())) {
-                    apkToast("安裝成功");
-                } else {
-                    apkToast("安裝失败");
-                }
+
+                ApkUtils.install(filePath, getApplicationContext());
+//                if (ApkUtils.install(filePath, getApplicationContext())) {
+//                    apkToast("安裝成功");
+//                } else {
+//                    apkToast("安裝失败");
+//                }
             }
         }.start();
     }
