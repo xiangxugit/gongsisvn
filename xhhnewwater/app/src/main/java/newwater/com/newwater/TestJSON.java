@@ -117,6 +117,14 @@ public class TestJSON {
 
 
     public  static String getDeviceid(){
-        return "1234587";
+        return "1";
+    }
+
+    public static String getUserid(){
+        return "1";
+    }
+
+    public static String getSaletYpe(){
+        return "1";
     }
 }

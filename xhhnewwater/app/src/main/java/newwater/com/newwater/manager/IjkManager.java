@@ -20,14 +20,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import newwater.com.newwater.R;
 import newwater.com.newwater.view.media.AndroidMediaController;
 import newwater.com.newwater.view.media.IRenderView;
 import newwater.com.newwater.view.media.IjkVideoView;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-import tv.danmaku.ijk.media.player.pragma.DebugLog;
 
+/**
+ * 备注：各种what数值见 IMediaPlayer
+ */
 public class IjkManager {
 
     private static final String TAG = "IjkManager";
@@ -131,7 +132,7 @@ public class IjkManager {
         this.defaultRetryTime = defaultRetryTime;
     }
 
-    public IjkManager(final Activity activity, Context context) {
+    public IjkManager(final Activity activity, int resId) {
         try {
             // 初始化播放器
             IjkMediaPlayer.loadLibrariesOnce(null);
@@ -144,7 +145,7 @@ public class IjkManager {
         screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
 
         // 初始化ijkVideoView，这里使用的是Demo中提供的AndroidMediaController类控制播放相关操作
-        videoView = (IjkVideoView) activity.findViewById(R.id.ijk_video);
+        videoView = (IjkVideoView) activity.findViewById(resId);
 //        mMediaController = new AndroidMediaController(context, false);
 //        mMediaController.setSupportActionBar(null);
 //        videoView.setMediaController(mMediaController);
@@ -198,7 +199,7 @@ public class IjkManager {
         portrait = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
         if (!playerSupport) {
-            DebugLog.e(TAG, "播放器不支持此设备");
+            Log.e(TAG, "播放器不支持此设备");
         }
     }
 
@@ -209,27 +210,28 @@ public class IjkManager {
     private void statusChange(int newStatus, int what, int extra) {
         status = newStatus;
         if (!isLive && newStatus == STATUS_COMPLETED) {
-            DebugLog.d(TAG, "statusChange STATUS_COMPLETED...");
+            Log.d(TAG, "statusChange STATUS_COMPLETED...");
             if (playerStateListener != null) {
                 playerStateListener.onComplete();
             }
         } else if (newStatus == STATUS_ERROR) {
-            DebugLog.d(TAG, "statusChange STATUS_ERROR...");
+            Log.d(TAG, "statusChange STATUS_ERROR...");
             if (playerStateListener != null) {
                 playerStateListener.onError(what, extra);
             }
         } else if (newStatus == STATUS_LOADING) {
+            Log.d(TAG, "statusChange STATUS_LOADING...");
 //            $.id(R.id.app_video_loading).visible();
             if (playerStateListener != null) {
                 playerStateListener.onLoading();
             }
-            DebugLog.d(TAG, "statusChange STATUS_LOADING...");
         } else if (newStatus == STATUS_PLAYING) {
-            DebugLog.d(TAG, "statusChange STATUS_PLAYING...");
+            Log.d(TAG, "statusChange STATUS_PLAYING...");
             if (playerStateListener != null) {
                 playerStateListener.onPlay();
             }
         } else if (newStatus == STATUS_INFO) {
+            Log.d(TAG, "statusChange STATUS_INFO... ");
             if (playerStateListener != null) {
                 playerStateListener.onInfo(what, extra);
             }
@@ -359,7 +361,7 @@ public class IjkManager {
         if (i == 0) {
             s = "off";
         }
-        DebugLog.d(TAG, "onVolumeSlide:" + s);
+        Log.d(TAG, "onVolumeSlide:" + s);
     }
 
     private void onProgressSlide(float percent) {
@@ -378,7 +380,7 @@ public class IjkManager {
         int showDelta = (int) delta / 1000;
         if (showDelta != 0) {
             String text = showDelta > 0 ? ("+" + showDelta) : "" + showDelta;
-            DebugLog.d(TAG, "onProgressSlide:" + text);
+            Log.d(TAG, "onProgressSlide:" + text);
         }
     }
 
@@ -396,7 +398,7 @@ public class IjkManager {
                 brightness = 0.01f;
             }
         }
-        DebugLog.d(TAG, "brightness:" + brightness + ",percent:" + percent);
+        Log.d(TAG, "brightness:" + brightness + ",percent:" + percent);
         WindowManager.LayoutParams lpa = activity.getWindow().getAttributes();
         lpa.screenBrightness = brightness + percent;
         if (lpa.screenBrightness > 1.0f) {

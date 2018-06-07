@@ -7,10 +7,8 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import newwater.com.newwater.downtemp.HttpProgressOnNextListener;
 import newwater.com.newwater.interfaces.ApiService;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.utils.SPDownloadUtil;
@@ -69,7 +67,7 @@ public class RetrofitHttp {
     public void downloadFile(final long range, final String url,
                              final String fileDir, final String fileName,
                              final DownloadCallback downloadCallback,
-                             HttpProgressOnNextListener listener) {
+                             DownloadSubscriber downloadSubscriber) {
         //断点续传时请求的总长度
         File file = new File(fileDir, fileName);
         String totalLength = "-";
@@ -77,90 +75,76 @@ public class RetrofitHttp {
             totalLength += file.length();
         }
 
-        DownloadSubscriber downloadSubscriber = new DownloadSubscriber(listener);
-
-
         apiService.executeDownload("bytes=" + Long.toString(range) + totalLength, url)
                 .subscribeOn(Schedulers.io())
-//                .subscribe(downloadSubscriber);
-                .subscribe(new Observer<ResponseBody>() {
+                .map(new Function<ResponseBody, Object>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
+                    public Object apply(ResponseBody responseBody) throws Exception {
+                        Log.d(TAG, "apply: -------------");
+                        writeCache(responseBody, range, fileDir, fileName, downloadCallback, url);
+                        return null;
                     }
-
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        RandomAccessFile randomAccessFile = null;
-                        InputStream inputStream = null;
-                        long total = range;
-                        long responseLength = 0;
-                        try {
-                            byte[] buf = new byte[2048];
-                            int len = 0;
-                            responseLength = responseBody.contentLength();
-                            inputStream = responseBody.byteStream();
-                            String filePath = fileDir;
-                            File file = new File(filePath, fileName);
-                            File dir = new File(filePath);
-                            if (!dir.exists()) {
-                                dir.mkdirs();
-                            }
-                            randomAccessFile = new RandomAccessFile(file, "rwd");
-                            if (range == 0) {
-                                randomAccessFile.setLength(responseLength);
-                            }
-                            randomAccessFile.seek(range);
-
-                            int progress = 0;
-                            int lastProgress = 0;
-
-                            while ((len = inputStream.read(buf)) != -1) {
-                                randomAccessFile.write(buf, 0, len);
-                                total += len;
-                                lastProgress = progress;
-                                progress = (int) (total * 100 / randomAccessFile.length());
-                                if (progress > 0 && progress != lastProgress) {
-                                    downloadCallback.onProgress(progress);
-                                }
-                            }
-                            downloadCallback.onComplete(fileDir + fileName);
-                        } catch (Exception e) {
-                            Log.d(TAG, e.getMessage());
-                            downloadCallback.onError(e.getMessage());
-                            e.printStackTrace();
-                        } finally {
-                            try {
-                                SPDownloadUtil.getInstance().save(url, total);
-                                if (randomAccessFile != null) {
-                                    randomAccessFile.close();
-                                }
-
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        downloadCallback.onError(e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-
-                });
+                })
+                .subscribe(downloadSubscriber);
     }
 
+    private void writeCache(ResponseBody responseBody, long range, String fileDir, String fileName, DownloadCallback downloadCallback, String url) {
+        Log.d(TAG, "writeCache: range = " + range + ", filePath = " + fileDir + fileName + ", url = "+ url);
+        RandomAccessFile randomAccessFile = null;
+        InputStream inputStream = null;
+        long total = range;
+        long responseLength = 0;
+        try {
+            byte[] buf = new byte[2048];
+            int len = 0;
+            responseLength = responseBody.contentLength();
+            inputStream = responseBody.byteStream();
+            String filePath = fileDir;
+            File file = new File(filePath, fileName);
+            File dir = new File(filePath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            randomAccessFile = new RandomAccessFile(file, "rwd");
+            if (range == 0) {
+                randomAccessFile.setLength(responseLength);
+            }
+            randomAccessFile.seek(range);
 
+            int progress = 0;
+            int lastProgress = 0;
 
+            while ((len = inputStream.read(buf)) != -1) {
+                randomAccessFile.write(buf, 0, len);
+                total += len;
+                lastProgress = progress;
+                progress = (int) (total * 100 / randomAccessFile.length());
+                if (progress > 0 && progress != lastProgress) {
+                    downloadCallback.onProgress(progress);
+                }
+            }
+            downloadCallback.onComplete(fileDir + fileName);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            downloadCallback.onError(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                SPDownloadUtil.getInstance().save(url, total);
+                if (randomAccessFile != null) {
+                    randomAccessFile.close();
+                }
+
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 
 
 }

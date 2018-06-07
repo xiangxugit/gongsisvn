@@ -46,11 +46,11 @@ import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.DataBaseUtils.XutilsInit;
 import newwater.com.newwater.beans.Advs_Video;
 import newwater.com.newwater.beans.DeviceEntity;
+import newwater.com.newwater.beans.DispenserCache;
 import newwater.com.newwater.broadcast.ConnectionChangeReceiver;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
-import newwater.com.newwater.downtemp.DownloadInfo;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.manager.DownloadManager;
 import newwater.com.newwater.manager.IjkManager;
@@ -59,6 +59,7 @@ import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
 import newwater.com.newwater.utils.TimeUtils;
 import newwater.com.newwater.utils.VideoUtils;
+import newwater.com.newwater.view.PopWindow;
 import newwater.com.newwater.view.PopWindowChooseWaterGetWay;
 import newwater.com.newwater.view.Pop_WantWater;
 
@@ -156,20 +157,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Advs_Video> allVideoList; //（同步后应该与push列表一致）
     /*当前要播放的闲时视频列表*/
     private List<Advs_Video> curAdVideoList;
-    /*已下载的免费喝水视频列表*/
-    private List<Advs_Video> freeAdVideoList;
+//    /*已下载的免费喝水视频列表*/
+//    private List<Advs_Video> freeAdVideoList;  // (此列表一旦有变动需要设置DispenserCache里的对应列表！)
     /*当前播放的视频在initAdVideoList中的index*/
     private int initAdIndex;
     /*当前播放的视频在curAdVideoList中的index*/
     private int curAdIndex;
-    /*当前播放的视频在freeAdVideoList中的index*/
-    private int freeAdIndex;
+//    /*当前播放的视频在freeAdVideoList中的index*/
+//    private int freeAdIndex;  // (此变量一旦有变动需要设置DispenserCache里的对应变量！)
     /*当前下载的视频在pushAdVideoList中的index*/
     private int pushAdIndex;
     /*是否正在播放视频*/
     private boolean isPlaying;
     /*是否正在下载*/
     private boolean isDownloading;
+    /*当前播放的是初始视频*/
+    private boolean isPlayInitVideo;
+    /*正处于推送收到后的等待时间*/
+    private boolean isWaitPush;
     /*当前时段的是否全部下载完毕*/
     private boolean hasDownCur;
     /*正在播放的闲时视频的id*/
@@ -178,10 +183,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String curDownAdId;
     /*当前时间*/
     private String curTime;
-    /*当前播放的是初始视频*/
-    private boolean isPlayInitVideo;
-    /*正处于推送收到后的等待时间*/
-    private boolean isWaitPush;
 
     // 权限集合
     List<String> permissionList = new ArrayList<>();
@@ -193,6 +194,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initPer();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (null != playerManager) {
+            playerManager.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (null != playerManager) {
+            playerManager.pause();
+        }
+        super.onPause();
     }
 
     /**
@@ -212,10 +229,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] permissions = permissionList.toArray(new String[permissionList.size()]);//将List转为数组
             ActivityCompat.requestPermissions(MainActivity.this, permissions, i);
         }
-//        initData();
+        initData();
         initView();
-//        initVideo();
-//        getDevice_Monitor_Config();
+        initVideo();
+        getDevice_Monitor_Config();
 
         // 开启logcat输出，方便debug，发布时请关闭
         // XGPushConfig.enableDebug(this, true);
@@ -251,14 +268,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initAdVideoList = new ArrayList<>();
         pushAdVideoList = new ArrayList<>();
         allVideoList = new ArrayList<>();
-        freeAdVideoList = new ArrayList<>();
+        DispenserCache.freeAdVideoList = new ArrayList<>();
         curAdVideoList = new ArrayList<>();
+//        DispenserCache.setFreeAdVideoList(new ArrayList<Advs_Video>());
         // 从数据库中取出数据填充列表
         try {
             List<Advs_Video> allAds = dbManager.findAll(Advs_Video.class);
-            for (Advs_Video ad : allAds) {
-                if (null == ad) continue;
-                dividerAds(allAds);
+            if (null != allAds && 0 != allAds.size()) {
+                for (Advs_Video ad : allAds) {
+                    if (null == ad) continue;
+                    dividerAds(allAds);
+                }
             }
         } catch (DbException e) {
             e.printStackTrace();
@@ -307,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initVideo() {
         // 初始化播放器
-        playerManager = new IjkManager(this, this);
+        playerManager = new IjkManager(this, R.id.idle_ad_video);
         playerManager.setFullScreenOnly(true);
         playerManager.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
         playerManager.playInFullScreen(true);
@@ -400,16 +420,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 播放初始视频
      */
     private void playInitVideo() {
+        if (null == initAdVideoList || 0 == initAdVideoList.size()) return;
         isPlayInitVideo = true;
         Advs_Video ad = initAdVideoList.get(initAdIndex % initAdVideoList.size());
         String proxyUrl = proxy.getProxyUrl(ad.getAdvs_video_localtion_path());
         playerManager.play(proxyUrl);
+
     }
 
     /**
      * 播放curDownAdVideoList中的视频
      */
     private void playVideo() {
+        if (null == curAdVideoList || 0 == curAdVideoList.size()) return;
         Advs_Video ad = curAdVideoList.get(curAdIndex % curAdVideoList.size());
         if (!TimeUtils.isCurrentDateTimeInPlan(
                 ad.getAdvs_play_begin_date(), ad.getAdvs_play_end_date(),
@@ -421,6 +444,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             } else {
                 playVideo();
+                return;
             }
         }
         isPlayInitVideo = false;
@@ -552,21 +576,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 同步数据到各个list
         curAdIndex = 0;
         allVideoList.clear();
-        freeAdVideoList.clear();
+        DispenserCache.freeAdVideoList.clear();
+//        DispenserCache.setFreeAdVideoList(new ArrayList<Advs_Video>());
         dividerAds(pushAdVideoList);
     }
 
     private void dividerAds(List<Advs_Video> adVideoList) {
+        if (null == adVideoList || 0 ==adVideoList.size());
         for (Advs_Video ad : adVideoList) {
             switch (ad.getAdvs_type()) {
                 case 0:
                     allVideoList.add(ad);
                     break;
                 case 1:
-                    freeAdVideoList.add(ad);
+                    DispenserCache.freeAdVideoList.add(ad);
                     break;
             }
         }
+//        DispenserCache.setFreeAdVideoList(freeAdVideoList);
     }
 
     /**
@@ -837,6 +864,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showToast(String string) {
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
+    }
+
+    private static long lastClickTime;
+
+    /**
+     * 是否是快速点击（是则return，防止快速连续点击）
+     * @return
+     */
+    public static boolean isFastClick() {
+        boolean flag = true;
+        long currentClickTime = System.currentTimeMillis();
+        if ((currentClickTime - lastClickTime) >= Constant.FAST_CLICK_DELAY_TIME) {
+            flag = false;
+        }
+        lastClickTime = currentClickTime;
+        return flag;
     }
 
     /**

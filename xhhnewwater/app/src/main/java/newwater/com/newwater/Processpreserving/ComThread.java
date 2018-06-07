@@ -10,6 +10,9 @@ import android.serialport.DevUtil;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+
+import org.json.JSONObject;
 import org.xutils.ex.DbException;
 
 import java.io.IOException;
@@ -25,6 +28,7 @@ import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
+import newwater.com.newwater.utils.TimeUtils;
 import okhttp3.Request;
 
 /**
@@ -41,6 +45,7 @@ public   class ComThread extends Thread {
     private boolean active = true;//轮询标志
     public Context context;
     public Handler myhandler;
+    public boolean updateflag = false;
     public boolean getActive() {
         return active;
     }
@@ -127,100 +132,178 @@ public   class ComThread extends Thread {
 
         String deviceNoticeUrl = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
         String postdata = "";
+        sysDeviceNoticeAO.setDeviceId(Integer.parseInt(TestJSON.getDeviceid()));
         if(DevUtil.ERR_TIMEOUT==1){
-            sysDeviceNoticeAO.setDeviceId(Integer.parseInt(TestJSON.getDeviceid()));
+            sysDeviceNoticeAO.setDeviceNoticeType(1);
+            updateflag = true;
+        }
+        //滤芯过了
+        boolean filterflag = filterOver();
+        if(false == filterflag){
+            sysDeviceNoticeAO.setDeviceNoticeType(2);
+            updateflag = true;
+        }
+        //滤芯是否用完
+        boolean filterend = filterend();
+        if(false == filterend){
+            sysDeviceNoticeAO.setDeviceNoticeType(3);
+            updateflag = true;
+
+        }
+        //水质是否异常
+         if(Constant.TDSERROR>devUtil.get_run_oTDS_value()){
+            sysDeviceNoticeAO.setDeviceNoticeType(4);
+             updateflag = true;
+
+         }
+         //纸杯不足
+        if(devUtil.get_run_bCup_value()==2){
+             sysDeviceNoticeAO.setDeviceNoticeType(5);
+            updateflag = true;
+
+        }
+        //耗水量异常
+        //漏电
+        if(devUtil.get_run_bLeak_value()==02){
+            sysDeviceNoticeAO.setDeviceNoticeType(9);
+            updateflag = true;
+
         }
 
-        devUtil.get_run_normalWaterSW_value();
+         //原水缺水
+        if(devUtil.get_run_bLeak_value()==02){
+            sysDeviceNoticeAO.setDeviceNoticeType(10);
+            updateflag = true;
 
+        }
 
-        OkHttpUtils.postAsyn(deviceNoticeUrl, new OkHttpUtils.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
-            }
+        //警告的类型
+        sysDeviceNoticeAO.setDeviceNoticeLeve(0);
 
-            @Override
-            public void onResponse(String response) {Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
-            }
-        },postdata);
-       //更新操作
-//        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
-//
-//        try {
-//            List warningdata = sys_device_monitor_config_dbOperate.find();
-//            Sys_Device_Monitor_Config monitor = (Sys_Device_Monitor_Config)warningdata.get(0);
-//
-//            //活性炭用量
-//            if(monitor.getMot_cfg_grain_carbon_flow()-Integer.parseInt(data[17][1])< Constant.MOT_CFG_GRAIN_CARBON_FLOW){
-//                monitor.setMot_cfg_grain_carbon_flow(monitor.getMot_cfg_grain_carbon_flow()-Integer.parseInt(data[17][1]));
-//                sys_device_monitor_config_dbOperate.update(monitor);
-//                //TODO 准备上传
-//            }
-//
-//            if(monitor.getMot_cfg_pose_carbon_flow()-Integer.parseInt(data[17][1])<Constant.MOT_CFG_POSE_CARBON_FLOW){
-//                monitor.setMot_cfg_pose_carbon_flow(monitor.getMot_cfg_pose_carbon_flow()-Integer.parseInt(data[17][1]));
-//                sys_device_monitor_config_dbOperate.update(monitor);
-//                //TODO 准备上传
-//            }
-//
-//            if(monitor.getMot_cfg_press_carbon_flow()-Integer.parseInt(data[17][1])<Constant.MOT_CFG_PRESS_CARBON_FLOW){
-//                monitor.setMot_cfg_press_carbon_flow(monitor.getMot_cfg_press_carbon_flow()-Integer.parseInt(data[17][1]));
-//                sys_device_monitor_config_dbOperate.update(monitor);
-//                //TODO 准备上传
-//            }
-//
-//            if(monitor.getMot_cfg_pp_flow()-Integer.parseInt(data[17][1])<Constant.MOT_CFG_PP_FLOW){
-//                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_pp_flow()-Integer.parseInt(data[17][1]));
-//                sys_device_monitor_config_dbOperate.update(monitor);
-//                //TODO 准备上传
-//            }
-//
-//
-//            if(monitor.getMot_cfg_ro_flow()-Integer.parseInt(data[17][1])<Constant.MOT_CFG_RO_FLOW){
-//                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_ro_flow()-Integer.parseInt(data[17][1]));
-//                sys_device_monitor_config_dbOperate.update(monitor);
-//                //TODO 准备上传
-//            }
-//
-//
-//            if(Integer.parseInt(data[17][1])>Constant.MOT_CFG_MAX_FLOW){
-//                //TODO 隐藏界面的操作
-//            }
+        sysDeviceNoticeAO.setDeviceNoticeSubject("");
+        sysDeviceNoticeAO.setDeviceNoticeContent("");
 
-//          user.setDevice_id();
+        String warningtime = TimeUtils.getCurrentTime();
+        sysDeviceNoticeAO.setDeviceNoticeTime(warningtime);
+        postdata = JSON.toJSONString(sysDeviceNoticeAO,true);
+        updateflag = true;
+        if(updateflag == true){
+            OkHttpUtils.postAsyn(deviceNoticeUrl, new OkHttpUtils.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
+                }
 
-            //        isNetworkConnected
+                @Override
+                public void onResponse(String response) {Toast.makeText(context,"成功",Toast.LENGTH_SHORT).show();
+                }
+            },postdata);
+        }else{
+            Log.e("不需要上传","不需要上传");
+        }
 
-//        mot_cfg_ network_time  检测网络状态，如果断网了，就存储
-//                //如果断网轮询的断线重连 mot_cfg_ network_times次
-//
-//
-//        mot_cfg_ pp_time 获取pp棉使用时间
-//
-//        mot_cfg_ pp_flow 获取pp棉制水总流量
-//        mot_cfg_ pp_change_time 获取pp棉更换时间
-//
-//                活性炭的操作
-//
-//                压缩活性炭操作
-//
-//                        后置活性炭的操作
-//
-//
-//        RO反渗透的操作
-//
-//
-//        监控数据上报时间间隔（单位分钟）(激活时间开始)
-//
-//                备单次最大出水量（单位ml)
-
-//
-//            Log.e("waringdata",warningdata.toString());
-//        } catch (DbException e) {
-//            e.printStackTrace();
-//        }
 
 
     }
+
+    public boolean filterOver() {
+        Boolean filterOverflag = true;
+        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
+        String[][] data=devUtil.toArray();
+        try {
+            List warningdata = sys_device_monitor_config_dbOperate.find();
+            Sys_Device_Monitor_Config monitor = (Sys_Device_Monitor_Config) warningdata.get(0);
+            if (monitor.getMot_cfg_grain_carbon_flow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_GRAIN_CARBON_FLOW) {
+                monitor.setMot_cfg_grain_carbon_flow(monitor.getMot_cfg_grain_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_pose_carbon_flow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_POSE_CARBON_FLOW) {
+                monitor.setMot_cfg_pose_carbon_flow(monitor.getMot_cfg_pose_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_press_carbon_flow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_PRESS_CARBON_FLOW) {
+                monitor.setMot_cfg_press_carbon_flow(monitor.getMot_cfg_press_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_pp_flow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_PP_FLOW) {
+                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_pp_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+
+            if (monitor.getMot_cfg_ro_flow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
+                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_ro_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return  filterOverflag;
+    }
+
+
+    //滤芯是否用完
+
+
+    public boolean filterend() {
+        Boolean filterOverflag = true;
+        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
+        String[][] data=devUtil.toArray();
+        try {
+            List warningdata = sys_device_monitor_config_dbOperate.find();
+            Sys_Device_Monitor_Config monitor = (Sys_Device_Monitor_Config) warningdata.get(0);
+            if (monitor.getMot_cfg_grain_carbon_flow() - Integer.parseInt(data[17][1]) <= 0) {
+                monitor.setMot_cfg_grain_carbon_flow(monitor.getMot_cfg_grain_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_pose_carbon_flow() - Integer.parseInt(data[17][1]) <= 0) {
+                monitor.setMot_cfg_pose_carbon_flow(monitor.getMot_cfg_pose_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_press_carbon_flow() - Integer.parseInt(data[17][1]) <= 0) {
+                monitor.setMot_cfg_press_carbon_flow(monitor.getMot_cfg_press_carbon_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+            if (monitor.getMot_cfg_pp_flow() - Integer.parseInt(data[17][1]) <= 0) {
+                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_pp_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+
+
+            if (monitor.getMot_cfg_ro_flow() - Integer.parseInt(data[17][1]) <= 0) {
+                monitor.setMot_cfg_pp_flow(monitor.getMot_cfg_ro_flow() - Integer.parseInt(data[17][1]));
+                sys_device_monitor_config_dbOperate.update(monitor);
+                //TODO 准备上传
+                filterOverflag = false;
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return  filterOverflag;
+    }
+
 }

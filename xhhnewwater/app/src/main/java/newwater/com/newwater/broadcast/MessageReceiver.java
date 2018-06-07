@@ -32,6 +32,7 @@ public class MessageReceiver extends XGPushBaseReceiver {
         if (context == null || notifiShowedRlt == null) {
             return;
         }
+
 //        XGNotification notific = new XGNotification();
 //        notific.setMsg_id(notifiShowedRlt.getMsgId());
 //        notific.setTitle(notifiShowedRlt.getTitle());

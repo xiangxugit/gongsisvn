@@ -9,7 +9,7 @@ import org.xutils.db.annotation.Table;
 @Table(name = "Advs_Video")
 public class Advs_Video {
     /*广告id -----------------------------*/
-    @Column(name = "advs_id", isId = true, autoGen = true)
+    @Column(name = "advs_id", isId = true, autoGen = false)
     private int advs_id;
     /*添加者id*/
     @Column(name = "creat_admin_user_id")

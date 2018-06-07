@@ -1,0 +1,17 @@
+package newwater.com.newwater;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class FreeAdActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_free_ad);
+    }
+}

@@ -30,7 +30,7 @@
         android:layout_height="50dp"
         android:gravity="center"
         android:text="@string/accoutnomoney"
-        android:textColor="@color/red"
+        android:textColor="@color/bloodred"
         android:layout_toRightOf="@+id/middleico"
         />
 
@@ -41,7 +41,7 @@
         android:layout_height="50dp"
         android:gravity="center"
         android:text="@string/tobuy"
-        android:textColor="@color/red"
+        android:textColor="@color/bloodred"
         android:layout_toRightOf="@+id/middleico"
         android:layout_below="@+id/accountnomoney"
         />

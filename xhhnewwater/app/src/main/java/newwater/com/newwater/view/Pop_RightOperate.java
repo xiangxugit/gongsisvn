@@ -19,6 +19,9 @@ import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.Processpreserving.ComThread;
 import newwater.com.newwater.Processpreserving.DaemonService;
 import newwater.com.newwater.R;
+import newwater.com.newwater.TestJSON;
+import newwater.com.newwater.beans.WaterSaleRecordAO;
+import newwater.com.newwater.beans.Water_Sale_Record;
 
 import static newwater.com.newwater.Processpreserving.DaemonService.comThread;
 
@@ -36,6 +39,13 @@ public class Pop_RightOperate extends PopupWindow {
     private boolean chushuiflag = false;
     private boolean getCupfalg = false;
     private ComThread comThread;
+
+    private WaterSaleRecordAO waterSaleRecordAO;
+    private int waterRecordType = 1;//售水模式
+    private int waterRecordIsCup = 0;//是否有纸杯
+    private int waterFlow = 0;//售水量
+    private int waterRecordCupNum = 0;//纸杯数量
+
     public Pop_RightOperate(final Activity context) {
         // 通过layout的id找到布局View
         this.context = context;
@@ -119,6 +129,21 @@ public class Pop_RightOperate extends PopupWindow {
             if(null==devUtil){
                 devUtil = new DevUtil(null);
             }
+            if(null==waterSaleRecordAO){
+                waterSaleRecordAO = new WaterSaleRecordAO();
+            }
+            waterSaleRecordAO.setUserId(Integer.parseInt(TestJSON.getUserid()));
+            waterSaleRecordAO.setDeviceId(Integer.parseInt(TestJSON.getDeviceid()));
+            //支付模式饮水
+            if(Integer.parseInt(TestJSON.getSaletYpe())==1){
+
+            }
+            waterSaleRecordAO.setProductChargMode(Integer.parseInt(TestJSON.getSaletYpe()));
+
+
+
+
+
 
             switch (v.getId()) {
                 case R.id.hotwater:
@@ -126,6 +151,8 @@ public class Pop_RightOperate extends PopupWindow {
                         Toast.makeText(context,"停止取水",Toast.LENGTH_SHORT).show();
                         hotwater.setText("热水");
                         hotwater.setBackgroundResource(R.drawable.hotwater);
+
+                        waterRecordType = 1;
                     }
                     else{
                         chushuiflag = false;
@@ -142,7 +169,7 @@ public class Pop_RightOperate extends PopupWindow {
 
                     break;
                 case R.id.warmwater://出温水
-
+                    waterRecordType = 2;
                     if(null==comThread){
                         Toast.makeText(context,"通讯未启动",Toast.LENGTH_SHORT).show();
                     }else{
@@ -195,6 +222,7 @@ public class Pop_RightOperate extends PopupWindow {
 
                     //调用冷水
                 case R.id.coolwater:
+                    waterRecordType = 3;
                     if(null==comThread){
                         Toast.makeText(context,"通讯未启动",Toast.LENGTH_SHORT).show();
                     }else{

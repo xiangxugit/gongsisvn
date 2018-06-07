@@ -20,7 +20,7 @@
             android:background="@drawable/hotwater"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@color/red"
+            android:textColor="@color/bloodred"
             android:text="热水"
             android:textSize="0sp"
             />

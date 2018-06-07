@@ -45,7 +45,7 @@ public class SysDeviceNoticeAO implements Serializable {
 	/**
 	 * 预警产生时间
 	 */
-	private Date deviceNoticeTime ;
+	private String deviceNoticeTime ;
 	/*private java.util.Date deviceNoticeTime;*/
 
 	/** 后台用户ID */
@@ -109,11 +109,11 @@ public class SysDeviceNoticeAO implements Serializable {
 		this.deviceNoticeContent = deviceNoticeContent;
 	}
 
-	public Date getDeviceNoticeTime() {
+	public String getDeviceNoticeTime() {
 		return deviceNoticeTime;
 	}
 
-	public void setDeviceNoticeTime(Date deviceNoticeTime) {
+	public void setDeviceNoticeTime(String deviceNoticeTime) {
 		this.deviceNoticeTime = deviceNoticeTime;
 	}
 

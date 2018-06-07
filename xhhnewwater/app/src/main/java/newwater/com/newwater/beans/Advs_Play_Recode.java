@@ -8,20 +8,38 @@ import org.xutils.db.annotation.Table;
  */
 @Table(name = "Advs_Play_Recode")
 public class Advs_Play_Recode {
-     @Column(name = "advs_id", isId = true, autoGen = true)
-     private int  advs_id;
-     @Column(name = "device_id")
-     private int  device_id;
-     @Column(name = "advs_play_time")
-     private int advs_play_time;
-     @Column(name = "advs_play_length_of_time")
-     private int advs_play_length_of_time;
-     @Column(name = "advs_play_device_charg_mode")
-     private int advs_play_device_charg_mode;
-     @Column(name = "advs_play_device_industry")
-     private int advs_play_device_industry;
-     @Column(name = "advs_play_scene")
-     private int advs_play_scene;
+    /*记录ID*/
+    @Column(name = "record_id", isId = true, autoGen = true)
+    private int record_id;
+    /*广告ID*/
+    @Column(name = "advs_id")
+    private int advs_id;
+    /*设备ID*/
+    @Column(name = "device_id")
+    private int device_id;
+    /*广告播放时间（datetime）*/
+    @Column(name = "advs_play_time")
+    private int advs_play_time;
+    /*广告时长*/
+    @Column(name = "advs_play_length_of_time")
+    private int advs_play_length_of_time;
+    /*广告收费模式*/
+    @Column(name = "advs_play_device_charg_mode")
+    private int advs_play_device_charg_mode;
+    /*广告播放行业*/
+    @Column(name = "advs_play_device_industry")
+    private int advs_play_device_industry;
+    /*广告播放场景*/
+    @Column(name = "advs_play_scene")
+    private int advs_play_scene;
+
+    public int getRecord_id() {
+        return record_id;
+    }
+
+    public void setRecord_id(int record_id) {
+        this.record_id = record_id;
+    }
 
     public int getAdvs_id() {
         return advs_id;
@@ -81,12 +99,15 @@ public class Advs_Play_Recode {
 
     @Override
     public String toString() {
-        return "Advs_Play_Recode [advs_id=" + advs_id + ", device_id=" + device_id + ", advs_play_time=" + advs_play_time + ", advs_play_length_of_time=" + advs_play_length_of_time +
-
-                ",advs_play_device_charg_mode="+advs_play_device_charg_mode+
-                ",advs_play_device_industry="+advs_play_device_industry+
-                ",advs_play_scene="+advs_play_scene+"]";
+        return "Advs_Play_Recode{" +
+                "record_id=" + record_id +
+                ", advs_id=" + advs_id +
+                ", device_id=" + device_id +
+                ", advs_play_time=" + advs_play_time +
+                ", advs_play_length_of_time=" + advs_play_length_of_time +
+                ", advs_play_device_charg_mode=" + advs_play_device_charg_mode +
+                ", advs_play_device_industry=" + advs_play_device_industry +
+                ", advs_play_scene=" + advs_play_scene +
+                '}';
     }
-
-
 }

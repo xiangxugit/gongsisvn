@@ -2,8 +2,6 @@ package purewater.com.leadapp.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import android.content.Context;
@@ -25,10 +23,9 @@ public class ApkUtils {
             return false;
 
         // 先判断手机是否有root权限
-        if (hasRootPerssion()) {
+        if (!hasRootPerssion()) {
             // 有root权限，利用静默安装实现
-             test(apkPath);
-            return true;
+            return clientInstall(apkPath);
         } else {
             // 没有root权限，利用意图进行安装
             Intent intent = new Intent();
@@ -106,59 +103,6 @@ public class ApkUtils {
         return false;
     }
 
-
-
-
-    private static void test(String path) {
-        Process process = null;
-        OutputStream out = null;
-        InputStream in = null;
-        String currenttempfilepath = "/sdcard/qq.apk";
-            // 请求root
-            try {
-                process = Runtime.getRuntime().exec("su");
-                out = process.getOutputStream();
-                out.write(("pm install -r " + currenttempfilepath + "\n").getBytes());
-                in = process.getInputStream();
-                int len = 0;
-                byte[] bs = new byte[256];
-                while (-1 != (len = in.read(bs))) {
-                    String state = new String(bs, 0, len);
-                    if (state.equals("success\n")) {
-                        //安装成功后的操作
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // 调用安装
-
-
-        catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-                if (out != null) {
-                    try {
-                        out.flush();
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-
-                    }
-
-
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                }
-            }}
     /**
      * 静默卸载
      */

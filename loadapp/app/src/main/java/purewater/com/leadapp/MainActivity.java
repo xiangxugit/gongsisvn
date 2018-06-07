@@ -41,6 +41,7 @@ import purewater.com.leadapp.utils.ApkUtils;
 import purewater.com.leadapp.utils.BaseSharedPreferences;
 import purewater.com.leadapp.utils.Create2QR2;
 import purewater.com.leadapp.utils.OkHttpUtils;
+import purewater.com.leadapp.utils.PackageUtils;
 import purewater.com.leadapp.utils.RestUtils;
 import purewater.com.leadapp.utils.XCallBack;
 import purewater.com.leadapp.utils.XutilsHttp;
@@ -277,8 +278,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(final File file) {
                 Log.e("tag", "下载成功:" + file);
                 //TODO 安装
-                install(finalFilePath);
+                Log.e("下载成功","成功"+file.getPath().toString());
+                install(file.getPath().toString());
+//                PackageUtils.install(MainActivity.this,file.getPath().toString());
                 showStep("two");
+
 
                 //TODO 获取二维码
                 String url = RestUtils.getUrl(RestUtils.GETSQ);
@@ -326,13 +330,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void install(final String filePath) {
         new Thread() {
             public void run() {
-
-                ApkUtils.install(filePath, getApplicationContext());
-//                if (ApkUtils.install(filePath, getApplicationContext())) {
-//                    apkToast("安裝成功");
-//                } else {
-//                    apkToast("安裝失败");
-//                }
+                if (ApkUtils.install(filePath, getApplicationContext())) {
+                    apkToast("安裝成功");
+                    ApkUtils.startApp("newwater.com.newwater","MainActivity");
+                } else {
+                    apkToast("安裝失败");
+                }
             }
         }.start();
     }
