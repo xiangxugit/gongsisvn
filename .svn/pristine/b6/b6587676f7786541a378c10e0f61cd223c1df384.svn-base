@@ -49,8 +49,6 @@ import java.util.Timer;
 
 import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.DataBaseUtils.XutilsInit;
-import newwater.com.newwater.Processpreserving.ComThread;
-import newwater.com.newwater.Processpreserving.DaemonService;
 import newwater.com.newwater.beans.Advs_Video;
 import newwater.com.newwater.beans.DeviceEntity;
 import newwater.com.newwater.beans.DispenserCache;
@@ -62,7 +60,6 @@ import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.manager.DownloadManager;
 import newwater.com.newwater.manager.IjkManager;
-import newwater.com.newwater.utils.ControllerUtils;
 import newwater.com.newwater.utils.GetDeviceInfo;
 import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
@@ -123,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //付工那边的代码start
     private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
 
-//    private DevUtil devUtil = null;
+    private DevUtil devUtil = null;
 
     public static final String FLAG = "UPDATE";
 
@@ -199,11 +196,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyHandler myHandler;
     private DbManager dbManager;
 
-    private ComThread comThread;//comThread服务是用来获取设备数据
-
-    private DevUtil devUtil;//设备操作的工具类
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -249,8 +241,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getDevice_Monitor_Config();
         registerXinGe();
 
-        initComThread();
-
         // 开启logcat输出，方便debug，发布时请关闭
         // XGPushConfig.enableDebug(this, true);
         // 如果需要知道注册是否成功，请使用registerPush(getApplicationContext(), XGIOperateCallback)带callback版本
@@ -273,17 +263,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //initToken();
     }
 
-    public void initComThread(){
-        if(null == DaemonService.comThread){
-            comThread = new ComThread(MainActivity.this,null);
-        }
-        if(null==devUtil){
-        devUtil = new DevUtil(null);
-        }
-
-
-
-    }
 
     public void registerXinGe(){
         DynamicReceiver myReceiver = new DynamicReceiver();
@@ -320,23 +299,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
             String text = "收到消息:" + xgPushTextMessage.toString();
             Log.e("收到消息", text);
-
-            //TODO 收到推送后的操作  1冲洗 2开盖 3开关机
-            String operateflag = "1";
-            if("1".equals(operateflag)){
-            ControllerUtils.operatedevice(6,false);
-            }
-
-            if("2".equals(operateflag)){
-                ControllerUtils.operatedevice(5,false);
-            }
-
-            if("3".equals(operateflag)){
-                ControllerUtils.operatedevice(2,false);
-            }
-
-
-
         }
 
         @Override

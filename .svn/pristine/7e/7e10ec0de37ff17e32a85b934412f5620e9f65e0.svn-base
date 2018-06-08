@@ -1,10 +1,4 @@
-package newwater.com.newwater.broadcast;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+package purewater.com.leadapp.broadcast;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +11,16 @@ import com.tencent.android.tpush.XGPushRegisterResult;
 import com.tencent.android.tpush.XGPushShowedResult;
 import com.tencent.android.tpush.XGPushTextMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MessageReceiver extends XGPushBaseReceiver {
     public static final String PUSHACTION = "com.tencent.android.tpush.action.PUSH_MESSAGE";//接收消息透传
-    private Intent intent = new Intent("com.qq.xgdemo.activity.UPDATE_LISTVIEW");
+    public static final String FEEACTION = "com.tencent.android.tpush.action.FEEDBACK";//监听注册、反注册、设置/删除标签、通知被点击等处理结果
     public static final String LogTag = "TPushReceiver";
 
     private void show(Context context, String text) {
-//		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
     // 通知展示
@@ -34,20 +31,20 @@ public class MessageReceiver extends XGPushBaseReceiver {
             return;
         }
 
-//        XGNotification notific = new XGNotification();
-//        notific.setMsg_id(notifiShowedRlt.getMsgId());
-//        notific.setTitle(notifiShowedRlt.getTitle());
-//        notific.setContent(notifiShowedRlt.getContent());
-//        // notificationActionType==1为Activity，2为url，3为intent
-//        notific.setNotificationActionType(notifiShowedRlt
-//                .getNotificationActionType());
-//        // Activity,url,intent都可以通过getActivity()获得
-//        notific.setActivity(notifiShowedRlt.getActivity());
-//        notific.setUpdate_time(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//                .format(Calendar.getInstance().getTime()));
-//        NotificationService.getInstance(context).save(notific);
-//        context.sendBroadcast(intent);
-//        show(context, "您有1条新消息, " + "通知被展示 ， " + notifiShowedRlt.toString());
+        /*XGNotification notific = new XGNotification();
+        notific.setMsg_id(notifiShowedRlt.getMsgId());
+        notific.setTitle(notifiShowedRlt.getTitle());
+        notific.setContent(notifiShowedRlt.getContent());
+        // notificationActionType==1为Activity，2为url，3为intent
+        notific.setNotificationActionType(notifiShowedRlt
+                .getNotificationActionType());
+        // Activity,url,intent都可以通过getActivity()获得
+        notific.setActivity(notifiShowedRlt.getActivity());
+        notific.setUpdate_time(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(Calendar.getInstance().getTime()));
+        NotificationService.getInstance(context).save(notific);
+        context.sendBroadcast(intent);
+        show(context, "您有1条新消息, " + "通知被展示 ， " + notifiShowedRlt.toString());*/
     }
 
     @Override
@@ -63,7 +60,6 @@ public class MessageReceiver extends XGPushBaseReceiver {
         }
         Log.d(LogTag, text);
         show(context, text);
-
     }
 
     @Override
@@ -79,7 +75,6 @@ public class MessageReceiver extends XGPushBaseReceiver {
         }
         Log.d(LogTag, text);
         show(context, text);
-
     }
 
     @Override
@@ -95,7 +90,6 @@ public class MessageReceiver extends XGPushBaseReceiver {
         }
         Log.d(LogTag, text);
         show(context, text);
-
     }
 
     // 通知点击回调 actionType=1为该消息被清除，actionType=0为该消息被点击
@@ -157,13 +151,17 @@ public class MessageReceiver extends XGPushBaseReceiver {
         show(context, text);
     }
 
-    // 消息透传
+    /**
+     * 消息透传
+     * @param context
+     * @param message
+     */
     @Override
     public void onTextMessage(Context context, XGPushTextMessage message) {
         // TODO Auto-generated method stub
 
         String text = "收到消息:" + message.toString();
-        Log.e("收到消息",""+text);
+        Log.e("收到消息", "" + text);
         // 获取自定义key-value
         String customContent = message.getCustomContent();
         if (customContent != null && customContent.length() != 0) {
