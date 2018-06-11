@@ -28,16 +28,15 @@ public class UriConstant {
 
     //售水几率
     public final static String WATERSALE = "api/v1/device/sale/water";
+
     // 根目录
-
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
-
     // 视频文件夹
     public static final String VIDEO_DIR = "video/";
-
     // 初始视频路径（不含前面公共部分）
     public static final String INIT_VIDEO_PATH = "";
-
+    // 视频消息推送暂存文件名
+    public static final String VIDEO_PUSH_FILE_NAME = "PushContent.txt";
     // database文件夹
     public static final String DB_DIR = "db/";
 

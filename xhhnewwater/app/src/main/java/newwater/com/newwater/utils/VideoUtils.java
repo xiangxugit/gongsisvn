@@ -11,7 +11,6 @@ import com.alibaba.fastjson.JSONArray;
 
 import org.xutils.common.Callback;
 import org.xutils.common.task.PriorityExecutor;
-import org.xutils.ex.DbException;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
@@ -19,10 +18,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import newwater.com.newwater.DataBaseUtils.XutilsInit;
 import newwater.com.newwater.TestJSON;
 import newwater.com.newwater.beans.Advs_Video;
-import newwater.com.newwater.constants.UriConstant;
 
 /**
  * Created by Administrator on 2018/5/11 0011.
@@ -185,8 +182,8 @@ public class VideoUtils {
                 Log.d(TAG, "getAdIndexFromList: 数据为空");
                 return -100;
             }
-            int advs_id = advsVideo.getAdvs_id();
-            if (0 != advs_id && advs_id == ad.getAdvs_id()) {
+            int advs_id = advsVideo.getAdvsId();
+            if (0 != advs_id && advs_id == ad.getAdvsId()) {
                 return i;
             }
         }
@@ -206,10 +203,10 @@ public class VideoUtils {
                 Log.d(TAG, "checkIfVideoIsLocal: 数据为空");
                 return null;
             }
-            int advs_id = advsVideo.getAdvs_id();
-            if (0 != advs_id && advs_id == ad.getAdvs_id()) {
+            int advs_id = advsVideo.getAdvsId();
+            if (0 != advs_id && advs_id == ad.getAdvsId()) {
                 if (advsVideo.isLocal()) {
-                    String localPath = advsVideo.getAdvs_video_localtion_path();
+                    String localPath = advsVideo.getAdvsVideoLocaltionPath();
                     return TextUtils.isEmpty(localPath) ? null : localPath;
                 } else {
                     return null;

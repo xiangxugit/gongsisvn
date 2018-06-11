@@ -3,6 +3,8 @@ package newwater.com.newwater.beans;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import java.util.Date;
+
 /**
  * Created by Administrator on 2018/5/25 0025.
  */
@@ -19,7 +21,7 @@ public class Advs_Play_Recode {
     private int device_id;
     /*广告播放时间（datetime）*/
     @Column(name = "advs_play_time")
-    private int advs_play_time;
+    private String advs_play_time;
     /*广告时长*/
     @Column(name = "advs_play_length_of_time")
     private int advs_play_length_of_time;
@@ -32,6 +34,25 @@ public class Advs_Play_Recode {
     /*广告播放场景*/
     @Column(name = "advs_play_scene")
     private int advs_play_scene;
+
+    public Advs_Play_Recode() {
+        super();
+    }
+
+    public Advs_Play_Recode(int advs_id, int device_id, String advs_play_time, int advs_play_length_of_time, int advs_play_device_charg_mode, int advs_play_device_industry, int advs_play_scene) {
+        this.advs_id = advs_id;
+        this.device_id = device_id;
+        this.advs_play_time = advs_play_time;
+        this.advs_play_device_charg_mode = advs_play_device_charg_mode;
+        this.advs_play_device_industry = advs_play_device_industry;
+        this.advs_play_scene = advs_play_scene;
+    }
+
+    public Advs_Play_Recode(int advs_id, int device_id, String advs_play_time) {
+        this.advs_id = advs_id;
+        this.device_id = device_id;
+        this.advs_play_time = advs_play_time;
+    }
 
     public int getRecord_id() {
         return record_id;
@@ -57,11 +78,11 @@ public class Advs_Play_Recode {
         this.device_id = device_id;
     }
 
-    public int getAdvs_play_time() {
+    public String getAdvs_play_time() {
         return advs_play_time;
     }
 
-    public void setAdvs_play_time(int advs_play_time) {
+    public void setAdvs_play_time(String advs_play_time) {
         this.advs_play_time = advs_play_time;
     }
 
@@ -104,10 +125,10 @@ public class Advs_Play_Recode {
                 ", advs_id=" + advs_id +
                 ", device_id=" + device_id +
                 ", advs_play_time=" + advs_play_time +
-                ", advs_play_length_of_time=" + advs_play_length_of_time +
-                ", advs_play_device_charg_mode=" + advs_play_device_charg_mode +
-                ", advs_play_device_industry=" + advs_play_device_industry +
-                ", advs_play_scene=" + advs_play_scene +
+//                ", advs_play_length_of_time=" + advs_play_length_of_time +
+//                ", advs_play_device_charg_mode=" + advs_play_device_charg_mode +
+//                ", advs_play_device_industry=" + advs_play_device_industry +
+//                ", advs_play_scene=" + advs_play_scene +
                 '}';
     }
 }

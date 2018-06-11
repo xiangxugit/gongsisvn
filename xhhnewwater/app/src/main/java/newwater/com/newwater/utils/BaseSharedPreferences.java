@@ -42,6 +42,17 @@ import android.content.Context;
         long value = context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).getLong(key, 0);
         return value;
     }
+
+    /**
+     *
+     * @param context
+     * @return 获取int
+     */
+    public static int getInt(Context context, String key)
+    {
+        int value = context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).getInt(key, 0);
+        return value;
+    }
     
 
     /**
@@ -62,6 +73,16 @@ import android.content.Context;
     public static void setLong(Context context, String key, Long keyValue)
     {
         context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).edit().putLong(key, keyValue).commit();
+    }
+
+    /**
+     *
+     * @param context
+     * @return int
+     */
+    public static void setInt(Context context, String key, int keyValue)
+    {
+        context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).edit().putInt(key, keyValue).commit();
     }
     
 
@@ -85,6 +106,16 @@ import android.content.Context;
     {
         context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).edit().remove(key).commit();
     }
+
+    /**
+     *
+     * @param context
+     * @return 删除公共缓存数据
+     */
+    public static void removeInt(Context context, String key)
+    {
+        context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).edit().remove(key).commit();
+    }
     
 
     /**
@@ -103,6 +134,16 @@ import android.content.Context;
      * @return 是否包含私有缓存数据
      */
     public static boolean containLong(Context context, String key)
+    {
+        return context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).contains(key);
+    }
+
+    /**
+     *
+     * @param context
+     * @return 是否包含int缓存数据
+     */
+    public static boolean containInt(Context context, String key)
     {
         return context.getSharedPreferences(COMMON, Context.MODE_PRIVATE).contains(key);
     }

@@ -219,17 +219,6 @@ public class IjkManager {
             if (playerStateListener != null) {
                 playerStateListener.onError(what, extra);
             }
-        } else if (newStatus == STATUS_LOADING) {
-            Log.d(TAG, "statusChange STATUS_LOADING...");
-//            $.id(R.id.app_video_loading).visible();
-            if (playerStateListener != null) {
-                playerStateListener.onLoading();
-            }
-        } else if (newStatus == STATUS_PLAYING) {
-            Log.d(TAG, "statusChange STATUS_PLAYING...");
-            if (playerStateListener != null) {
-                playerStateListener.onPlay();
-            }
         } else if (newStatus == STATUS_INFO) {
             Log.d(TAG, "statusChange STATUS_INFO... ");
             if (playerStateListener != null) {
@@ -726,10 +715,6 @@ public class IjkManager {
         void onComplete();
 
         void onError(int what, int extra);
-
-        void onLoading();
-
-        void onPlay();
 
         void onInfo(int what, int extra);
     }

@@ -9,12 +9,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.danikula.videocache.HttpProxyCacheServer;
+import org.xutils.DbManager;
+import org.xutils.ex.DbException;
 
+import newwater.com.newwater.DataBaseUtils.XutilsInit;
+import newwater.com.newwater.beans.Advs_Play_Recode;
+import newwater.com.newwater.beans.Advs_Video;
 import newwater.com.newwater.beans.DispenserCache;
 import newwater.com.newwater.constants.Constant;
-import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.manager.IjkManager;
+import newwater.com.newwater.utils.TimeUtils;
 import newwater.com.newwater.view.CircleTextProgressbar;
 
 public class FreeAdActivity extends Activity implements IjkManager.PlayerStateListener, CircleTextProgressbar.OnCountdownProgressListener, View.OnClickListener {
@@ -25,7 +29,8 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
     private Button btnQuit;
     private Context mContext;
     private IjkManager playerManager;
-    private HttpProxyCacheServer proxy;
+    private DbManager dbManager;
+    private int deviceId;
     private int playDuration;  // 秒
 
 
@@ -50,13 +55,15 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
 
     private void initData() {
         mContext = FreeAdActivity.this;
-        proxy = App.getProxy(mContext);
+        // TODO: 2018/6/8 0008 deviceId获取
+//        deviceId = ;
+        dbManager = new XutilsInit(FreeAdActivity.this).getDb();
         playDuration = Constant.DEFAULT_FREE_AD_DURATION;
         Intent intent = getIntent();
         if (null != intent) {
             Bundle bundle = intent.getExtras();
-            if (null != bundle && bundle.containsKey(Constant.FREE_AD_DURATION)) {
-                playDuration = bundle.getInt(Constant.FREE_AD_DURATION);
+            if (null != bundle && bundle.containsKey(Constant.KEY_FREE_AD_DURATION)) {
+                playDuration = bundle.getInt(Constant.KEY_FREE_AD_DURATION);
             }
         }
     }
@@ -101,9 +108,8 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
         playerManager.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
         playerManager.playInFullScreen(true);
         playerManager.setOnPlayerStateChangeListener(this);
-//        String proxyUrl = proxy.getProxyUrl(DispenserCache.freeAdVideoList
-//                .get(DispenserCache.freeAdIndex).getAdvs_video_localtion_path());
-        String proxyUrl = UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + "AnnMarieThomas_2011-480p.mp4";
+        String proxyUrl = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex).getAdvsVideoLocaltionPath();
+//        String proxyUrl = UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + "AnnMarieThomas_2011-480p.mp4";
         playerManager.play(proxyUrl);
     }
 
@@ -111,26 +117,23 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
     @Override
     public void onComplete() {
         Log.d(TAG, "onComplete: index = " + DispenserCache.freeAdIndex);
+        Advs_Video curAd = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex);
+        Advs_Play_Recode curAdRecord = new Advs_Play_Recode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
+                curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
+                curAd.getAdvsIndustry(), curAd.getAdvsPlayScene());
+        try {
+            dbManager.save(curAdRecord);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
         DispenserCache.freeAdIndex ++;
-        // TODO: 2018/6/5 0005 更新播放记录，定时向服务器发送数据
-        String proxyUrl = proxy.getProxyUrl(DispenserCache.freeAdVideoList
-                .get(DispenserCache.freeAdIndex).getAdvs_video_localtion_path());
-        playerManager.play(proxyUrl);
+        playerManager.play(DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex)
+                .getAdvsVideoLocaltionPath());
     }
 
     @Override
     public void onError(int what, int extra) {
         Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
-    }
-
-    @Override
-    public void onLoading() {
-
-    }
-
-    @Override
-    public void onPlay() {
-
     }
 
     @Override

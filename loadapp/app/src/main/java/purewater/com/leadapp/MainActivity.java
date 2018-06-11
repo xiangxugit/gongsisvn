@@ -1,6 +1,9 @@
 package purewater.com.leadapp;
 
+import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -64,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     List<String> permissionList = new ArrayList<>();
     //sd卡默认下载路径
     String sdPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+    //要调用另一个APP的activity所在的包名
+    String packageName = "newwater.com.newwater";
+    //要调用另一个APP的activity名字
+    String activity = "newwater.com.newwater.MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +150,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
 
+    /**
+     * 信鸽消息透传
+     */
     public class DynamicReceiver extends XGPushBaseReceiver {
         @Override
         public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
@@ -168,24 +178,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
             String jsonData = "收到消息:" + xgPushTextMessage.toString();
             JSONObject jsonObject = JSON.parseObject(jsonData);
-            String deviceId = jsonObject.getString("deviceId");
             Log.e("message", jsonData);
+            String deviceId = jsonObject.getString("deviceId");
 
-            String url = RestUtils.getUrl(RestUtils.GET);
-            try {
-                OkHttpUtils.getAsyn(url, new OkHttpUtils.StringCallback() {
-                    @Override
-                    public void onFailure(Request request, IOException e) {
-                        Log.e("onFailure", request.toString());
-                    }
-
-                    @Override
-                    public void onResponse(String result) {
-                        Log.e("onResponse", result);
-                    }
-                });
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+            //String url = RestUtils.getUrl(RestUtils.GET + "?deviceId=" + deviceId);
+            if (deviceId != null && deviceId.length() != 0) {
+                //ApkUtils.startApp("newwater.com.newwater", "MainActivity");
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("load_send_device_id", deviceId);
+                intent.putExtras(bundle);
+                intent.setClassName(packageName, activity);
+                startActivityForResult(intent, 1);
             }
         }
 
@@ -198,6 +202,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
 
         }
+    }
+
+    /**
+     * 在启动前进行一次判断：app是否在后台运行
+     *
+     * @return
+     */
+    private boolean isBackgroundRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        if (activityManager == null)
+            return false;
+        // get running application processes
+        List<ActivityManager.RunningAppProcessInfo> processList = activityManager
+                .getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo process : processList) {
+             /*
+            BACKGROUND=400 EMPTY=500 FOREGROUND=100
+            GONE=1000 PERCEPTIBLE=130 SERVICE=300 ISIBLE=200
+             */
+            if (process.processName.startsWith(packageName)) {
+                boolean isBackground = process.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                        && process.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
+                boolean isLockedState = keyguardManager
+                        .inKeyguardRestrictedInputMode();
+                if (isBackground || isLockedState)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -361,7 +397,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 if (ApkUtils.install(filePath, getApplicationContext())) {
                     apkToast("安裝成功");
-                    ApkUtils.startApp("newwater.com.newwater", "MainActivity");
                 } else {
                     apkToast("安裝失败");
                 }

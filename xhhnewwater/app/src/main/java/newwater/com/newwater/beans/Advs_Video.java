@@ -10,215 +10,215 @@ import org.xutils.db.annotation.Table;
 public class Advs_Video {
     /*广告id -----------------------------*/
     @Column(name = "advs_id", isId = true, autoGen = false)
-    private int advs_id;
+    private int advsId;
     /*添加者id*/
     @Column(name = "creat_admin_user_id")
-    private int creat_admin_user_id;
+    private int creatAdminUserId;
     /*审核者id*/
     @Column(name = "pass_admin_user_id")
-    private int pass_admin_user_id;
+    private int passAdminUserId;
     /*播放行业*/
     @Column(name = "advs_industry")
-    private int advs_industry;
+    private int advsIndustry;
     /*播放类型  0-闲时播放；1-免费喝水播放 -----------------------------*/
-    @Column(name = "advs_type")
-    private int advs_type;
+    @Column(name = "advs_play_scene")
+    private int advsPlayScene;
     /*设备收费模式*/
     @Column(name = "advs_charg_mode")
-    private int advs_charg_mode;
+    private int advsChargMode;
     /*是都指定设备播放  0-不指定；1-指定设备*/
     @Column(name = "advs_is_point_device")
-    private int advs_is_point_device;
+    private int advsIsPointDevice;
     /*标题*/
     @Column(name = "advs_title")
-    private String advs_title;
+    private String advsTitle;
     /*下载路径 -----------------------------*/
     @Column(name = "advs_video_download_path")
-    private String advs_video_download_path;
+    private String advsVideoDownloadPath;
     /*本地路径 -------~~~~~~~~~~~-------*/
     @Column(name = "advs_video_localtion_path")
-    private String advs_video_localtion_path;
+    private String advsVideoLocaltionPath;
     /*视频时长 -----------------------------*/
     @Column(name = "advs_video_length_of_time")
-    private String advs_video_length_of_time;
+    private int advsVideoLengthOfTime;
     /*视频大小*/
     @Column(name = "advs_video_size")
-    private double advs_video_size;
+    private double advsVideoSize;
     /*创建时间*/
     @Column(name = "advs_creat_time")
-    private String advs_creat_time;
+    private String advsCreatTime;
     /*审核时间*/
     @Column(name = "advs_pass_time")
-    private String advs_pass_time;
+    private String advsPassTime;
     /*自动上架日期 -----------------------------*/
     @Column(name = "advs_play_begin_date")
-    private String advs_play_begin_date;
+    private String advsPlayBeginDatetimes;
     /*自动下架日期 -----------------------------*/
     @Column(name = "advs_play_end_date")
-    private String advs_play_end_date;
+    private String advsPlayEndDatetimes;
     /*开始播放时间 -----------------------------*/
     @Column(name = "advs_play_begin_time")
-    private String advs_play_begin_time;
+    private String advsPlayBeginTime;
     /*结束播放时间 -----------------------------*/
     @Column(name = "advs_play_end_time")
-    private String advs_play_end_time;
+    private String advsPlayEndTime;
     /*广告状态  0-未审核;1-已审核未上架;2-已审核已上架；3-已审核已下架*/
     @Column(name = "advs_status")
-    private int advs_status;
+    private int advsStatus;
     /*是否已下载到本地 --------~~~~~~~~~~~~------*/
     @Column(name = "is_local")
     private boolean isLocal;
 
-    public int getAdvs_id() {
-        return advs_id;
+    public int getAdvsId() {
+        return advsId;
     }
 
-    public void setAdvs_id(int advs_id) {
-        this.advs_id = advs_id;
+    public void setAdvsId(int advsId) {
+        this.advsId = advsId;
     }
 
-    public int getCreat_admin_user_id() {
-        return creat_admin_user_id;
+    public int getCreatAdminUserId() {
+        return creatAdminUserId;
     }
 
-    public void setCreat_admin_user_id(int creat_admin_user_id) {
-        this.creat_admin_user_id = creat_admin_user_id;
+    public void setCreatAdminUserId(int creatAdminUserId) {
+        this.creatAdminUserId = creatAdminUserId;
     }
 
-    public int getPass_admin_user_id() {
-        return pass_admin_user_id;
+    public int getPassAdminUserId() {
+        return passAdminUserId;
     }
 
-    public void setPass_admin_user_id(int pass_admin_user_id) {
-        this.pass_admin_user_id = pass_admin_user_id;
+    public void setPassAdminUserId(int passAdminUserId) {
+        this.passAdminUserId = passAdminUserId;
     }
 
-    public int getAdvs_industry() {
-        return advs_industry;
+    public int getAdvsIndustry() {
+        return advsIndustry;
     }
 
-    public void setAdvs_industry(int advs_industry) {
-        this.advs_industry = advs_industry;
+    public void setAdvsIndustry(int advsIndustry) {
+        this.advsIndustry = advsIndustry;
     }
 
-    public int getAdvs_type() {
-        return advs_type;
+    public int getAdvsPlayScene() {
+        return advsPlayScene;
     }
 
-    public void setAdvs_type(int advs_type) {
-        this.advs_type = advs_type;
+    public void setAdvsPlayScene(int advsPlayScene) {
+        this.advsPlayScene = advsPlayScene;
     }
 
-    public int getAdvs_charg_mode() {
-        return advs_charg_mode;
+    public int getAdvsChargMode() {
+        return advsChargMode;
     }
 
-    public void setAdvs_charg_mode(int advs_charg_mode) {
-        this.advs_charg_mode = advs_charg_mode;
+    public void setAdvsChargMode(int advsChargMode) {
+        this.advsChargMode = advsChargMode;
     }
 
-    public int getAdvs_is_point_device() {
-        return advs_is_point_device;
+    public int getAdvsIsPointDevice() {
+        return advsIsPointDevice;
     }
 
-    public void setAdvs_is_point_device(int advs_is_point_device) {
-        this.advs_is_point_device = advs_is_point_device;
+    public void setAdvsIsPointDevice(int advsIsPointDevice) {
+        this.advsIsPointDevice = advsIsPointDevice;
     }
 
-    public String getAdvs_title() {
-        return advs_title;
+    public String getAdvsTitle() {
+        return advsTitle;
     }
 
-    public void setAdvs_title(String advs_title) {
-        this.advs_title = advs_title;
+    public void setAdvsTitle(String advsTitle) {
+        this.advsTitle = advsTitle;
     }
 
-    public String getAdvs_video_download_path() {
-        return advs_video_download_path;
+    public String getAdvsVideoDownloadPath() {
+        return advsVideoDownloadPath;
     }
 
-    public void setAdvs_video_download_path(String advs_video_download_path) {
-        this.advs_video_download_path = advs_video_download_path;
+    public void setAdvsVideoDownloadPath(String advsVideoDownloadPath) {
+        this.advsVideoDownloadPath = advsVideoDownloadPath;
     }
 
-    public String getAdvs_video_localtion_path() {
-        return advs_video_localtion_path;
+    public String getAdvsVideoLocaltionPath() {
+        return advsVideoLocaltionPath;
     }
 
-    public void setAdvs_video_localtion_path(String advs_video_localtion_path) {
-        this.advs_video_localtion_path = advs_video_localtion_path;
+    public void setAdvsVideoLocaltionPath(String advsVideoLocaltionPath) {
+        this.advsVideoLocaltionPath = advsVideoLocaltionPath;
     }
 
-    public String getAdvs_video_length_of_time() {
-        return advs_video_length_of_time;
+    public int getAdvsVideoLengthOfTime() {
+        return advsVideoLengthOfTime;
     }
 
-    public void setAdvs_video_length_of_time(String advs_video_length_of_time) {
-        this.advs_video_length_of_time = advs_video_length_of_time;
+    public void setAdvsVideoLengthOfTime(int advsVideoLengthOfTime) {
+        this.advsVideoLengthOfTime = advsVideoLengthOfTime;
     }
 
-    public double getAdvs_video_size() {
-        return advs_video_size;
+    public double getAdvsVideoSize() {
+        return advsVideoSize;
     }
 
-    public void setAdvs_video_size(double advs_video_size) {
-        this.advs_video_size = advs_video_size;
+    public void setAdvsVideoSize(double advsVideoSize) {
+        this.advsVideoSize = advsVideoSize;
     }
 
-    public String getAdvs_creat_time() {
-        return advs_creat_time;
+    public String getAdvsCreatTime() {
+        return advsCreatTime;
     }
 
-    public void setAdvs_creat_time(String advs_creat_time) {
-        this.advs_creat_time = advs_creat_time;
+    public void setAdvsCreatTime(String advsCreatTime) {
+        this.advsCreatTime = advsCreatTime;
     }
 
-    public String getAdvs_pass_time() {
-        return advs_pass_time;
+    public String getAdvsPassTime() {
+        return advsPassTime;
     }
 
-    public void setAdvs_pass_time(String advs_pass_time) {
-        this.advs_pass_time = advs_pass_time;
+    public void setAdvsPassTime(String advsPassTime) {
+        this.advsPassTime = advsPassTime;
     }
 
-    public String getAdvs_play_begin_date() {
-        return advs_play_begin_date;
+    public String getAdvsPlayBeginDatetimes() {
+        return advsPlayBeginDatetimes;
     }
 
-    public void setAdvs_play_begin_date(String advs_play_begin_date) {
-        this.advs_play_begin_date = advs_play_begin_date;
+    public void setAdvsPlayBeginDatetimes(String advsPlayBeginDatetimes) {
+        this.advsPlayBeginDatetimes = advsPlayBeginDatetimes;
     }
 
-    public String getAdvs_play_end_date() {
-        return advs_play_end_date;
+    public String getAdvsPlayEndDatetimes() {
+        return advsPlayEndDatetimes;
     }
 
-    public void setAdvs_play_end_date(String advs_play_end_date) {
-        this.advs_play_end_date = advs_play_end_date;
+    public void setAdvsPlayEndDatetimes(String advsPlayEndDatetimes) {
+        this.advsPlayEndDatetimes = advsPlayEndDatetimes;
     }
 
-    public String getAdvs_play_begin_time() {
-        return advs_play_begin_time;
+    public String getAdvsPlayBeginTime() {
+        return advsPlayBeginTime;
     }
 
-    public void setAdvs_play_begin_time(String advs_play_begin_time) {
-        this.advs_play_begin_time = advs_play_begin_time;
+    public void setAdvsPlayBeginTime(String advsPlayBeginTime) {
+        this.advsPlayBeginTime = advsPlayBeginTime;
     }
 
-    public String getAdvs_play_end_time() {
-        return advs_play_end_time;
+    public String getAdvsPlayEndTime() {
+        return advsPlayEndTime;
     }
 
-    public void setAdvs_play_end_time(String advs_play_end_time) {
-        this.advs_play_end_time = advs_play_end_time;
+    public void setAdvsPlayEndTime(String advsPlayEndTime) {
+        this.advsPlayEndTime = advsPlayEndTime;
     }
 
-    public int getAdvs_status() {
-        return advs_status;
+    public int getAdvsStatus() {
+        return advsStatus;
     }
 
-    public void setAdvs_status(int advs_status) {
-        this.advs_status = advs_status;
+    public void setAdvsStatus(int advsStatus) {
+        this.advsStatus = advsStatus;
     }
 
     public boolean isLocal() {
@@ -232,25 +232,25 @@ public class Advs_Video {
     @Override
     public String toString() {
         return "Advs_Video{" +
-                "advs_id=" + advs_id +
-                ", creat_admin_user_id=" + creat_admin_user_id +
-                ", pass_admin_user_id=" + pass_admin_user_id +
-                ", advs_industry=" + advs_industry +
-                ", advs_type=" + advs_type +
-                ", advs_charg_mode=" + advs_charg_mode +
-                ", advs_is_point_device=" + advs_is_point_device +
-                ", advs_title='" + advs_title + '\'' +
-                ", advs_video_download_path='" + advs_video_download_path + '\'' +
-                ", advs_video_localtion_path='" + advs_video_localtion_path + '\'' +
-                ", advs_video_length_of_time='" + advs_video_length_of_time + '\'' +
-                ", advs_video_size=" + advs_video_size +
-                ", advs_creat_time='" + advs_creat_time + '\'' +
-                ", advs_pass_time='" + advs_pass_time + '\'' +
-                ", advs_play_begin_date='" + advs_play_begin_date + '\'' +
-                ", advs_play_end_date='" + advs_play_end_date + '\'' +
-                ", advs_play_begin_time='" + advs_play_begin_time + '\'' +
-                ", advs_play_end_time='" + advs_play_end_time + '\'' +
-                ", advs_status=" + advs_status +
+                "advsId=" + advsId +
+                ", creatAdminUserId=" + creatAdminUserId +
+                ", passAdminUserId=" + passAdminUserId +
+                ", advsIndustry=" + advsIndustry +
+                ", advsPlayScene=" + advsPlayScene +
+                ", advsChargMode=" + advsChargMode +
+                ", advsIsPointDevice=" + advsIsPointDevice +
+                ", advsTitle='" + advsTitle + '\'' +
+                ", advsVideoDownloadPath='" + advsVideoDownloadPath + '\'' +
+                ", advsVideoLocaltionPath='" + advsVideoLocaltionPath + '\'' +
+                ", advsVideoLengthOfTime='" + advsVideoLengthOfTime + '\'' +
+                ", advsVideoSize=" + advsVideoSize +
+                ", advsCreatTime='" + advsCreatTime + '\'' +
+                ", advsPassTime='" + advsPassTime + '\'' +
+                ", advsPlayBeginDatetimes='" + advsPlayBeginDatetimes + '\'' +
+                ", advsPlayEndDatetimes='" + advsPlayEndDatetimes + '\'' +
+                ", advsPlayBeginTime='" + advsPlayBeginTime + '\'' +
+                ", advsPlayEndTime='" + advsPlayEndTime + '\'' +
+                ", advsStatus=" + advsStatus +
                 ", isLocal=" + isLocal +
                 '}';
     }

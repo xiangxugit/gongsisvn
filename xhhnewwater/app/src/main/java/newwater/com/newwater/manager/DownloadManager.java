@@ -87,6 +87,7 @@ public class DownloadManager {
         Log.d(TAG, "stopDown: dl_info: 即将停止下载");
         listener.onStop();
         downloadSubscriber.unSubscribe();
+        downloadCallback.onError("下载被停止了");
     }
 
     public void pause() {

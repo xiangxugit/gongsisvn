@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">newwater</string>
+    <string name="err_code_title">故障码：</string>
     <string name="hotwater">热水</string>
     <string name="warmwater">温水</string>
     <string name="coolwater">冷水</string>

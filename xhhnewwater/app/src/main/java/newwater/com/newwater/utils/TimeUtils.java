@@ -20,7 +20,7 @@ public class TimeUtils {
         return formatter.format(curDate);
     }
 
-    private static Date strToDateLong(String strDate) {
+    public static Date strToDateLong(String strDate) {
         Log.d(TAG, "strToDateLong: strDate = " + strDate);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ParsePosition pos = new ParsePosition(0);
@@ -94,7 +94,6 @@ public class TimeUtils {
 
         Date endDate = strToDateLong(spTime);
         if (null != endDate) {
-            Log.d(TAG, "isFutureTime: Date为空！");
             isFuture = endDate.getTime() > currentTime.getTime();
         }
         return isFuture;
@@ -121,7 +120,7 @@ public class TimeUtils {
         currentTime = strToDateLong(curTimeStr);
 
         // 将当前时刻付给时间段
-        spDate = spDate + curTimeStr.substring(11, 19);
+        spDate = spDate + curTimeStr.substring(10, 19);
 
         Date endDate = strToDateLong(spDate);
         if (null != endDate) {
