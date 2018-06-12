@@ -30,7 +30,7 @@
             android:visibility="gone"
             android:background="@drawable/wantwater"
             android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"/>
     </RelativeLayout>
 
 </RelativeLayout>

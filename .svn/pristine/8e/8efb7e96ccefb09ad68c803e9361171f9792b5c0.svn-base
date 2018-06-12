@@ -1,0 +1,81 @@
+package newwater.com.newwater.utils;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Base64;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import newwater.com.newwater.TestJSON;
+import newwater.com.newwater.constants.UriConstant;
+import newwater.com.newwater.view.PopQrCode;
+import okhttp3.Request;
+
+public class CommonUtil {
+
+    /**
+     * Base64加密
+     * @param str
+     * @return
+     */
+    public static String encode(String str) {
+        String result = "";
+        if( str != null) {
+            try {
+                result = new String(Base64.encode(str.getBytes("utf-8"), Base64.NO_WRAP),"utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Base64解密
+     * @param str
+     * @return
+     */
+
+    public static String decode(String str) {
+        String result = "";
+        if (str != null) {
+            try {
+                result = new String(Base64.decode(str, Base64.NO_WRAP), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static void showQrCode(Activity mContext) {
+        PopQrCode popChooseWatera = new PopQrCode(mContext);
+        popChooseWatera.showPopupWindow(new View(mContext));
+
+        final ImageView qcode = PopQrCode.qrcode;
+        String qcodestring = TestJSON.getWeiXinQcode();
+
+        //请求二维码
+        String getTempQCodeurl = RestUtils.getUrl(UriConstant.GETTEMPQCODE);
+        OkHttpUtils.getAsyn(getTempQCodeurl, new OkHttpUtils.StringCallback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+            }
+            @Override
+            public void onResponse(String response) {
+                Bitmap qcodebitmap = Create2QR2.createBitmap(response);
+                qcode.setImageBitmap(qcodebitmap);
+                TextView rightText = PopQrCode.getwater;
+                rightText.setText("扫码关注，完成用户绑定");
+            }
+        });
+    }
+
+}
+

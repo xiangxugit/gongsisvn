@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 
 import org.json.JSONObject;
+import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
+import newwater.com.newwater.DataBaseUtils.XutilsInit;
+import newwater.com.newwater.FreeAdActivity;
 import newwater.com.newwater.TestJSON;
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.beans.Sys_Device_Monitor_Config;
@@ -29,6 +32,7 @@ import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.TimeUtils;
+import newwater.com.newwater.utils.UploadLocalData;
 import okhttp3.Request;
 
 /**
@@ -46,6 +50,7 @@ public   class ComThread extends Thread {
     public Context context;
     public Handler myhandler;
     public boolean updateflag = false;
+    private DbManager dbManager;
     public boolean getActive() {
         return active;
     }
@@ -58,6 +63,9 @@ public   class ComThread extends Thread {
         if(null == this.sysDeviceNoticeAO){
             this.sysDeviceNoticeAO = new SysDeviceNoticeAO();
         }
+        dbManager = new XutilsInit(context).getDb();
+
+
     }
     @Override
     public void run() {
@@ -186,6 +194,13 @@ public   class ComThread extends Thread {
         String warningtime = TimeUtils.getCurrentTime();
         sysDeviceNoticeAO.setDeviceNoticeTime(warningtime);
         postdata = JSON.toJSONString(sysDeviceNoticeAO,true);
+
+        //TODO 存入数据库 定时上报
+        try {
+            dbManager.save(sysDeviceNoticeAO);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
         updateflag = true;
         if(updateflag == true){
             OkHttpUtils.postAsyn(deviceNoticeUrl, new OkHttpUtils.StringCallback() {

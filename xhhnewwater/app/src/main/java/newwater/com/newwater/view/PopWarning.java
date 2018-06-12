@@ -1,22 +1,16 @@
 package newwater.com.newwater.view;
-import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.serialport.DevUtil;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.logging.Handler;
-
-import newwater.com.newwater.MainActivity;
 import newwater.com.newwater.Processpreserving.ComThread;
 import newwater.com.newwater.R;
 
@@ -26,12 +20,12 @@ import static newwater.com.newwater.Processpreserving.DaemonService.comThread;
  * 自定义的PopupWindow
  */
 public class PopWarning extends PopupWindow {
-    private Activity context;
+    private BaseActivity context;
     private RelativeLayout outcupleft;
     private RelativeLayout outcupright;
     private TextView bottomsure;
     private DevUtil devUtil;
-    public PopWarning(Activity context) {
+    public PopWarning(BaseActivity context) {
         // 通过layout的id找到布局View
         this.context = context;
         View contentView = LayoutInflater.from(context).inflate(R.layout.prompt_pop, null);
@@ -91,10 +85,10 @@ public class PopWarning extends PopupWindow {
                     }else{
                         comThread.setActive(false);
                     }
-                    String hotwatertext = Pop_RightOperate.hotwater.getText().toString();
+                    String hotwatertext = PopRightOperate.hotwater.getText().toString();
                     if("热水".equals(hotwatertext)){
-                        Pop_RightOperate.hotwater.setText("停止取水");
-                        Pop_RightOperate.hotwater.setBackgroundResource(R.drawable.hotwaterstop);
+                        PopRightOperate.hotwater.setText("停止取水");
+                        PopRightOperate.hotwater.setBackgroundResource(R.drawable.hotwaterstop);
                         int sw = 1;
                         try {
                         if (devUtil.do_ioWater(1, sw) == 0) {
@@ -108,11 +102,9 @@ public class PopWarning extends PopupWindow {
                             comThread.setActive(true);
                         }
 
-
                     }else {
-
                         //关闭取热水
-                        Pop_RightOperate.hotwater.setText("热水");
+                        PopRightOperate.hotwater.setText("热水");
                         String s = "出热水指令执行";
                         int sw = 2;
                         try {
@@ -127,13 +119,12 @@ public class PopWarning extends PopupWindow {
                         } finally {
                             comThread.setActive(true);
                         }
-
                         //获取到本次出水的量
                         String[][] data=devUtil.toArray();
                         int getwaterdata = Integer.parseInt(data[17][1]);
 
-
                     }
+
                    /* if(devUtil.isComOpened()==true){
                         if (devUtil.do_ioWater(1, sw) == 0) {
                             Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();

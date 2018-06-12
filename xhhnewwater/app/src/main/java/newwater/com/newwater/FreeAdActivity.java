@@ -37,6 +37,7 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: -----------");
         initData();
         initView();
         initCountDown();
@@ -108,16 +109,20 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
         playerManager.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
         playerManager.playInFullScreen(true);
         playerManager.setOnPlayerStateChangeListener(this);
-        String proxyUrl = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex).getAdvsVideoLocaltionPath();
-//        String proxyUrl = UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + "AnnMarieThomas_2011-480p.mp4";
-        playerManager.play(proxyUrl);
+        if (null != DispenserCache.freeAdVideoList && 0 != DispenserCache.freeAdVideoList.size()) {
+            String proxyUrl = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex
+                    % DispenserCache.freeAdVideoList.size()).getAdvsVideoLocaltionPath();
+//            String proxyUrl = UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + "AnnMarieThomas_2011-480p.mp4";
+            playerManager.play(proxyUrl);
+        }
     }
 
     // ------------ ijk 监听 start ------------
     @Override
     public void onComplete() {
         Log.d(TAG, "onComplete: index = " + DispenserCache.freeAdIndex);
-        Advs_Video curAd = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex);
+        Advs_Video curAd = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex
+                % DispenserCache.freeAdVideoList.size());
         Advs_Play_Recode curAdRecord = new Advs_Play_Recode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
                 curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
                 curAd.getAdvsIndustry(), curAd.getAdvsPlayScene());
@@ -127,8 +132,8 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
             e.printStackTrace();
         }
         DispenserCache.freeAdIndex ++;
-        playerManager.play(DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex)
-                .getAdvsVideoLocaltionPath());
+        playerManager.play(DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex
+                % DispenserCache.freeAdVideoList.size()).getAdvsVideoLocaltionPath());
     }
 
     @Override
@@ -144,6 +149,7 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
 
     @Override
     public void onClick(View v) {
+        DispenserCache.isFreeAdDone = true;
         finish();
     }
 

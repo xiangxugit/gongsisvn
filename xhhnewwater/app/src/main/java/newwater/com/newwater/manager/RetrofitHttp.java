@@ -28,7 +28,6 @@ public class RetrofitHttp {
     private OkHttpClient okHttpClient;
 
     public static String baseUrl;
-
     private static RetrofitHttp sIsntance;
 
     public static RetrofitHttp getInstance(String baseUrl) {

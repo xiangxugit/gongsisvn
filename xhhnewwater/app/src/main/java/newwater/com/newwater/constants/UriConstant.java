@@ -1,5 +1,7 @@
 package newwater.com.newwater.constants;
 
+import android.os.Environment;
+
 public class UriConstant {
 
     public static String IP = "192.168.0.200";//外网服务器
@@ -31,10 +33,16 @@ public class UriConstant {
 
     // 根目录
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
+//    Environment.getExternalStorageDirectory().getPath()
+
     // 视频文件夹
     public static final String VIDEO_DIR = "video/";
-    // 初始视频路径（不含前面公共部分）
-    public static final String INIT_VIDEO_PATH = "";
+    // 初始视频文件夹
+    public static final String INIT_VIDEO_DIR = "init/video/";
+    // 初始视频1文件名
+    public static final String VIDEO_INIT_FILE_NAME_1 = "Init1.mp4";
+    // 初始视频2文件名
+    public static final String VIDEO_INIT_FILE_NAME_2 = "Init2.mp4";
     // 视频消息推送暂存文件名
     public static final String VIDEO_PUSH_FILE_NAME = "PushContent.txt";
     // database文件夹
@@ -43,5 +51,7 @@ public class UriConstant {
     // 分隔符
     public static final String FILE_SEPARATE = "/";
 
+    // 广告视频的baseUrl
     public static final String AD_VIDEO_BASE_URL= "http://mirror.aarnet.edu.au/pub/TED-talks/";
+//    public static final String AD_VIDEO_BASE_URL= "http://220.170.49.117/";
 }

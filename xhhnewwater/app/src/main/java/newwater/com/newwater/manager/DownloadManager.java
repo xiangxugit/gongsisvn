@@ -5,7 +5,9 @@ import android.util.Log;
 
 import java.io.File;
 
+import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.interfaces.DownloadCallback;
+import newwater.com.newwater.utils.FileUtil;
 import newwater.com.newwater.utils.SPDownloadUtil;
 
 public class DownloadManager {
@@ -87,7 +89,7 @@ public class DownloadManager {
         Log.d(TAG, "stopDown: dl_info: 即将停止下载");
         listener.onStop();
         downloadSubscriber.unSubscribe();
-        downloadCallback.onError("下载被停止了");
+        downloadCallback.onError("下载出错，下载被停止了");
     }
 
     public void pause() {
@@ -121,13 +123,19 @@ public class DownloadManager {
         if (file.exists()) {
             range = SPDownloadUtil.getInstance().get(downloadUrl, 0);
             Log.d(TAG, "download: dl_info: range = " + range);
+            if (0 == file.length()) {
+                Log.d(TAG, "download: 文件长度为0，重建文件并下载");
+                FileUtil.deleteFile(localDir + fileName);
+                download();
+                return;
+            }
             progress = (int) (range * 100 / file.length());
             if (range == file.length()) {
+                Log.d(TAG, "download: 文件长度为已有长度，直接完成");
+                downloadCallback.onComplete(localDir + fileName);
                 return;
             }
         }
-
-        Log.d(TAG, "download: dl_info: range = " + range);
 
 /*        final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_download);
         remoteViews.setProgressBar(R.id.pb_progress, 100, progress, false);

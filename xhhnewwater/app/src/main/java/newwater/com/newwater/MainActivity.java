@@ -12,8 +12,6 @@ import android.serialport.DevUtil;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -23,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 import newwater.com.newwater.DataBaseUtils.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.DataBaseUtils.XutilsInit;
@@ -60,12 +58,10 @@ import newwater.com.newwater.broadcast.ConnectionChangeReceiver;
 import newwater.com.newwater.broadcast.MessageReceiver;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.constants.Constant;
-import newwater.com.newwater.constants.ErrCodeConstant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.manager.DownloadManager;
 import newwater.com.newwater.manager.IjkManager;
-import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.CommonUtil;
 import newwater.com.newwater.utils.FileUtil;
 import newwater.com.newwater.utils.ControllerUtils;
@@ -73,14 +69,20 @@ import newwater.com.newwater.utils.GetDeviceInfo;
 import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
 import newwater.com.newwater.utils.TimeUtils;
+import newwater.com.newwater.utils.UploadLocalData;
 import newwater.com.newwater.utils.VideoUtils;
-import newwater.com.newwater.view.PopWindow;
-import newwater.com.newwater.view.PopWindowChooseWaterGetWay;
-import newwater.com.newwater.view.Pop_WantWater;
+import newwater.com.newwater.view.BaseActivity;
+import newwater.com.newwater.view.PopBuy;
+import newwater.com.newwater.view.PopLeftOperate;
+import newwater.com.newwater.view.PopRightOperate;
+import newwater.com.newwater.view.PopWarning;
+import newwater.com.newwater.view.PopWaterSale;
+import newwater.com.newwater.view.PopQrCode;
+import newwater.com.newwater.view.PopWantWater;
 
 import static newwater.com.newwater.utils.PermissionUtils.permissions;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IjkManager.PlayerStateListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, IjkManager.PlayerStateListener {
     private static final String TAG = "MainActivity";
 
     private static final int DOWNLOADAPK_ID = 10;
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Context mContext;
     private int deviceId;
-    private int drinkMode;
+    private int drinkMode = Constant.DRINK_MODE_WATER_SALE;
     private TextView dixieccup;//纸杯和我要饮水按钮
     private Boolean operateornot = false;
     public static LinearLayout leftoperate;//左边操作区域
@@ -107,25 +109,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RelativeLayout outcupleft;
     private RelativeLayout outcupright;
 
-    private PopWindow popChooseWater;
-    private PopWindowChooseWaterGetWay popChooseWatera;
+    private PopWaterSale popChooseWater;
+    private PopQrCode popChooseWatera;
 
     private RelativeLayout root;
     private ImageView qrcode;
 
-    //VideoView
-//    private CustomerVideoView videoplay;
-
-
-    //viewpager 视频
-    private ViewPager viewpager;
-
-    private Timer timer;//定时器，用于实现轮播
-
     static int pos = 0;
     private final static int DATADELETE = 2;
 
-    Pop_WantWater pop_wantWater = null;
+    private ImageView ivWantWater;
+    private PopWantWater popWantWater = null;
+    private PopWaterSale popWaterSale = null;
+    private PopQrCode popQrCode = null;
+    private PopLeftOperate popLeft = null;
+    private PopRightOperate popRight = null;
+    private PopBuy popBuy = null;
+    private PopWarning popWarning = null;
 
     //付工那边的代码start
     private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
@@ -173,14 +173,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Advs_Video> allVideoList; //（同步后应该与push列表一致）
     /*当前要播放的闲时视频列表*/
     private List<Advs_Video> curAdVideoList;
-//    /*已下载的免费喝水视频列表*/
-//    private List<Advs_Video> freeAdVideoList;  // (此列表一旦有变动需要设置DispenserCache里的对应列表！)
     /*当前播放的视频在initAdVideoList中的index*/
     private int initAdIndex;
     /*当前播放的视频在curAdVideoList中的index*/
     private int curAdIndex;
-//    /*当前播放的视频在freeAdVideoList中的index*/
-//    private int freeAdIndex;  // (此变量一旦有变动需要设置DispenserCache里的对应变量！)
     /*当前下载的视频在pushAdVideoList中的index*/
     private int pushAdIndex;
     /*是否正在播放视频*/
@@ -191,12 +187,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isPlayInitVideo;
     /*正处于推送收到后的等待时间*/
     private boolean isWaitPush;
-    /*当前时段的是否全部下载完毕*/
-    private boolean hasDownCur;
-    /*正在播放的闲时视频的id*/
-    private String curPlayAdId;
-    /*正在下载的视频的id*/
-    private String curDownAdId;
     /*当前时间*/
     private String curTime;
 
@@ -210,12 +200,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private DevUtil devUtil;//设备操作的工具类
 
+    // -------------------------- 生命周期 start --------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initPer();
-    }
+
+        }
 
     @Override
     protected void onResume() {
@@ -223,6 +215,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (null != playerManager) {
             playerManager.start();
         }
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DispenserCache.isFreeAdDone) {
+                    Log.d(TAG, "dismissPop: 看完广告视频，可以喝水了");
+                    DispenserCache.isFreeAdDone = false;
+                    dismissPop(popWantWater);
+                    showPopLeftOperate();
+                    showPopRightOperate();
+                } else {
+                    Log.d(TAG, "dismissPop: 要出现了");
+                    showPopWantWater();
+                }
+            }
+        }, 500);
+
     }
 
     @Override
@@ -235,8 +243,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        // TODO: 2018/6/12 0012 清空各种
         super.onDestroy();
     }
+
+    // -------------------------- 生命周期 end --------------------------
 
     /**
      * 初始化权限
@@ -286,122 +297,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //initToken();
     }
 
-    public void initComThread(){
-        if(null == DaemonService.comThread){
-            comThread = new ComThread(MainActivity.this,null);
-        }
-        if(null==devUtil){
-        devUtil = new DevUtil(null);
-        }
-
-
-
-    }
-
-    public void registerXinGe(){
-        DynamicReceiver myReceiver = new DynamicReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MessageReceiver.PUSHACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(myReceiver, filter);
-    }
-
-
-
-    public class DynamicReceiver extends XGPushBaseReceiver {
-        @Override
-        public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
-
-        }
-
-        @Override
-        public void onUnregisterResult(Context context, int i) {
-
-        }
-
-        @Override
-        public void onSetTagResult(Context context, int i, String s) {
-
-        }
-
-        @Override
-        public void onDeleteTagResult(Context context, int i, String s) {
-
-        }
-
-        @Override
-        public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
-            String text = "收到消息:" + xgPushTextMessage.toString();
-            Log.e("收到消息", text);
-
-            //TODO 收到推送后的操作  1冲洗 2开盖 3开关机
-            String operateflag = "1";
-            if("1".equals(operateflag)){
-            ControllerUtils.operatedevice(6,false);
-            }
-
-            if("2".equals(operateflag)){
-                ControllerUtils.operatedevice(5,false);
-            }
-
-            if("3".equals(operateflag)){
-                ControllerUtils.operatedevice(2,false);
-            }
-
-
-
-        }
-
-        @Override
-        public void onNotifactionClickedResult(Context context, XGPushClickedResult xgPushClickedResult) {
-
-        }
-
-        @Override
-        public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
-
-        }
-    }
-
     private void initData() {
         mContext = MainActivity.this;
-        // deviceId获取
-        /*1、intent获取*/
-        Intent intent = getIntent();
-        if (null != intent) {
-            Bundle bundle = intent.getExtras();
-            if (null != bundle && bundle.containsKey(Constant.KEY_LOAD_SEND_DEVICE_ID)) {
-                deviceId = bundle.getInt(Constant.KEY_LOAD_SEND_DEVICE_ID);
-                BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
-            }
-        }
-        /*intent没有则本地获取*/
-        if (0 == deviceId) {
-            if (BaseSharedPreferences.containInt(mContext, Constant.DEVICE_ID_KEY)) {
-                deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
-            }
-        }
-        /*都没有则上报错误*/
-        if (0 == deviceId) {
-            // TODO: 2018/6/11 0011 上报无deviceId错误
-            Log.d(TAG, "initData: 无deviceId！");
-            moveToBreakDownActivity(ErrCodeConstant.ERR_NO_DEVICE_ID);
-            return;
-        }
-        // drinkMode获取
-        /*本地获取*/
-        if (BaseSharedPreferences.containInt(mContext, Constant.DRINK_MODE_KEY)) {
-            drinkMode = BaseSharedPreferences.getInt(mContext, Constant.DRINK_MODE_KEY);
-        }
-        /*本地没有则接口求一次*/
-        // TODO: 2018/6/11 0011 接口：根据deviceId获取售水模式
-        /*都没有则报错*/
-        if (0 == drinkMode) {
-            // TODO: 2018/6/11 0011 上报无drinkMode错误
-            Log.d(TAG, "initData: 无drinkMode！");
-            moveToBreakDownActivity(ErrCodeConstant.ERR_NO_DRINK_MODE);
-            return;
-        }
+        myHandler = new MyHandler();
+//        // deviceId 和 drinkMode 获取
+//        /*1、intent获取*/
+//        Intent intent = getIntent();
+//        if (null != intent) {
+//            Bundle bundle = intent.getExtras();
+//            if (null != bundle && bundle.containsKey(Constant.KEY_LOAD_SEND_DEVICE_ID)) {
+//                deviceId = bundle.getInt(Constant.KEY_LOAD_SEND_DEVICE_ID);
+//                BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
+//            }
+//            if (null != bundle && bundle.containsKey(Constant.KEY_LOAD_SEND_DRINK_MODE)) {
+//                drinkMode = bundle.getInt(Constant.KEY_LOAD_SEND_DRINK_MODE);
+//                BaseSharedPreferences.setInt(mContext, Constant.DRINK_MODE_KEY, drinkMode);
+//            }
+//        }
+//        /*2、intent没有则本地获取*/
+//        if (0 == deviceId) {
+//            if (BaseSharedPreferences.containInt(mContext, Constant.DEVICE_ID_KEY)) {
+//                deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
+//            }
+//        }
+//        if (0 == drinkMode) {
+//            if (BaseSharedPreferences.containInt(mContext, Constant.DRINK_MODE_KEY)) {
+//                drinkMode = BaseSharedPreferences.getInt(mContext, Constant.DRINK_MODE_KEY);
+//            }
+//        }
+//        /*3、都没有则上报错误*/
+//        if (0 == deviceId) {
+//            // TODO: 2018/6/11 0011 上报无deviceId错误
+//            Log.d(TAG, "initData: 无deviceId！");
+//            moveToBreakDownActivity(ErrCodeConstant.ERR_NO_DEVICE_ID);
+//            return;
+//        }
+//        if (0 == drinkMode) {
+//            // TODO: 2018/6/11 0011 上报无drinkMode错误
+//            Log.d(TAG, "initData: 无drinkMode！");
+//            moveToBreakDownActivity(ErrCodeConstant.ERR_NO_DRINK_MODE);
+//            return;
+//        }
         // 数据库
         dbManager = new XutilsInit(MainActivity.this).getDb();
         // 网络变化广播接收器
@@ -414,6 +350,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         allVideoList = new ArrayList<>();
         DispenserCache.freeAdVideoList = new ArrayList<>();
         curAdVideoList = new ArrayList<>();
+        Advs_Video initAd1 = new Advs_Video();
+        Advs_Video initAd2 = new Advs_Video();
+        initAd1.setAdvsVideoLocaltionPath(UriConstant.APP_ROOT_PATH + UriConstant.INIT_VIDEO_DIR
+                + UriConstant.VIDEO_INIT_FILE_NAME_1);
+        initAd2.setAdvsVideoLocaltionPath(UriConstant.APP_ROOT_PATH + UriConstant.INIT_VIDEO_DIR
+                + UriConstant.VIDEO_INIT_FILE_NAME_2);
+        initAdVideoList.add(initAd1);
         // 从本地文件中取出推送数据，看是否需要处理
         getPushStrategy();
         // 从数据库中取出数据填充列表
@@ -435,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         setContentView(R.layout.activity_main);
         root = (RelativeLayout) findViewById(R.id.root);
-
+        ivWantWater = findViewById(R.id.wantwater);
 
         // 获取当前设备是哪一种模式
         int model = TestJSON.getModel();
@@ -481,27 +424,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loopPlayVideo();
     }
 
-    /*private void initToken() {
-        try {
-            String url = RestUtils.getUrl(UriConstant.NEWAPK);
-            OkHttpUtils.getAsyn(url,
-                    new OkHttpUtils.StringCallback() {
-                        @Override
-                        public void onFailure(Request request, IOException e) {
-                            Log.i("getApkInfo", request.toString());
-                        }
-
-                        @Override
-                        public void onResponse(String response) {
-                            Log.e("getApkInfo", response);
-                        }
-                    });
-        } catch (Exception e) {
-            Log.i("Error", e.getMessage());
-            e.printStackTrace();
-        }
-    }*/
-
     private void getDevice_Monitor_Config() {
         Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(MainActivity.this);
         try {
@@ -519,6 +441,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
     }
 
+    public void registerXinGe(){
+        DynamicReceiver myReceiver = new DynamicReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MessageReceiver.PUSHACTION);
+        filter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(myReceiver, filter);
+    }
+
+    public void initComThread(){
+        if(null == DaemonService.comThread){
+            comThread = new ComThread(MainActivity.this,null);
+        }
+        if(null==devUtil){
+            devUtil = new DevUtil(null);
+        }
+
+
+
+    }
+
     private void loopPlayVideo() {
         Log.d(TAG, "loopPlayVideo: 开始循环播放广告视频");
         if (getCurrentVideoList()) {
@@ -532,7 +474,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 获取当前应该播放的闲时视频的列表
-     *
      * @return 返回值为当前时段是否有videoList
      */
     private boolean getCurrentVideoList() {
@@ -603,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 从推送中解析出pushAdVideoList
      */
     private void getPushStrategy() {
-        Log.d(TAG, "getPushStrategy: 55555555555555555 json处理");
+        Log.d(TAG, "getPushStrategy: 开始处理strategy的json数据");
         // 从本地文件取出数据，如果是已经处理的数据，则不响应；反之则处理。
         String decode = CommonUtil.decode(FileUtil.readTxtFile(UriConstant.APP_ROOT_PATH +
                 UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME));
@@ -635,14 +576,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pushAdVideoList.add(ad);
             }
         }
-        Log.d(TAG, "getPushStrategy: 66666666666666666 json处理完毕");
+        Log.d(TAG, "getPushStrategy: json处理完毕");
+        // 删除本次策略中没有的广告的本地文件
+        try {
+            List<Advs_Video> allDbAdList = dbManager.findAll(Advs_Video.class);
+            for (Advs_Video ad : allDbAdList) {
+                int index = VideoUtils.getAdIndexFromList(ad, pushAdVideoList);
+                Log.d(TAG, "refreshAllAdVideoData: index = " + index);
+                if (-1 == index) {
+                    String localPath = ad.getAdvsVideoLocaltionPath();
+                    Log.d(TAG, "refreshAllAdVideoData: 删除本地文件：" + localPath);
+                    FileUtil.deleteFile(localPath);
+
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
     }
 
     public void downloadAllVideo() {
-        Log.d(TAG, "getPushStrategy: 7777777777777777777 进入下载");
+        Log.d(TAG, "getPushStrategy: 进入循环下载");
         // 下载完毕，则去同步各种数据
         if (pushAdIndex >= pushAdVideoList.size()) {
-            Log.d(TAG, "getPushStrategy: 8888888888888888 状态为已下载，return");
+            Log.d(TAG, "getPushStrategy: 全部视频状态为已下载，return");
             myHandler.sendEmptyMessageDelayed(Constant.MSG_ALL_DOWN_CONPLETE, Constant.ALL_DOWN_WAIT_TIME);
             return;
         }
@@ -650,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Advs_Video ad = pushAdVideoList.get(pushAdIndex);
         // 如果为空，则下载下一个
         if (null == ad) {
-            Log.d(TAG, "getPushStrategy: 8888888888888888 本条广告为空，return");
+            Log.d(TAG, "getPushStrategy: 本条广告为空，return");
             pushAdIndex++;
             downloadAllVideo();
             return;
@@ -658,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 已经是本地的，则更新isLocal并下载下一个
         String localPath = VideoUtils.checkIfVideoIsLocal(ad, allVideoList);
         if (!TextUtils.isEmpty(localPath)) {
-            Log.d(TAG, "getPushStrategy: 8888888888888888 本条广告已有本地路径，return");
+            Log.d(TAG, "getPushStrategy: 本条广告已有本地路径，return");
             ad.setLocal(true);
             ad.setAdvsVideoLocaltionPath(localPath);
             pushAdVideoList.set(pushAdIndex, ad);
@@ -678,12 +635,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void downloadVideo(Advs_Video ad) {
         if (isDownloading) {
-            Toast.makeText(MainActivity.this, "正在下载", Toast.LENGTH_SHORT).show();
-            myHandler.sendEmptyMessageDelayed(Constant.NSG_IS_DOWNLOADING_WAITING,
+            Log.d(TAG, "downloadVideo: 正在下载，return..");
+            if (myHandler.hasMessages(Constant.MSG_WAITING_THEN_DOWNLOAD)){
+                myHandler.removeMessages(Constant.MSG_WAITING_THEN_DOWNLOAD);
+            }
+            myHandler.sendEmptyMessageDelayed(Constant.MSG_WAITING_THEN_DOWNLOAD,
                     Constant.IS_DOWNING_WAIT_TIME * 1000);
             return;
         }
-        Log.d(TAG, "downloadVideo: 开始下载广告视频 pushAdIndex = " + pushAdIndex + ", url = " + ad.getAdvsVideoDownloadPath());
+        String downloadPath = ad.getAdvsVideoDownloadPath();
+        Log.d(TAG, "downloadVideo: 开始下载广告视频 pushAdIndex = " + pushAdIndex + ", url = " + downloadPath);
         isDownloading = true;
         DownloadManager manager = DownloadManager.getInstance();
         manager.setDownloadCallback(new DownloadCallback() {
@@ -696,7 +657,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ad.setAdvsVideoLocaltionPath(localPath);
                 pushAdVideoList.set(pushAdIndex, ad);
                 pushAdIndex ++;
-                Log.d(TAG, "onComplete: dl_info: 9999999999999 即将再次进入下载");
                 downloadAllVideo();
             }
 
@@ -705,7 +665,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onError: dl_info: 下载错误！msg -- " + msg);
                 isDownloading = false;
                 // 网址错误则上报错误信息；其他错误则放在最后再下
-                if (msg.contains(Constant.DOWN_ERROR_EXCEPTION_WRONG_URL)) {
+                if (msg.contains(Constant.DOWN_ERROR_MSG_WRONG_URL)) {
                     Log.d(TAG, "onError: dl_info: URL有误！");
                     // TODO: 2018/6/8 0008 上报地址错误
                     pushAdVideoList.remove(pushAdIndex);
@@ -716,7 +676,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Advs_Video advsVideo = pushAdVideoList.get(pushAdIndex);
                 pushAdVideoList.remove(pushAdIndex);
                 pushAdVideoList.add(advsVideo);
-                downloadAllVideo();
+                if (myHandler.hasMessages(Constant.MSG_WAITING_THEN_DOWNLOAD)){
+                    myHandler.removeMessages(Constant.MSG_WAITING_THEN_DOWNLOAD);
+                }
+                myHandler.sendEmptyMessageDelayed(Constant.MSG_WAITING_THEN_DOWNLOAD,
+                        Constant.IS_DOWNING_WAIT_TIME * 1000);
             }
 
             @Override
@@ -724,12 +688,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onProgress: dl_info: 正在下载.. progress = " + progress);
             }
         });
-        manager.startDown(DOWNLOADAPK_ID, UriConstant.AD_VIDEO_BASE_URL, ad.getAdvsVideoDownloadPath(),
-                UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
+        manager.startDown(DOWNLOADAPK_ID, downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1),
+                downloadPath, UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
     }
 
     private void refreshAllAdVideoData() {
-        Log.d(TAG, "refreshAllAdVideoData: 更新全部广告视频信息到数据库");
+        Log.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
         playerManager.stop();
         // 同步数据到数据库
         try {
@@ -755,10 +719,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         for (Advs_Video ad : adVideoList) {
             switch (ad.getAdvsPlayScene()) {
-                case 0:
+                case Constant.AD_TYPE_IDLE:
                     allVideoList.add(ad);
                     break;
-                case 1:
+                case Constant.AD_TYPE_FREE:
                     DispenserCache.freeAdVideoList.add(ad);
                     break;
             }
@@ -766,121 +730,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        DispenserCache.setFreeAdVideoList(freeAdVideoList);
     }
 
-    /**
-     * 这个函数在Activity创建完成之后会调用。购物车悬浮窗需要依附在Activity上，如果Activity还没有完全建好就去
-     * 调用showCartFloatView()，则会抛出异常
-     *
-     * @param hasFocus
-     */
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (null == popChooseWater) {
-            Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
-            pop_wantWater.showPopupWindow(new View(this));
-        } else {
-            Pop_WantWater pop_wantWater = new Pop_WantWater(MainActivity.this);
-            pop_wantWater.showPopupWindow(new View(this));
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.exit:
-                TimeBack timeback = new TimeBack(exit, 30000, 1000);
-                break;
-
-            case R.id.leftpop:
-                //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面
-                leftoperate.setVisibility(View.GONE);
-                rightoperate.setVisibility(View.GONE);
-                break;
-
-            case R.id.rightpop:
-                //弹出二维码
-
-                break;
-            case R.id.wantwater:
-                popChooseWater.showPopupWindow(new View(mContext));
-                break;
-            case R.id.tobehot:
-                //加热使能
-
-
-                break;
-
-            case R.id.tobecool:
-                //制冷使能
-                break;
-            case R.id.chongxi:
-
-                //冲洗使能
-                break;
-
-        }
-
-    }
-
-    // ------------ ijk 监听 start --------------
-    @Override
-    public void onComplete() {
-        Log.d(TAG, "onComplete: isPlayInitVideo = " + isPlayInitVideo);
-        curTime = TimeUtils.getCurrentTime();
-        if (isPlayInitVideo) {
-            initAdIndex += 1;
-        } else {
-            Advs_Video curAd = allVideoList.get(curAdIndex % curAdVideoList.size());
-            Advs_Play_Recode curAdRecord = new Advs_Play_Recode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
-                    curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
-                    curAd.getAdvsIndustry(), curAd.getAdvsPlayScene());
-            /*curAdRecord.setAdvs_id(curAd.getAdvsId());
-            curAdRecord.setDevice_id(deviceId);
-            curAdRecord.setAdvs_play_time(TimeUtils.getCurrentTime());
-            curAdRecord.setAdvs_play_length_of_time(curAd.getAdvsVideoLengthOfTime());
-            curAdRecord.setAdvs_play_device_charg_mode(curAd.getAdvsChargMode());
-            curAdRecord.setAdvs_play_device_industry(curAd.getAdvsIndustry());
-            curAdRecord.setAdvs_play_scene(curAd.getAdvsPlayScene());*/
-            try {
-                dbManager.save(curAdRecord);
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
-            curAdIndex += 1;
-        }
-        loopPlayVideo();
-    }
-
-    /**
-     * 错误
-     * 暂时只有一种错误回调，即what = MediaPlayer.MEDIA_ERROR_UNKNOWN， extra = 0，后期可做修改（IjkVideoView中）
-     *
-     * @param what
-     */
-    @Override
-    public void onError(int what, int extra) {
-        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
-        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-            //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
-            Toast.makeText(mContext, "网络服务错误", Toast.LENGTH_LONG).show();
-        } else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
-            Toast.makeText(mContext, "文件不存在或错误，或网络不可访问错误", Toast.LENGTH_SHORT).show();
-        }
-        playerManager.onDestroy();//释放
-        playVideo();//播放
-    }
-
-    @Override
-    public void onInfo(int what, int extra) {
-        Log.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
-    }
-
-    // ------------ ijk 监听 end --------------
-
-
     public void listenDevice() {
-
-
 //        Time t = new Time();
 //        t.setToNow();
 //        int hout = t.hour;
@@ -915,7 +765,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
         //水质监听
-        myHandler = new MyHandler();
         Time t = new Time();
         Time tupload = new Time();
         tupload.setToNow();
@@ -955,44 +804,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return startDT.getTime();
     }
 
-    public class MyHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
-            switch (msg.what) {
-                case 0:
-//                    byte[] data = (byte[])msg.obj
-                    Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
-                    break;
-                case DATADELETE:
-                    String test = msg.obj.toString();
-                    Toast.makeText(mContext, "定时" + test, Toast.LENGTH_SHORT).show();
-                    break;
-                case Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH:
-                    Log.d(TAG, "handleMessage: start deal video strategy push");
-                    pushAdIndex = 0;
-                    curTime = TimeUtils.getCurrentTime();
-                    getPushStrategy();
-                    downloadAllVideo();
-                    break;
-
-                case Constant.MSG_UPDATE_SCODE:
-                    Log.e("成功", "更新二维码成功");
-                    break;
-
-                case Constant.NSG_IS_DOWNLOADING_WAITING:
-                    downloadAllVideo();
-                    break;
-                case Constant.MSG_ALL_DOWN_CONPLETE:
-                    refreshAllAdVideoData();
-                    loopPlayVideo();
-                    break;
-                case 1002:
-                    Log.d(TAG, "handleMessage: 33333333333333333 接到消息了");
-                    onReceivePush();
-                    break;
-            }
-        }
+    /**
+     * Activity是否XXX
+     * @return
+     */
+    private boolean isActivityValidate() {
+        // TODO: 2018/6/12 0012 判断能弹窗的前提
+        return true;
     }
 
     /**
@@ -1012,6 +830,92 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+
+    // -------------------------- 回调 start --------------------------
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.exit:
+                TimeBack timeback = new TimeBack(exit, 30000, 1000);
+                break;
+
+            case R.id.leftpop:
+                //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面
+                leftoperate.setVisibility(View.GONE);
+                rightoperate.setVisibility(View.GONE);
+                break;
+
+            case R.id.rightpop:
+                //弹出二维码
+
+                break;
+            case R.id.wantwater:
+                popChooseWater.showPopupWindow(new View(mContext));
+                break;
+            case R.id.tobehot:
+                //加热使能
+
+
+                break;
+
+            case R.id.tobecool:
+                //制冷使能
+                break;
+            case R.id.chongxi:
+
+                //冲洗使能
+                break;
+
+        }
+
+    }
+
+    // --------- ijk 监听 start ---------
+    @Override
+    public void onComplete() {
+        Log.d(TAG, "onComplete: isPlayInitVideo = " + isPlayInitVideo);
+        curTime = TimeUtils.getCurrentTime();
+        if (isPlayInitVideo) {
+            initAdIndex += 1;
+        } else {
+            Advs_Video curAd = allVideoList.get(curAdIndex % curAdVideoList.size());
+            Advs_Play_Recode curAdRecord = new Advs_Play_Recode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
+                    curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
+                    curAd.getAdvsIndustry(), curAd.getAdvsPlayScene());
+            try {
+                dbManager.save(curAdRecord);
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+            curAdIndex += 1;
+        }
+        loopPlayVideo();
+    }
+
+    /**
+     * 错误
+     * 暂时只有一种错误回调，即what = MediaPlayer.MEDIA_ERROR_UNKNOWN， extra = 0，后期可做修改（IjkVideoView中）
+     * @param what
+     */
+    @Override
+    public void onError(int what, int extra) {
+        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
+        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+            //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
+            Toast.makeText(mContext, "网络服务错误", Toast.LENGTH_LONG).show();
+        } else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
+            Toast.makeText(mContext, "文件不存在或错误，或网络不可访问错误", Toast.LENGTH_SHORT).show();
+        }
+        playerManager.onDestroy();//释放
+        playVideo();//播放
+    }
+
+    @Override
+    public void onInfo(int what, int extra) {
+        Log.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
+    }
+    // --------- ijk end ---------
 
     /**
      * Callback received when a permissions request has been completed.
@@ -1039,38 +943,154 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //判断是否勾选禁止后不再询问
                 boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permissions[i]);
                 if (showRequestPermission) {
-                    showToast("权限未申请");
+                    Toast.makeText(MainActivity.this, "权限未申请", Toast.LENGTH_LONG).show();
                 }
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void showToast(String string) {
-        Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
-    }
+    // -------------------------- 回调 end --------------------------
 
-    private static long lastClickTime;
+    // -------------------------- 内部类 start --------------------------
 
-    /**
-     * 是否是快速点击（是则return，防止快速连续点击）
-     * @return
-     */
-    public static boolean isFastClick() {
-        boolean flag = true;
-        long currentClickTime = System.currentTimeMillis();
-        if ((currentClickTime - lastClickTime) >= Constant.FAST_CLICK_DELAY_TIME) {
-            flag = false;
+    public class DynamicReceiver extends XGPushBaseReceiver {
+        @Override
+        public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
+
         }
-        lastClickTime = currentClickTime;
-        return flag;
+
+        @Override
+        public void onUnregisterResult(Context context, int i) {
+
+        }
+
+        @Override
+        public void onSetTagResult(Context context, int i, String s) {
+
+        }
+
+        @Override
+        public void onDeleteTagResult(Context context, int i, String s) {
+
+        }
+
+        @Override
+        public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
+            Log.d(TAG, "onTextMessage: receive new push");
+            String pushString = xgPushTextMessage.toString();
+            Log.e("收到消息: ", pushString);
+
+            PushEntity pushEntity = JSONObject.parseObject(pushString, PushEntity.class);
+            if (null == pushEntity) {
+                Log.d(TAG, "onTextMessage: 推送为空！");
+                return;
+            }
+            // 获取内容
+            String content = pushEntity.getOperationContent();
+            if (TextUtils.isEmpty(content)) {
+                Log.d(TAG, "onTextMessage: 推送内容为空！");
+                Log.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
+                return;
+            }
+            Log.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
+            switch (pushEntity.getOperationType()) {
+                case Constant.PUSH_OPERATION_TYPE_OPERATE:
+                    //TODO 收到推送后的操作  1冲洗 2开盖 3开关机
+                    String operateflag = "1";
+                    if("1".equals(operateflag)){
+                        ControllerUtils.operateDevice(6,false);
+                    }
+
+                    if("2".equals(operateflag)){
+                        ControllerUtils.operateDevice(5,false);
+                    }
+
+                    if("3".equals(operateflag)){
+                        ControllerUtils.operateDevice(2,false);
+                    }
+
+                    break;
+                case Constant.PUSH_OPERATION_TYPE_CONFIG:
+                    // 存入本地文件
+                    Log.d(TAG, "onTextMessage: 推送类型为：配置。开始将push的strategy存入本地..");
+                    FileUtil.saveContentToSdcard(UriConstant.APP_ROOT_PATH +
+                                    UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME,
+                            CommonUtil.encode(Constant.VIDEO_PUSH_HANDLE_TO_DO + content));
+                    // 发送延时消息处理
+                    if (myHandler.hasMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH)) {
+                        myHandler.removeMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH);
+                    }
+                    myHandler.sendEmptyMessageDelayed(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH,
+                            Constant.RECEIVE_PUSH_VIDEO_STRATEGY_WAIT_TIME * 1000);
+                    break;
+                case Constant.PUSH_OPERATION_TYPE_LOGIN:
+                    break;
+                case Constant.PUSH_OPERATION_TYPE_UPDATE_ID:
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onNotifactionClickedResult(Context context, XGPushClickedResult xgPushClickedResult) {
+
+        }
+
+        @Override
+        public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
+
+        }
     }
 
+    public class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+                case 0:
+//                    byte[] data = (byte[])msg.obj
+                    Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
+                    break;
+                case DATADELETE:
+                    String test = msg.obj.toString();
+                    Toast.makeText(mContext, "定时" + test, Toast.LENGTH_SHORT).show();
+                    break;
+                case Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH:
+                    Log.d(TAG, "handleMessage: start deal video strategy push");
+                    pushAdIndex = 0;
+                    curTime = TimeUtils.getCurrentTime();
+                    getPushStrategy();
+                    downloadAllVideo();
+                    break;
+
+                case Constant.MSG_UPDATE_SCODE:
+                    Log.e("成功", "更新二维码成功");
+                    break;
+
+                case Constant.MSG_WAITING_THEN_DOWNLOAD:
+                    downloadAllVideo();
+                    break;
+                case Constant.MSG_ALL_DOWN_CONPLETE:
+                    refreshAllAdVideoData();
+                    loopPlayVideo();
+                    break;
+                case 1002:
+                    Log.d(TAG, "handleMessage: 33333333333333333 接到消息了");
+                    onReceivePush();
+                    break;
+            }
+        }
+    }
+
+    // -------------------------- 内部类 end --------------------------
+
+    // -------------------------- View start --------------------------
     /**
      * 跳转到机器故障Activity
      * @param errCode
      */
-    private void moveToBreakDownActivity(int errCode) {
+    public void moveToBreakDownActivity(int errCode) {
         Intent intent =  new Intent(mContext, BreakDownActivity.class);
         Bundle bundle = new Bundle();
         bundle.putInt(Constant.KEY_BREAK_DOWN_ERRCODE, errCode);
@@ -1080,6 +1100,99 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * 跳转到免费广告Activity
+     * @param adDuration
+     */
+    public void moveToFreeAdActivity(int adDuration) {
+        Intent intent =  new Intent(mContext, FreeAdActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Constant.KEY_FREE_AD_DURATION, adDuration);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    /**
+     * 我要喝水
+     */
+    public void showPopWantWater() {
+        if (isActivityValidate()) {
+            popWantWater = new PopWantWater(MainActivity.this, drinkMode);
+            popWantWater.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 售水模式
+     */
+    public void showPopWaterSale() {
+        if (isActivityValidate()) {
+            popWaterSale = new PopWaterSale(MainActivity.this);
+            popWaterSale.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 租赁模式/买断模式：二维码
+     */
+    public void showPopQrCode() {
+        if (isActivityValidate()) {
+            popQrCode = new PopQrCode(MainActivity.this);
+            popQrCode.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 左操作面板
+     */
+    public void showPopLeftOperate() {
+        if (isActivityValidate()) {
+            popLeft = new PopLeftOperate(MainActivity.this);
+            popLeft.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 右操作面板
+     */
+    public void showPopRightOperate() {
+        if (isActivityValidate()) {
+            popRight = new PopRightOperate(MainActivity.this, popLeft);
+            popRight.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 充值
+     */
+    public void showPopBuy() {
+        if (isActivityValidate()) {
+            popBuy = new PopBuy(MainActivity.this, "test");
+            popBuy.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    /**
+     * 热水警告
+     */
+    public void showPopWarning() {
+        if (isActivityValidate()) {
+            PopWarning PopWarning = new PopWarning(MainActivity.this);
+            PopWarning.showPopupWindow(new View(MainActivity.this));
+        }
+    }
+
+    public void dismissPop(PopupWindow pop) {
+        if (isActivityValidate()) {
+            if (null != pop && pop.isShowing()) {
+                Log.d(TAG, "dismissPop: -----------1--------");
+                pop.dismiss();
+            }
+        }
+    }
+
+    // -------------------------- View end --------------------------
+
+    /**
      * 模拟收到信鸽推送的回调，后面有真的写好了，这里的内容就移过去
      */
     private void onReceivePush() {
@@ -1087,10 +1200,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String pushString = "{" +
                 "\"deviceId\":0," +
                 "\"operationContent\":[" +
-                "{\"advsId\":1,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"12:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"16:07:17\",\"advsVideoDownloadPath\":\"MarkRonson_2014.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
-                "{\"advsId\":2,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527593061000,\"advsPlayBeginDatetimes\":\"2018-05-29\",\"advsPlayBeginTime\":\"14:07:17\",\"advsPlayConfigDtlId\":2,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527593061000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"16:07:17\",\"advsVideoDownloadPath\":\"LeeSmolin_2003.mp4\",\"advsVideoLengthOfTime\":1,\"advsVideoLocaltionPath\":\"\",\"local\":false}" +
-                "{\"advsId\":4,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"12:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"14:07:17\",\"advsVideoDownloadPath\":\"KiranBirSethi_2009I.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
-                "{\"advsId\":4,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"10:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"12:07:17\",\"advsVideoDownloadPath\":\"StephenWilkes_2016.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+                "{\"advsId\":1,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"12:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"23:07:17\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/MarkRonson_2014.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+                "{\"advsId\":2,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527593061000,\"advsPlayBeginDatetimes\":\"2018-05-29\",\"advsPlayBeginTime\":\"08:07:17\",\"advsPlayConfigDtlId\":2,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527593061000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"10:07:17\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/LeeSmolin_2003.mp4\",\"advsVideoLengthOfTime\":1,\"advsVideoLocaltionPath\":\"\",\"local\":false}" +
+                "{\"advsId\":3,\"advsPlayScene\":1,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/AditiShankardass_2009I_480.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+//                "{\"advsId\":4,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"12:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"23:07:17\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/KiranBirSethi_2009I.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+//                "{\"advsId\":5,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"10:07:17\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"23:07:17\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/StephenWilkes_2016.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+//                "{\"advsId\":6,\"advsPlayScene\":1,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"\",\"advsVideoDownloadPath\":\"http://mirror.aarnet.edu.au/pub/TED-talks/AnnMarieThomas_2011-480p.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
+                "{\"advsId\":7,\"advsPlayScene\":0,\"advsPlayBeginDatetime\":1527596302000,\"advsPlayBeginDatetimes\":\"2018-05-01\",\"advsPlayBeginTime\":\"\",\"advsPlayConfigDtlId\":1,\"advsPlayConfigId\":1,\"advsPlayEndDatetime\":1527596302000,\"advsPlayEndDatetimes\":\"2018-08-31\",\"advsPlayEndTime\":\"\",\"advsVideoDownloadPath\":\"http://112.253.22.165/22/i/i/h/h/iihhwacyhbbxmleszykibadklhesym/sh.yinyuetai.com/37B50162DC0FD54E945776F4162B4BB9.mp4\",\"advsVideoLengthOfTime\":60,\"advsVideoLocaltionPath\":\"\",\"local\":false}," +
                 "]," +
                 "\"operationType\":2," +
                 "\"pushIdList\":" +
@@ -1139,7 +1255,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 用来判断服务是否运行
-     *
      * @param className 判断的服务名字
      * @return true 在运行 false 不在运行
      */

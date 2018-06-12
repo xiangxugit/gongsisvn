@@ -42,6 +42,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -55,6 +56,17 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".BreakDownActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".TestActivity">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
         <service
             android:name=".Processpreserving.Service1"
             android:process=":process1" />
@@ -66,7 +78,7 @@
             <intent-filter>
 
                 <!-- 系统启动完成后会调用 -->
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -176,7 +188,7 @@
         <provider
             android:name="com.tencent.mid.api.MidProvider"
             android:authorities="newwater.com.newwater.TENCENT.MID.V3"
-            android:exported="true"></provider>
+            android:exported="true" />
 
         <!-- 【必须】 请修改为APP的AccessId，“21”开头的10位数字，中间没空格 -->
         <meta-data
@@ -186,6 +198,7 @@
         <meta-data
             android:name="XG_V2_ACCESS_KEY"
             android:value="AI89KG975GRE" />
+
     </application>
 
 </manifest>

@@ -40,7 +40,7 @@ public  class TimeRun {
 //    https://blog.csdn.net/qinde025/article/details/6828723
     public static TimerTask task;
     private DevUtil devUtil=null;
-
+    private Handler handler = null;
     /**
      *
      * @param context
@@ -57,8 +57,8 @@ public  class TimeRun {
 
 
         task = new TimerTask() {
-            @Override
-            public void run() {
+                @Override
+                public void run() {
                 if(Constant.TIME_OPERATE_UPDATEWATER==operateflag){
                     //上传水质
                     GetDeviceInfo getDeviceInfo = new GetDeviceInfo();

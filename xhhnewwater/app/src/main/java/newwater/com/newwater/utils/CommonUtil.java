@@ -1,8 +1,22 @@
 package newwater.com.newwater.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Base64;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import newwater.com.newwater.TestJSON;
+import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.constants.UriConstant;
+import newwater.com.newwater.view.BaseActivity;
+import newwater.com.newwater.view.PopQrCode;
+import okhttp3.Request;
 
 public class CommonUtil {
 
@@ -39,6 +53,44 @@ public class CommonUtil {
             }
         }
         return result;
+    }
+
+    /**
+     * 是否是快速点击（是则return，防止快速连续点击）
+     * @return
+     */
+    public static long lastClickTime;
+    public static boolean isFastClick() {
+        boolean flag = true;
+        long currentClickTime = System.currentTimeMillis();
+        if ((currentClickTime - lastClickTime) >= Constant.FAST_CLICK_DELAY_TIME) {
+            flag = false;
+        }
+        lastClickTime = currentClickTime;
+        return flag;
+    }
+
+    public static void showQrCode(BaseActivity mContext) {
+        mContext.showPopQrCode();
+
+        final ImageView qcode = PopQrCode.qrcode;
+        String qcodestring = TestJSON.getWeiXinQcode();
+
+        //请求二维码
+        String getTempQCodeurl = RestUtils.getUrl(UriConstant.GETTEMPQCODE);
+        OkHttpUtils.getAsyn(getTempQCodeurl, new OkHttpUtils.StringCallback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+            }
+            @Override
+            public void onResponse(String response) {
+                Bitmap qcodebitmap = Create2QR2.createBitmap(response);
+                qcode.setImageBitmap(qcodebitmap);
+                TextView rightText = PopQrCode.getwater;
+                rightText.setText("扫码关注，完成用户绑定");
+            }
+        });
     }
 
 }

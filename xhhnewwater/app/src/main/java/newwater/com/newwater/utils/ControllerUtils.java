@@ -21,7 +21,7 @@ public class ControllerUtils {
             devUtil = new DevUtil(null);
         }
     }
-    public static void  operatedevice(int directive,boolean flag){
+    public static void operateDevice(int directive, boolean flag){
             if(directive==SET_IOHEATENABLED){
                 //加热
                 devUtil.set_ioHeatEnabled(flag);

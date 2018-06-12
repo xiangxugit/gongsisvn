@@ -7,4 +7,5 @@ public class DispenserCache {
     public static String lastPushId;
     public static int freeAdIndex;
     public static List<Advs_Video> freeAdVideoList;
+    public static boolean isFreeAdDone;
 }

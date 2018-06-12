@@ -17,8 +17,8 @@
         android:id="@+id/free_ad_quit_btn"
         style="@style/free_ad_top_right_style"
         android:background="@drawable/button_round_gray"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:textSize="20sp"
         android:text="×"/>
 

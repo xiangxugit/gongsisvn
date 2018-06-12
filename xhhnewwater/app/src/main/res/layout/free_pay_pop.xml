@@ -12,7 +12,7 @@
         <LinearLayout
             android:id="@+id/leftpop"
             android:layout_width="450dp"
-            android:layout_height="260dp"
+            android:layout_height="280dp"
             android:orientation="vertical"
             android:padding="@dimen/middlemargin"
             android:gravity="center"
@@ -47,7 +47,7 @@
         <LinearLayout
             android:id="@+id/rightpop"
             android:layout_width="450dp"
-            android:layout_height="260dp"
+            android:layout_height="280dp"
             android:orientation="vertical"
             android:layout_toRightOf="@+id/leftpop"
             android:padding="@dimen/margintop"
