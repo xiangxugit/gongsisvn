@@ -1,0 +1,233 @@
+package newwater.com.newwater.view.activity;
+
+import android.content.Context;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushBaseReceiver;
+import com.tencent.android.tpush.XGPushClickedResult;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
+import com.tencent.android.tpush.XGPushRegisterResult;
+import com.tencent.android.tpush.XGPushShowedResult;
+import com.tencent.android.tpush.XGPushTextMessage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import newwater.com.newwater.R;
+import newwater.com.newwater.broadcast.MessageReceiver;
+import newwater.com.newwater.constants.UriConstant;
+import newwater.com.newwater.utils.Create2QR2;
+import newwater.com.newwater.utils.OkHttpUtils;
+import newwater.com.newwater.utils.RestUtils;
+import okhttp3.Request;
+
+import static newwater.com.newwater.utils.PermissionUtils.permissions;
+
+public class InitActivity extends AppCompatActivity {
+    private LinearLayout fiststep;
+    private LinearLayout laststep;
+    private ImageView qcode;//扫描二维码激活系统
+    private MessageReceiver messageReceiver;//信鸽Receiver
+
+    // 权限集合
+    List<String> permissionList = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initView();
+        initData();
+    }
+
+    public void initView() {
+        fiststep = (LinearLayout) findViewById(R.id.fiststep);
+        laststep = (LinearLayout) findViewById(R.id.laststep);
+        qcode = (ImageView) findViewById(R.id.qcode);
+    }
+
+    private void initData() {
+        initPermission();
+        initPush();
+    }
+
+    private void initPermission() {
+        int i;
+        for (i = 0; i < permissions.length; i++) {
+            if (ContextCompat.checkSelfPermission(this, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permissions[i]);
+            }
+        }
+        if (permissionList.isEmpty()) {//未授予的权限为空，表示都授予了
+            Toast.makeText(this, "已经授权", Toast.LENGTH_LONG).show();
+        } else {//请求权限方法
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);//将List转为数组
+            ActivityCompat.requestPermissions(this, permissions, i);
+        }
+    }
+
+    private void initPush() {
+        // 开启logcat输出，方便debug，发布时请关闭
+        // XGPushConfig.enableDebug(this, true);
+        // 如果需要知道注册是否成功，请使用registerPush(getApplicationContext(), XGIOperateCallback)带callback版本
+        // 具体可参考详细的开发指南
+        // 传递的参数为ApplicationContext
+        XGPushConfig.enableDebug(this, true);
+        XGPushManager.registerPush(this, new XGIOperateCallback() {
+            @Override
+            public void onSuccess(Object data, int flag) {
+                //token在设备卸载重装的时候有可能会变
+                Log.i("TPush", "注册成功，设备token为：" + data);
+
+                //TODO 生成二维码
+                //String data = XGPushConfig.getToken(MainActivity.this);
+                Bitmap bit = Create2QR2.createBitmap(data.toString());
+                qcode.setImageBitmap(bit);
+            }
+
+            @Override
+            public void onFail(Object data, int errCode, String msg) {
+                Log.i("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+            }
+        });
+
+        DynamicReceiver myReceiver = new DynamicReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MessageReceiver.PUSHACTION);
+        filter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(myReceiver, filter);
+    }
+
+    /**
+     * 信鸽消息透传
+     */
+    public class DynamicReceiver extends XGPushBaseReceiver {
+        @Override
+        public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
+
+        }
+
+        @Override
+        public void onUnregisterResult(Context context, int i) {
+
+        }
+
+        @Override
+        public void onSetTagResult(Context context, int i, String s) {
+
+        }
+
+        @Override
+        public void onDeleteTagResult(Context context, int i, String s) {
+
+        }
+
+        @Override
+        public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
+            Log.e("收到消息:", xgPushTextMessage.toString());
+            String jsonData = xgPushTextMessage.getContent();
+            JSONObject jsonObject = JSON.parseObject(jsonData);
+            int deviceId = jsonObject.getInteger("deviceId");
+            if (0 == deviceId) {
+                // TODO: 2018/6/14 0014 上报无deviceId错误
+                return;
+            }
+            getDeviceInfo(deviceId);
+
+            //String url = RestUtils.getUrl(RestUtils.GET + "?deviceId=" + deviceId);
+            /*if (deviceId != null && deviceId.length() != 0) {
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("load_send_device_id", deviceId);
+                bundle.putString("load_send_drink_mode", deviceMode);
+                intent.putExtras(bundle);
+                intent.setClassName(packageName, activity);
+                startActivityForResult(intent, 1);
+            }*/
+        }
+
+        @Override
+        public void onNotifactionClickedResult(Context context, XGPushClickedResult xgPushClickedResult) {
+
+        }
+
+        @Override
+        public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
+
+        }
+    }
+
+    private void getDeviceInfo(int deviceId) {
+        OkHttpUtils.getAsyn(RestUtils.getUrl(UriConstant.GET_DEVICE_CONFIG + deviceId), new OkHttpUtils.StringCallback() {
+            @Override
+            public void onFailure(int errCode, Request request, IOException e) {
+                // TODO: 2018/6/14 0014 过一分钟再来一次
+            }
+
+            @Override
+            public void onResponse(String response) {
+                JSONObject jsonObject = JSONObject.parseObject(response);
+                Integer code = jsonObject.getInteger("code");
+                if (0 == code) {
+                    String data = jsonObject.getString("data");
+                    // TODO: 2018/6/14 0014 继续解析
+                    // TODO: 2018/6/14 0014 都是对的就开始下载 
+                } else {
+                    // TODO: 2018/6/14 0014 错误的处理
+                }
+
+            }
+        });
+    }
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                //判断是否勾选禁止后不再询问
+                boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i]);
+                if (showRequestPermission) {
+                    showToast("权限未申请");
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 控制流程 控件的显示/隐藏
+     *
+     * @param step
+     */
+    public void showStep(String step) {
+        if (step == "fist") {
+            fiststep.setVisibility(View.GONE);
+            laststep.setVisibility(View.VISIBLE);
+        }
+    }
+}

@@ -369,13 +369,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(final File file) {
                 Log.e("tag", "下载成功:" + file.getPath());
                 //TODO 安装
-                install(file.getPath());
+//                install(file.getPath());
                 //PackageUtils.install(MainActivity.this, file.getPath());
                 showStep("two");
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-                startActivity(intent);
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+//                startActivity(intent);
             }
 
             @Override

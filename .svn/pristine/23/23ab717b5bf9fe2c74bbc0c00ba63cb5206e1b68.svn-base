@@ -1,0 +1,196 @@
+package newwater.com.newwater.utils;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.serialport.DevUtil;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+import org.xutils.common.util.LogUtil;
+import org.xutils.ex.DbException;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import newwater.com.newwater.App;
+import newwater.com.newwater.DataBaseUtils.XutilsInit;
+import newwater.com.newwater.beans.DeiviceParams;
+import newwater.com.newwater.beans.SysDeviceWaterQualityAO;
+import newwater.com.newwater.beans.Sys_Device_Water_Quality;
+import newwater.com.newwater.beans.person;
+import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.constants.UriConstant;
+import okhttp3.Request;
+
+/**
+ * Created by Administrator on 2018/4/28 0028.
+ */
+
+public class TimeRun {
+
+    //    https://blog.csdn.net/qinde025/article/details/6828723
+    public static TimerTask task;
+    private DevUtil devUtil = null;
+    private Handler handler = null;
+
+    /**
+     * @param context
+     * @param handler
+     * @param loopjiange
+     * @param what
+     * @param operateflag 1:水质状态
+     */
+
+    public TimeRun(final Activity context, Date time, final Handler handler, final long loopjiange, final int what, final int operateflag) {
+        if (null == devUtil) {
+            devUtil = new DevUtil(null);
+        }
+
+
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                if (Constant.TIME_OPERATE_UPDATEWATER == operateflag) {
+                    //上传水质
+                    GetDeviceInfo getDeviceInfo = new GetDeviceInfo();
+                    String deviceId = getDeviceInfo.getIMEI(context);
+                    if (null == deviceId) {
+                        deviceId = "123456";
+                    }
+                    deviceId = "123456";
+                    SysDeviceWaterQualityAO sysDeviceWaterQualityAO = new SysDeviceWaterQualityAO();
+                    sysDeviceWaterQualityAO.setDeviceId(Integer.parseInt(deviceId));
+//                    String[][] data=devUtil.toArray();
+
+                    sysDeviceWaterQualityAO.setDeviceRawWater(devUtil.get_run_sTDS_value());
+                    sysDeviceWaterQualityAO.setDevicePureWater(devUtil.get_run_sTDS_value());
+                    sysDeviceWaterQualityAO.setDeviceWaterQualityTime(TimeUtils.getCurrentTime());
+                    sysDeviceWaterQualityAO.setHotTemp(devUtil.get_run_hotTemp_value());
+                    sysDeviceWaterQualityAO.setColdTemp(devUtil.get_run_coolTemp_value());
+                    sysDeviceWaterQualityAO.setHeatingStatus(devUtil.get_run_bHot_value());
+                    sysDeviceWaterQualityAO.setCoolingStatus(devUtil.get_run_bCool_value());
+                    sysDeviceWaterQualityAO.setWaterPurificationStatus(devUtil.get_run_bWater_value());
+                    sysDeviceWaterQualityAO.setFlushStatus(devUtil.get_run_bRinse_value());
+                    sysDeviceWaterQualityAO.setRawWaterStatus(devUtil.get_run_bFault_value());
+                    sysDeviceWaterQualityAO.setWaterLeakageStatus(devUtil.get_run_bLeak_value());
+                    sysDeviceWaterQualityAO.setSwitchStatus(devUtil.get_run_bSwitch_value());
+                    sysDeviceWaterQualityAO.setWaterCupStatus(devUtil.get_run_bCup_value());
+                    String hotoutornot = "";
+                    if (devUtil.get_run_hotWaterSW_value() == true) {
+                        sysDeviceWaterQualityAO.setHotWaterOutletStatus(1);
+                    } else {
+                        sysDeviceWaterQualityAO.setHotWaterOutletStatus(0);
+                    }
+                    if (devUtil.get_run_coolWaterSW_value() == true) {
+                        sysDeviceWaterQualityAO.setColdWaterOutletStatus(1);
+                    } else {
+                        sysDeviceWaterQualityAO.setColdWaterOutletStatus(0);
+                    }
+
+                    //温水出水状态
+                    if (devUtil.get_run_normalWaterSW_value() == true) {
+                        sysDeviceWaterQualityAO.setWarmWaterOutletStatus(1);
+                    } else {
+                        sysDeviceWaterQualityAO.setWarmWaterOutletStatus(0);
+                    }
+                    //加热设备温度
+                    sysDeviceWaterQualityAO.setHeatingTemp(devUtil.get_pam_hotTemp_value());
+                    //制冷设备温度
+                    sysDeviceWaterQualityAO.setCoolingTemp(devUtil.get_pam_coolTemp_value());
+                    //单位是分钟
+
+                    sysDeviceWaterQualityAO.setFlushInterval(devUtil.get_pam_rinseTimeLong_value());
+
+                    sysDeviceWaterQualityAO.setFlushDuration(devUtil.get_pam_rinseInterval_value());
+
+                    String postdata = JSON.toJSONString(sysDeviceWaterQualityAO, true);
+//                    OkHttpUtils
+//                    Message msg = new Message();
+//                    msg.what = what;
+//                    msg.obj = postdata;
+//                    handler.sendMessage(msg);
+                    String url = RestUtils.getUrl(UriConstant.WATERQUALITY);
+                    OkHttpUtils.postAsyn(url, new OkHttpUtils.StringCallback() {
+                        @Override
+                        public void onFailure(int errCode, Request request, IOException e) {
+                            Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onResponse(String response) {
+                            Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+                        }
+                    }, postdata);
+                }
+
+                if (Constant.TIME_OPETATE_UPDATESCODE == operateflag) {
+                    String sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE);
+
+                    OkHttpUtils.getAsyn(sCodeUrl, new OkHttpUtils.StringCallback() {
+                        @Override
+                        public void onFailure(int errCode, Request request, IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response) {
+                            JSONObject scodeobj = JSONObject.parseObject(response);
+//                            if("0".equals(scodeobj.getString("code"))){
+//                                String data = scodeobj.getString("date");
+//                                BaseSharedPreferences.setString(context,Constant.SCODEKEY,data);
+//                            }
+                        }
+                    });
+                }
+                //进行数据库上传
+
+//                List<person> list = null;
+//                try {
+//                    XutilsInit xutilsInit = new XutilsInit(context);
+//                    list = xutilsInit.getDb().findAll(person.class);
+//                    if(null==list){
+//
+//                    }else{
+//                        Log.e("---",""+ list.toString());
+//                    }
+//                } catch (DbException e) {
+//                    e.printStackTrace();
+//                }
+
+
+//                UploadLocalData uploadLocalData = new UploadLocalData();
+//                uploadLocalData.upload("",list.toString());
+
+
+            }
+        };
+        Timer timer = new Timer(true);
+        timer.schedule(task, time, loopjiange);
+    }
+
+
+    public void cancelTimer() {
+        this.task.cancel();
+    }
+
+    //TODO 封装一个获取date的方法
+    public static Date tasktime(int hour, int minute, int second) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour); //凌晨1点
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        Date date = calendar.getTime(); //第一次执行定时任务的时间
+        return date;
+    }
+
+
+}

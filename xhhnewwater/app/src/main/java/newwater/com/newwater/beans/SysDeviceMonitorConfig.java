@@ -1,0 +1,597 @@
+package newwater.com.newwater.beans;
+
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * Created by Administrator on 2018/5/21 0021.
+ */
+@Table(name = "Sys_Device_Monitor_Config")
+public class SysDeviceMonitorConfig implements Serializable {
+
+    @Column(name = "mot_cfg_id", isId = true, autoGen = true)
+    private int motCfgId;
+
+
+    /**
+     * 设备ID
+     */
+    @Column(name = "s")
+    private int deviceId;
+
+
+    /**
+     * 巡检时间(单位分钟)
+     */
+    @Column(name = "mot_cfg_network_time")
+    private int motCfgNetworkTime;
+
+
+    /**
+     * 巡检次数(单位次)
+     */
+    @Column(name = "mot_cfg_network_times")
+    private int motCfgNetworkTimes;
+
+
+    /**
+     * PP棉使用时间(单位天)
+     */
+    @Column(name = "mot_cfg_pp_time")
+    private int motCfgPpTime;
+
+
+    /**
+     * PP棉制水总流量(单位L)
+     */
+    @Column(name = "mot_cfg_pp_flow")
+    private int motCfgPpFlow;
+
+
+    /**
+     * PP棉制更换时间
+     */
+    @Column(name = "mot_cfg_pp_change_time")
+    private java.util.Date motCfgPpChangeTime;
+
+
+    /**
+     * 颗粒活性炭使用时间(单位天) 注：颗粒活性炭使用时长 100天
+     */
+    @Column(name = "mot_cfg_grain_carbon_time")
+    private int motCfgGrainCarbonTime;
+
+
+    /**
+     * 颗粒活性炭使用时间(单位L) 注：颗粒活性炭制水总流量11355L
+     */
+    @Column(name = "mot_cfg_grain_carbon_flow")
+    private int motCfgGrainCarbonFlow;
+
+
+    /**
+     * 颗粒活性炭更换时间
+     */
+    @Column(name = "mot_cfg_grain_carbon_change_time")
+    private java.util.Date motCfgGrainCarbonChangeTime;
+
+
+    /**
+     * 压缩活性炭使用时间(单位天)
+     * 注：压缩活性炭使用时长 100天
+     */
+    @Column(name = "mot_cfg_press_carbon_time")
+    private int motCfgPressCarbonTime;
+
+
+    /**
+     * 压缩活性炭使用时间(单位L)
+     * 注：压缩活性炭制水总流量11355L
+     */
+    @Column(name = "mot_cfg_press_carbon_flow")
+    private int motCfgPressCarbonFlow;
+
+
+    /**
+     * 压缩活性炭更换时间
+     */
+    @Column(name = "mot_cfg_press_carbon_change_time")
+    private java.util.Date motCfgPressCarbonChangeTime;
+
+
+    /**
+     * 后置活性炭使用时间(单位天)
+     * 注：后置活性炭使用时长 100天
+     */
+    @Column(name = "mot_cfg_pose_carbon_time")
+    private int motCfgPoseCarbonTime;
+
+
+    /**
+     * 后置活性炭使用时间(单位L)
+     * 注：后置活性炭制水总流量11355L
+     */
+    @Column(name = "mot_cfg_pose_carbon_flow")
+    private int motCfgPoseCarbonFlow;
+
+
+    /**
+     * 后置活性炭更换时间
+     */
+    @Column(name = "mot_cfg_pose_carbon_change_time")
+    private java.util.Date motCfgPoseCarbonChangeTime;
+
+
+    /**
+     * RO反渗透膜使用时间(单位天)
+     * 注：RO反渗透膜使用时长 540天
+     */
+    @Column(name = "mot_cfg_ro_time")
+    private int motCfgRoTime;
+
+
+    /**
+     * RO反渗透膜使用时间(单位L)
+     * 注：RO反渗透膜制水总流量11355L
+     */
+    @Column(name = "mot_cfg_ro_flow")
+    private int motCfgRoFlow;
+
+
+    /**
+     * RO反渗透膜更换时间
+     */
+    @Column(name = "mot_cfg_ro_change_time")
+    private java.util.Date motCfgRoChangeTime;
+
+    /**
+     * 监控数据上报时间间隔（单位分钟）(激活时间开始)
+     */
+    @Column(name = "mot_cfg_up_time")
+    private int motCfgUpTime;
+
+
+    /**
+     * 设备单次最大出水量（单位ml）
+     */
+    @Column(name = "mot_cfg_max_flow")
+    private int motCfgMaxFlow;
+
+
+    /**
+     * 音量控制
+     */
+    @Column(name = "mot_cfg_volume")
+    private int motCfgVolume;
+
+
+    /**
+     * 冲洗时间间隔(/分/次)
+     */
+    @Column(name = "mot_cfg_flush_interval")
+    private int motCfgFlushInterval;
+
+
+    /**
+     * 冲洗持续时长(/次/秒)
+     */
+    @Column(name = "mot_cfg_flush_duration")
+    private int motCfgFlushDuration;
+
+
+    /**
+     * 加热临界温度
+     */
+    @Column(name = "mot_cfg_heating_temp")
+    private int motCfgHeatingTemp;
+
+
+    /**
+     * 制冷临界温度
+     */
+    @Column(name = "mot_cfg_cooling_temp")
+    private int motCfgCoolingTemp;
+
+
+    /**
+     * 是否全天加热(0-否 1-是)
+     */
+    @Column(name = "mot_cfg_heating_allday")
+    private int motCfgHeatingAllday;
+
+
+    /**
+     * 按时间段加热
+     */
+    @Column(name = "mot_cfg_heating_interval")
+    private String motCfgHeatingInterval;
+
+
+    /**
+     * 是否全天制冷(0-否 1-是)
+     */
+    @Column(name = "mot_cfg_cooling_allday")
+    private int motCfgCoolingAllday;
+
+
+    /**
+     * 按时间段制冷
+     */
+    @Column(name = "mot_cfg_cooling_interval")
+    private String motCfgCoolingInterval;
+
+
+    /**
+     * 订单子ID（激活时选择）
+     */
+    @Column(name = "order_dtl_id")
+    private int orderDtlId;
+
+
+    /**
+     * 维护人员
+     */
+    @Column(name = "maintenance_admin_user_id")
+    private int maintenanceAdminUserId;
+
+
+    /**
+     * 维护人员
+     */
+    @Column(name = "maintenance_admin_user_name")
+    private String maintenanceAdminUserName;
+
+
+    /**
+     * 收费模式(1:售水；2：租赁；3：销售)
+     */
+    @Column(name = "product_charg_mode")
+    private int productChargMode;
+
+    /**
+     * 手机号
+     */
+    @Column(name = "admin_user_telephone")
+    private String adminUserTelephone;
+
+    /**
+     * 设备租赁到期时间
+     */
+    @Column(name = "product_rent_time")
+    private java.util.Date productRentTime;
+
+
+    public int getMotCfgId() {
+        return motCfgId;
+    }
+
+    public void setMotCfgId(int motCfgId) {
+        this.motCfgId = motCfgId;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public int getMotCfgNetworkTime() {
+        return motCfgNetworkTime;
+    }
+
+    public void setMotCfgNetworkTime(int motCfgNetworkTime) {
+        this.motCfgNetworkTime = motCfgNetworkTime;
+    }
+
+    public int getMotCfgNetworkTimes() {
+        return motCfgNetworkTimes;
+    }
+
+    public void setMotCfgNetworkTimes(int motCfgNetworkTimes) {
+        this.motCfgNetworkTimes = motCfgNetworkTimes;
+    }
+
+    public int getMotCfgPpTime() {
+        return motCfgPpTime;
+    }
+
+    public void setMotCfgPpTime(int motCfgPpTime) {
+        this.motCfgPpTime = motCfgPpTime;
+    }
+
+    public int getMotCfgPpFlow() {
+        return motCfgPpFlow;
+    }
+
+    public void setMotCfgPpFlow(int motCfgPpFlow) {
+        this.motCfgPpFlow = motCfgPpFlow;
+    }
+
+    public Date getMotCfgPpChangeTime() {
+        return motCfgPpChangeTime;
+    }
+
+    public void setMotCfgPpChangeTime(Date motCfgPpChangeTime) {
+        this.motCfgPpChangeTime = motCfgPpChangeTime;
+    }
+
+    public int getMotCfgGrainCarbonTime() {
+        return motCfgGrainCarbonTime;
+    }
+
+    public void setMotCfgGrainCarbonTime(int motCfgGrainCarbonTime) {
+        this.motCfgGrainCarbonTime = motCfgGrainCarbonTime;
+    }
+
+    public int getMotCfgGrainCarbonFlow() {
+        return motCfgGrainCarbonFlow;
+    }
+
+    public void setMotCfgGrainCarbonFlow(int motCfgGrainCarbonFlow) {
+        this.motCfgGrainCarbonFlow = motCfgGrainCarbonFlow;
+    }
+
+    public Date getMotCfgGrainCarbonChangeTime() {
+        return motCfgGrainCarbonChangeTime;
+    }
+
+    public void setMotCfgGrainCarbonChangeTime(Date motCfgGrainCarbonChangeTime) {
+        this.motCfgGrainCarbonChangeTime = motCfgGrainCarbonChangeTime;
+    }
+
+    public int getMotCfgPressCarbonTime() {
+        return motCfgPressCarbonTime;
+    }
+
+    public void setMotCfgPressCarbonTime(int motCfgPressCarbonTime) {
+        this.motCfgPressCarbonTime = motCfgPressCarbonTime;
+    }
+
+    public int getMotCfgPressCarbonFlow() {
+        return motCfgPressCarbonFlow;
+    }
+
+    public void setMotCfgPressCarbonFlow(int motCfgPressCarbonFlow) {
+        this.motCfgPressCarbonFlow = motCfgPressCarbonFlow;
+    }
+
+    public Date getMotCfgPressCarbonChangeTime() {
+        return motCfgPressCarbonChangeTime;
+    }
+
+    public void setMotCfgPressCarbonChangeTime(Date motCfgPressCarbonChangeTime) {
+        this.motCfgPressCarbonChangeTime = motCfgPressCarbonChangeTime;
+    }
+
+    public int getMotCfgPoseCarbonTime() {
+        return motCfgPoseCarbonTime;
+    }
+
+    public void setMotCfgPoseCarbonTime(int motCfgPoseCarbonTime) {
+        this.motCfgPoseCarbonTime = motCfgPoseCarbonTime;
+    }
+
+    public int getMotCfgPoseCarbonFlow() {
+        return motCfgPoseCarbonFlow;
+    }
+
+    public void setMotCfgPoseCarbonFlow(int motCfgPoseCarbonFlow) {
+        this.motCfgPoseCarbonFlow = motCfgPoseCarbonFlow;
+    }
+
+    public Date getMotCfgPoseCarbonChangeTime() {
+        return motCfgPoseCarbonChangeTime;
+    }
+
+    public void setMotCfgPoseCarbonChangeTime(Date motCfgPoseCarbonChangeTime) {
+        this.motCfgPoseCarbonChangeTime = motCfgPoseCarbonChangeTime;
+    }
+
+    public int getMotCfgRoTime() {
+        return motCfgRoTime;
+    }
+
+    public void setMotCfgRoTime(int motCfgRoTime) {
+        this.motCfgRoTime = motCfgRoTime;
+    }
+
+    public int getMotCfgRoFlow() {
+        return motCfgRoFlow;
+    }
+
+    public void setMotCfgRoFlow(int motCfgRoFlow) {
+        this.motCfgRoFlow = motCfgRoFlow;
+    }
+
+    public Date getMotCfgRoChangeTime() {
+        return motCfgRoChangeTime;
+    }
+
+    public void setMotCfgRoChangeTime(Date motCfgRoChangeTime) {
+        this.motCfgRoChangeTime = motCfgRoChangeTime;
+    }
+
+    public int getMotCfgUpTime() {
+        return motCfgUpTime;
+    }
+
+    public void setMotCfgUpTime(int motCfgUpTime) {
+        this.motCfgUpTime = motCfgUpTime;
+    }
+
+    public int getMotCfgMaxFlow() {
+        return motCfgMaxFlow;
+    }
+
+    public void setMotCfgMaxFlow(int motCfgMaxFlow) {
+        this.motCfgMaxFlow = motCfgMaxFlow;
+    }
+
+    public int getMotCfgVolume() {
+        return motCfgVolume;
+    }
+
+    public void setMotCfgVolume(int motCfgVolume) {
+        this.motCfgVolume = motCfgVolume;
+    }
+
+    public int getMotCfgFlushInterval() {
+        return motCfgFlushInterval;
+    }
+
+    public void setMotCfgFlushInterval(int motCfgFlushInterval) {
+        this.motCfgFlushInterval = motCfgFlushInterval;
+    }
+
+    public int getMotCfgFlushDuration() {
+        return motCfgFlushDuration;
+    }
+
+    public void setMotCfgFlushDuration(int motCfgFlushDuration) {
+        this.motCfgFlushDuration = motCfgFlushDuration;
+    }
+
+    public int getMotCfgHeatingTemp() {
+        return motCfgHeatingTemp;
+    }
+
+    public void setMotCfgHeatingTemp(int motCfgHeatingTemp) {
+        this.motCfgHeatingTemp = motCfgHeatingTemp;
+    }
+
+    public int getMotCfgCoolingTemp() {
+        return motCfgCoolingTemp;
+    }
+
+    public void setMotCfgCoolingTemp(int motCfgCoolingTemp) {
+        this.motCfgCoolingTemp = motCfgCoolingTemp;
+    }
+
+    public int getMotCfgHeatingAllday() {
+        return motCfgHeatingAllday;
+    }
+
+    public void setMotCfgHeatingAllday(int motCfgHeatingAllday) {
+        this.motCfgHeatingAllday = motCfgHeatingAllday;
+    }
+
+    public String getMotCfgHeatingInterval() {
+        return motCfgHeatingInterval;
+    }
+
+    public void setMotCfgHeatingInterval(String motCfgHeatingInterval) {
+        this.motCfgHeatingInterval = motCfgHeatingInterval;
+    }
+
+    public int getMotCfgCoolingAllday() {
+        return motCfgCoolingAllday;
+    }
+
+    public void setMotCfgCoolingAllday(int motCfgCoolingAllday) {
+        this.motCfgCoolingAllday = motCfgCoolingAllday;
+    }
+
+    public String getMotCfgCoolingInterval() {
+        return motCfgCoolingInterval;
+    }
+
+    public void setMotCfgCoolingInterval(String motCfgCoolingInterval) {
+        this.motCfgCoolingInterval = motCfgCoolingInterval;
+    }
+
+    public int getOrderDtlId() {
+        return orderDtlId;
+    }
+
+    public void setOrderDtlId(int orderDtlId) {
+        this.orderDtlId = orderDtlId;
+    }
+
+    public int getMaintenanceAdminUserId() {
+        return maintenanceAdminUserId;
+    }
+
+    public void setMaintenanceAdminUserId(int maintenanceAdminUserId) {
+        this.maintenanceAdminUserId = maintenanceAdminUserId;
+    }
+
+    public String getMaintenanceAdminUserName() {
+        return maintenanceAdminUserName;
+    }
+
+    public void setMaintenanceAdminUserName(String maintenanceAdminUserName) {
+        this.maintenanceAdminUserName = maintenanceAdminUserName;
+    }
+
+    public int getProductChargMode() {
+        return productChargMode;
+    }
+
+    public void setProductChargMode(int productChargMode) {
+        this.productChargMode = productChargMode;
+    }
+
+    public String getAdminUserTelephone() {
+        return adminUserTelephone;
+    }
+
+    public void setAdminUserTelephone(String adminUserTelephone) {
+        this.adminUserTelephone = adminUserTelephone;
+    }
+
+    public Date getProductRentTime() {
+        return productRentTime;
+    }
+
+    public void setProductRentTime(Date productRentTime) {
+        this.productRentTime = productRentTime;
+    }
+
+
+    @Override
+    public String toString() {
+        return "SysDeviceMonitorConfig{" +
+                "motCfgId=" + motCfgId +
+                ", deviceId=" + deviceId +
+                ", motCfgNetworkTime=" + motCfgNetworkTime +
+                ", motCfgNetworkTimes=" + motCfgNetworkTimes +
+                ", motCfgPpTime=" + motCfgPpTime +
+                ", motCfgPpFlow=" + motCfgPpFlow +
+                ", motCfgPpChangeTime=" + motCfgPpChangeTime +
+                ", motCfgGrainCarbonTime=" + motCfgGrainCarbonTime +
+                ", motCfgGrainCarbonFlow=" + motCfgGrainCarbonFlow +
+                ", motCfgGrainCarbonChangeTime=" + motCfgGrainCarbonChangeTime +
+                ", motCfgPressCarbonTime=" + motCfgPressCarbonTime +
+                ", motCfgPressCarbonFlow=" + motCfgPressCarbonFlow +
+                ", motCfgPressCarbonChangeTime=" + motCfgPressCarbonChangeTime +
+                ", motCfgPoseCarbonTime=" + motCfgPoseCarbonTime +
+                ", motCfgPoseCarbonFlow=" + motCfgPoseCarbonFlow +
+                ", motCfgPoseCarbonChangeTime=" + motCfgPoseCarbonChangeTime +
+                ", motCfgRoTime=" + motCfgRoTime +
+                ", motCfgRoFlow=" + motCfgRoFlow +
+                ", motCfgRoChangeTime=" + motCfgRoChangeTime +
+                ", motCfgUpTime=" + motCfgUpTime +
+                ", motCfgMaxFlow=" + motCfgMaxFlow +
+                ", motCfgVolume=" + motCfgVolume +
+                ", motCfgFlushInterval=" + motCfgFlushInterval +
+                ", motCfgFlushDuration=" + motCfgFlushDuration +
+                ", motCfgHeatingTemp=" + motCfgHeatingTemp +
+                ", motCfgCoolingTemp=" + motCfgCoolingTemp +
+                ", motCfgHeatingAllday=" + motCfgHeatingAllday +
+                ", motCfgHeatingInterval='" + motCfgHeatingInterval + '\'' +
+                ", motCfgCoolingAllday=" + motCfgCoolingAllday +
+                ", motCfgCoolingInterval='" + motCfgCoolingInterval + '\'' +
+                ", orderDtlId=" + orderDtlId +
+                ", maintenanceAdminUserId=" + maintenanceAdminUserId +
+                ", maintenanceAdminUserName='" + maintenanceAdminUserName + '\'' +
+                ", productChargMode=" + productChargMode +
+                ", adminUserTelephone='" + adminUserTelephone + '\'' +
+                ", productRentTime=" + productRentTime +
+                '}';
+    }
+}

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activity.TestActivity"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
+        android:text="结果"
+        android:gravity="center"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_test"
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
+        android:gravity="center"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_pause"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="暂停"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="重新播放"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_go_on"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="继续"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_download"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="下载"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_stop_down"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="暂停下载"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_jump"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="跳转"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_convert"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="转换"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_get_db"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="获取数据库数据"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_upload"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="上报"
+        android:visibility="visible"/>
+
+    <newwater.com.newwater.media.IjkVideoView
+        android:id="@+id/test_ijk_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+</LinearLayout>

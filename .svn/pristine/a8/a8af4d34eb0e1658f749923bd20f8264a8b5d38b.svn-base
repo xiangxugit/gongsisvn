@@ -1,0 +1,60 @@
+package newwater.com.newwater.constants;
+
+import android.os.Environment;
+
+public class UriConstant {
+
+    public static String IP = "192.168.0.200";//外网服务器
+
+//    public static String IP="192.168.0.61";
+
+
+    public static String PORT = "28301";
+//    public static String PORT = "8080";
+
+    public final static String LOGIN = "huapage/mobi/app/login/user";
+
+    //需要loginName loginPassword
+    public final static String GETTOKEN = "api/v1/token";
+    //获取最新的apk
+    public final static String NEWAPK = "api/v1/apk/new";
+
+    //水质信息采集
+    public final static String WATERQUALITY = "api/v1/device/data/waterQuality";
+
+    //获取临时二维码
+    public final static String GETTEMPQCODE = "api/v1/andorid/getSQ";
+
+    //设备通知接口
+    public final static String NOTICEQUALITY = "api/v1/device/notice/noticeQuality";
+
+    //售水几率
+    public final static String WATERSALE = "api/v1/device/sale/water";
+
+    //获取设备信息
+    public final static String GET_DEVICE_CONFIG = "api/v1/device/config/";
+
+    // 根目录
+    public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
+//    Environment.getExternalStorageDirectory().getPath()
+
+    // 视频文件夹
+    public static final String VIDEO_DIR = "video/";
+    // 初始视频文件夹
+    public static final String INIT_VIDEO_DIR = "init/video/";
+    // 初始视频1文件名
+    public static final String VIDEO_INIT_FILE_NAME_1 = "Init1.mp4";
+    // 初始视频2文件名
+    public static final String VIDEO_INIT_FILE_NAME_2 = "Init2.mp4";
+    // 视频消息推送暂存文件名
+    public static final String VIDEO_PUSH_FILE_NAME = "PushContent.txt";
+    // database文件夹
+    public static final String DB_DIR = "db/";
+
+    // 分隔符
+    public static final String FILE_SEPARATE = "/";
+
+    // 广告视频的baseUrl
+    public static final String AD_VIDEO_BASE_URL= "http://mirror.aarnet.edu.au/pub/TED-talks/";
+//    public static final String AD_VIDEO_BASE_URL= "http://220.170.49.117/";
+}

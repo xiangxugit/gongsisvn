@@ -1,0 +1,159 @@
+package newwater.com.newwater.processpreserve;
+
+import android.app.Notification;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.serialport.DevUtil;
+import android.text.format.Time;
+import android.widget.Toast;
+
+import com.coolerfall.daemon.Daemon;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import newwater.com.newwater.view.activity.MainActivity;
+import newwater.com.newwater.beans.ViewShow;
+
+/**
+ * Created by Administrator on 2018/5/17 0017.
+ */
+
+public class DaemonService extends Service {
+    private final static int GRAY_SERVICE_ID = -1001;
+    private String DevPath = "/dev/ttyS3";//默认串口
+    private final int Baudrate = 115200;//默认波特率
+    private final int LoopIdle = 50;//线程空闲时间ms
+    private DevUtil devUtil = null;
+    public static ComThread comThread ;
+    final  MyHandler myHandler = new DaemonService.MyHandler();
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Daemon.run(this, DaemonService.class, Daemon.INTERVAL_ONE_MINUTE * 2);
+        startTimeTask();
+        grayGuard();
+        comThread = new ComThread(this, myHandler);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        MyHandler myHandler = new MyHandler();
+        if (comThread == null) {
+            comThread = new ComThread(this, myHandler);
+
+        }
+        comThread.start();
+        //启动定时任务开始取数据存入数据库
+        return super.onStartCommand(intent, flags, startId);
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        startService(new Intent(this, DaemonService.class));
+    }
+
+
+    public class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+                case 0:
+                    Intent it = new Intent();
+                    it.setAction(MainActivity.FLAG);
+                    ViewShow viewShow = (ViewShow) msg.obj;
+
+                    Bundle b = new Bundle();
+                    b.putSerializable("progress", viewShow);
+                    it.putExtras(b);
+                    sendBroadcast(it);
+                    break;
+
+                case 1:
+                    //TODO 获取list定时上报
+
+
+                    break;
+            }
+
+        }
+    }
+
+
+    private void startTimeTask() {
+
+    }
+
+
+    public static class DaemonInnerService extends Service {
+
+        @Override
+        public void onCreate() {
+            super.onCreate();
+        }
+
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            startForeground(GRAY_SERVICE_ID, new Notification());
+            //stopForeground(true);
+            stopSelf();
+            return super.onStartCommand(intent, flags, startId);
+        }
+
+        @Override
+        public IBinder onBind(Intent intent) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+//            unregisterReceiver(upd);
+        }
+    }
+
+
+    private void grayGuard() {
+        if (Build.VERSION.SDK_INT < 18) {
+            startForeground(GRAY_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
+        } else {
+            Intent innerIntent = new Intent(this, DaemonInnerService.class);
+            startService(innerIntent);
+            startForeground(GRAY_SERVICE_ID, new Notification());
+        }
+
+
+        //发送唤醒广播来促使挂掉的UI进程重新启动起来
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        Intent alarmIntent = new Intent();
+//        alarmIntent.setAction(WakeReceiver.GRAY_WAKE_ACTION);
+//        PendingIntent operation = PendingIntent.getBroadcast(this, WAKE_REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            alarmManager.setWindow(AlarmManager.RTC_WAKEUP,
+//                    System.currentTimeMillis(), ALARM_INTERVAL, operation);
+//        }else {
+//            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+//                    System.currentTimeMillis(), ALARM_INTERVAL, operation);
+//        }
+    }
+
+
+}
