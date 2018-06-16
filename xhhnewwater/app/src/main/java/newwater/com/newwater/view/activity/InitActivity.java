@@ -160,7 +160,7 @@ public class InitActivity extends AppCompatActivity {
                         qcode.setImageBitmap(bit);
                     }
                 });
-//                getDeviceInfo(1);
+                getDeviceInfo(1);
             }
 
             @Override
@@ -211,7 +211,7 @@ public class InitActivity extends AppCompatActivity {
                 return;
             }
             BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
-            getDeviceInfo(deviceId);
+//            getDeviceInfo(deviceId);
         }
 
         @Override
@@ -333,9 +333,9 @@ public class InitActivity extends AppCompatActivity {
         BaseSharedPreferences.setInt(mContext, Constant.DEVICE_TDS_THRESHOLD_KEY,
                 Constant.DEVICE_TDS_THRESHOLD_DEFAULT);
 //        public = new AdvsVideo();
-         AdvsVideo testVideo = new AdvsVideo();
-         testVideo.setAdvsVideoDownloadPath("http://mirror.aarnet.edu.au/pub/TED-talks/MarkRonson_2014.mp4");
-         adList.add(testVideo);
+//         AdvsVideo testVideo = new AdvsVideo();
+//         testVideo.setAdvsVideoDownloadPath("http://mirror.aarnet.edu.au/pub/TED-talks/MarkRonson_2014.mp4");
+//         adList.add(testVideo);
 //        adList = ......
         return true;
 

@@ -54,12 +54,10 @@ public class DaemonService extends Service {
         MyHandler myHandler = new MyHandler();
         if (comThread == null) {
             comThread = new ComThread(this, myHandler);
-
         }
         comThread.start();
         //启动定时任务开始取数据存入数据库
         return super.onStartCommand(intent, flags, startId);
-
     }
 
 
@@ -69,7 +67,7 @@ public class DaemonService extends Service {
         startService(new Intent(this, DaemonService.class));
     }
 
-
+    // TODO: 2018/6/16 0016 没有回收
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -85,22 +83,17 @@ public class DaemonService extends Service {
                     it.putExtras(b);
                     sendBroadcast(it);
                     break;
-
                 case 1:
                     //TODO 获取list定时上报
-
-
                     break;
             }
 
         }
     }
 
-
     private void startTimeTask() {
 
     }
-
 
     public static class DaemonInnerService extends Service {
 
@@ -134,6 +127,7 @@ public class DaemonService extends Service {
         if (Build.VERSION.SDK_INT < 18) {
             startForeground(GRAY_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
         } else {
+            // TODO: 2018/6/16 0016  DaemonInnerService没有在清单文件注册
             Intent innerIntent = new Intent(this, DaemonInnerService.class);
             startService(innerIntent);
             startForeground(GRAY_SERVICE_ID, new Notification());

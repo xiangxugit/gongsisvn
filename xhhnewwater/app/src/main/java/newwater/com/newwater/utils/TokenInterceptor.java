@@ -58,7 +58,7 @@ public class TokenInterceptor implements Interceptor {
      */
     private boolean isTokenExpired(Response response) {
         boolean test = false;
-        if (response.code() != 200) {
+        if (response.code() != 200&&response.code()!=404) {
             test = true;
         }
         return test;

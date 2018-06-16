@@ -9,341 +9,320 @@ import org.xutils.db.annotation.Table;
 
 
 /**
- * 
  * 水质监测对象
- * 
+ *
  * @author 自动生成
  * @createTime 2018/5/22 星期二 下午 3:07:09
  */
 @Table(name = "SysDeviceWaterQualityAO")
-public class SysDeviceWaterQualityAO implements Serializable{
+public class SysDeviceWaterQualityAO implements Serializable {
 
-	private static final long serialVersionUID = -3221953410749686858L;
+//    private static final long serialVersionUID = -3221953410749686858L;
 
-	/**
-	 * 设备id
-	 */
-	@Column(name = "deviceId", isId = true)
-	private Integer deviceId ;
+    /**
+     * 设备id
+     */
+    @Column(name = "deviceId", isId = true)
+    private Integer deviceId;
 
+    /**
+     * 原水水质
+     */
+    @Column(name = "deviceRawWater")
+    private int deviceRawWater;
 
-	/**
-	 * 原水水质
-	 */
-	@Column(name = "deviceRawWater", isId = true)
-	private int deviceRawWater ;
+    /**
+     * 纯水水质
+     */
+    @Column(name = "devicePureWater")
+    private int devicePureWater;
 
-
-	/**
-	 * 纯水水质
-	 */
-	@Column(name = "devicePureWater", isId = true)
-	private int devicePureWater ;
-
-
-	/**
-	 * 检测时间
-	 */
+    /**
+     * 检测时间
+     */
 //    @Temporal(TemporalType.DATE)
 //    @JsonFormat(timezone = "GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 //    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Column(name = "deviceWaterQualityTime", isId = true)
-	private String deviceWaterQualityTime ;
+    @Column(name = "deviceWaterQualityTime")
+    private String deviceWaterQualityTime;
 
     /**
-	 * 热水温度
-	 */
-	@Column(name = "hotTemp")
-	private Integer hotTemp ;
+     * 热水温度
+     */
+    @Column(name = "hotTemp")
+    private Integer hotTemp;
+
+    /**
+     * 冷水温度
+     */
+    @Column(name = "coldTemp")
+    private Integer coldTemp;
+
+    /**
+     * 是否正在制热：1-是，0-否
+     */
+    @Column(name = "heatingStatus")
+    private Integer heatingStatus;
+
+    /**
+     * 是否正在制冷：1-是，0-否
+     */
+    @Column(name = "coolingStatus")
+    private Integer coolingStatus;
+
+    /**
+     * 是否正在制水：1-是，0-否
+     */
+    @Column(name = "waterPurificationStatus")
+    private Integer waterPurificationStatus;
+
+    /**
+     * 是否正在冲洗：1-是，0-否
+     */
+    @Column(name = "flushStatus")
+    private Integer flushStatus;
+
+    /**
+     * 原水状态：1：正常（不缺水），0-异常（缺水）
+     */
+    @Column(name = "rawWaterStatus")
+    private Integer rawWaterStatus;
+
+    /**
+     * 漏水状态：1：正常（未漏水）0-异常（漏水）
+     */
+    @Column(name = "waterLeakageStatus")
+    private Integer waterLeakageStatus;
+
+    /**
+     * 开关机状态：1-开机，0-关机
+     */
+    @Column(name = "switchStatus")
+    private Integer switchStatus;
+
+    /**
+     * 水杯状态：1-正常（被缺杯）；0-异常（缺杯）
+     */
+    @Column(name = "waterCupStatus")
+    private Integer waterCupStatus;
+
+    /**
+     * 热水出水状态：1：出水中；0-停止
+     */
+    @Column(name = "hotWaterOutletStatus")
+    private Integer hotWaterOutletStatus;
+
+    /**
+     * 冷水出水状态：1：出水中；0-停止
+     */
+    @Column(name = "coldWaterOutletStatus")
+    private Integer coldWaterOutletStatus;
+
+    /**
+     * 温水出水状态：1：出水中；0-停止
+     */
+    @Column(name = "warmWaterOutletStatus")
+    private Integer warmWaterOutletStatus;
+
+    /**
+     * 加热设备温度
+     */
+    @Column(name = "heatingTemp")
+    private Integer heatingTemp;
+
+    /**
+     * 制冷设备温度
+     */
+    @Column(name = "coolingTemp")
+    private Integer coolingTemp;
+
+    /**
+     * 冲洗间隔(小时)
+     */
+    @Column(name = "flushInterval")
+    private Integer flushInterval;
+
+    /**
+     * 冲洗时长(秒)
+     */
+    @Column(name = "flushInterval")
+    private Integer flushDuration;
+
 
+    public SysDeviceWaterQualityAO() {
+        super();
+    }
 
-	/**
-	 * 冷水温度
-	 */
-	@Column(name = "coldTemp")
-	private Integer coldTemp ;
+//    public static long getSerialVersionUID() {
+//        return serialVersionUID;
+//    }
 
+    public Integer getDeviceId() {
+        return deviceId;
+    }
 
-	/**
-	 * 是否正在制热：1-是，0-否
-	 */
-	@Column(name = "heatingStatus")
-	private Integer heatingStatus ;
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
+    }
 
+    public int getDeviceRawWater() {
+        return deviceRawWater;
+    }
 
-	/**
-	 * 是否正在制冷：1-是，0-否
-	 */
-	@Column(name = "coolingStatus", isId = true)
-	private Integer coolingStatus ;
+    public void setDeviceRawWater(int deviceRawWater) {
+        this.deviceRawWater = deviceRawWater;
+    }
 
+    public int getDevicePureWater() {
+        return devicePureWater;
+    }
 
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
-	}
+    public void setDevicePureWater(int devicePureWater) {
+        this.devicePureWater = devicePureWater;
+    }
 
-	public Integer getDeviceId() {
-		return deviceId;
-	}
+    public String getDeviceWaterQualityTime() {
+        return deviceWaterQualityTime;
+    }
 
-	public void setDeviceId(Integer deviceId) {
-		this.deviceId = deviceId;
-	}
+    public void setDeviceWaterQualityTime(String deviceWaterQualityTime) {
+        this.deviceWaterQualityTime = deviceWaterQualityTime;
+    }
 
-	public int getDeviceRawWater() {
-		return deviceRawWater;
-	}
+    public Integer getHotTemp() {
+        return hotTemp;
+    }
 
-	public void setDeviceRawWater(int deviceRawWater) {
-		this.deviceRawWater = deviceRawWater;
-	}
+    public void setHotTemp(int hotTemp) {
+        this.hotTemp = hotTemp;
+    }
 
-	public int getDevicePureWater() {
-		return devicePureWater;
-	}
+    public Integer getColdTemp() {
+        return coldTemp;
+    }
 
-	public void setDevicePureWater(int devicePureWater) {
-		this.devicePureWater = devicePureWater;
-	}
+    public void setColdTemp(Integer coldTemp) {
+        this.coldTemp = coldTemp;
+    }
 
-	public String getDeviceWaterQualityTime() {
-		return deviceWaterQualityTime;
-	}
+    public Integer getHeatingStatus() {
+        return heatingStatus;
+    }
 
-	public void setDeviceWaterQualityTime(String deviceWaterQualityTime) {
-		this.deviceWaterQualityTime = deviceWaterQualityTime;
-	}
+    public void setHeatingStatus(Integer heatingStatus) {
+        this.heatingStatus = heatingStatus;
+    }
 
-	public Integer getHotTemp() {
-		return hotTemp;
-	}
+    public Integer getCoolingStatus() {
+        return coolingStatus;
+    }
 
-	public void setHotTemp(int hotTemp) {
-		this.hotTemp = hotTemp;
-	}
+    public void setCoolingStatus(Integer coolingStatus) {
+        this.coolingStatus = coolingStatus;
+    }
 
-	public Integer getColdTemp() {
-		return coldTemp;
-	}
+    public Integer getWaterPurificationStatus() {
+        return waterPurificationStatus;
+    }
 
-	public void setColdTemp(Integer coldTemp) {
-		this.coldTemp = coldTemp;
-	}
+    public void setWaterPurificationStatus(Integer waterPurificationStatus) {
+        this.waterPurificationStatus = waterPurificationStatus;
+    }
 
-	public Integer getHeatingStatus() {
-		return heatingStatus;
-	}
+    public Integer getFlushStatus() {
+        return flushStatus;
+    }
 
-	public void setHeatingStatus(Integer heatingStatus) {
-		this.heatingStatus = heatingStatus;
-	}
+    public void setFlushStatus(Integer flushStatus) {
+        this.flushStatus = flushStatus;
+    }
 
-	public Integer getCoolingStatus() {
-		return coolingStatus;
-	}
+    public Integer getRawWaterStatus() {
+        return rawWaterStatus;
+    }
 
-	public void setCoolingStatus(Integer coolingStatus) {
-		this.coolingStatus = coolingStatus;
-	}
+    public void setRawWaterStatus(Integer rawWaterStatus) {
+        this.rawWaterStatus = rawWaterStatus;
+    }
 
-	public Integer getWaterPurificationStatus() {
-		return waterPurificationStatus;
-	}
+    public Integer getWaterLeakageStatus() {
+        return waterLeakageStatus;
+    }
 
-	public void setWaterPurificationStatus(Integer waterPurificationStatus) {
-		this.waterPurificationStatus = waterPurificationStatus;
-	}
-
-	public Integer getFlushStatus() {
-		return flushStatus;
-	}
+    public void setWaterLeakageStatus(Integer waterLeakageStatus) {
+        this.waterLeakageStatus = waterLeakageStatus;
+    }
 
-	public void setFlushStatus(Integer flushStatus) {
-		this.flushStatus = flushStatus;
-	}
-
-	public Integer getRawWaterStatus() {
-		return rawWaterStatus;
-	}
+    public Integer getSwitchStatus() {
+        return switchStatus;
+    }
 
-	public void setRawWaterStatus(Integer rawWaterStatus) {
-		this.rawWaterStatus = rawWaterStatus;
-	}
-
-	public Integer getWaterLeakageStatus() {
-		return waterLeakageStatus;
-	}
+    public void setSwitchStatus(Integer switchStatus) {
+        this.switchStatus = switchStatus;
+    }
 
-	public void setWaterLeakageStatus(Integer waterLeakageStatus) {
-		this.waterLeakageStatus = waterLeakageStatus;
-	}
+    public Integer getWaterCupStatus() {
+        return waterCupStatus;
+    }
 
-	public Integer getSwitchStatus() {
-		return switchStatus;
-	}
+    public void setWaterCupStatus(Integer waterCupStatus) {
+        this.waterCupStatus = waterCupStatus;
+    }
 
-	public void setSwitchStatus(Integer switchStatus) {
-		this.switchStatus = switchStatus;
-	}
+    public Integer getHotWaterOutletStatus() {
+        return hotWaterOutletStatus;
+    }
 
-	public Integer getWaterCupStatus() {
-		return waterCupStatus;
-	}
+    public void setHotWaterOutletStatus(Integer hotWaterOutletStatus) {
+        this.hotWaterOutletStatus = hotWaterOutletStatus;
+    }
 
-	public void setWaterCupStatus(Integer waterCupStatus) {
-		this.waterCupStatus = waterCupStatus;
-	}
+    public Integer getColdWaterOutletStatus() {
+        return coldWaterOutletStatus;
+    }
 
-	public Integer getHotWaterOutletStatus() {
-		return hotWaterOutletStatus;
-	}
+    public void setColdWaterOutletStatus(Integer coldWaterOutletStatus) {
+        this.coldWaterOutletStatus = coldWaterOutletStatus;
+    }
 
-	public void setHotWaterOutletStatus(Integer hotWaterOutletStatus) {
-		this.hotWaterOutletStatus = hotWaterOutletStatus;
-	}
+    public Integer getWarmWaterOutletStatus() {
+        return warmWaterOutletStatus;
+    }
 
-	public Integer getColdWaterOutletStatus() {
-		return coldWaterOutletStatus;
-	}
+    public void setWarmWaterOutletStatus(Integer warmWaterOutletStatus) {
+        this.warmWaterOutletStatus = warmWaterOutletStatus;
+    }
 
-	public void setColdWaterOutletStatus(Integer coldWaterOutletStatus) {
-		this.coldWaterOutletStatus = coldWaterOutletStatus;
-	}
+    public Integer getHeatingTemp() {
+        return heatingTemp;
+    }
 
-	public Integer getWarmWaterOutletStatus() {
-		return warmWaterOutletStatus;
-	}
+    public void setHeatingTemp(Integer heatingTemp) {
+        this.heatingTemp = heatingTemp;
+    }
 
-	public void setWarmWaterOutletStatus(Integer warmWaterOutletStatus) {
-		this.warmWaterOutletStatus = warmWaterOutletStatus;
-	}
+    public Integer getCoolingTemp() {
+        return coolingTemp;
+    }
 
-	public Integer getHeatingTemp() {
-		return heatingTemp;
-	}
+    public void setCoolingTemp(Integer coolingTemp) {
+        this.coolingTemp = coolingTemp;
+    }
 
-	public void setHeatingTemp(Integer heatingTemp) {
-		this.heatingTemp = heatingTemp;
-	}
+    public Integer getFlushInterval() {
+        return flushInterval;
+    }
 
-	public Integer getCoolingTemp() {
-		return coolingTemp;
-	}
+    public void setFlushInterval(Integer flushInterval) {
+        this.flushInterval = flushInterval;
+    }
 
-	public void setCoolingTemp(Integer coolingTemp) {
-		this.coolingTemp = coolingTemp;
-	}
+    public Integer getFlushDuration() {
+        return flushDuration;
+    }
 
-	public Integer getFlushInterval() {
-		return flushInterval;
-	}
+    public void setFlushDuration(Integer flushDuration) {
+        this.flushDuration = flushDuration;
+    }
 
-	public void setFlushInterval(Integer flushInterval) {
-		this.flushInterval = flushInterval;
-	}
-
-	public Integer getFlushDuration() {
-		return flushDuration;
-	}
-
-	public void setFlushDuration(Integer flushDuration) {
-		this.flushDuration = flushDuration;
-	}
-
-	/**
-	 * 是否正在制水：1-是，0-否
-	 */
-	@Column(name = "waterPurificationStatus")
-	private Integer waterPurificationStatus ;
-
-
-	/**
-	 * 是否正在冲洗：1-是，0-否
-	 */
-	@Column(name = "flushStatus")
-	private Integer flushStatus ;
-
-
-	/**
-	 * 原水状态：1：正常（不缺水），0-异常（缺水）
-	 */
-	@Column(name = "rawWaterStatus")
-	private Integer rawWaterStatus ;
-
-
-	/**
-	 * 漏水状态：1：正常（未漏水）0-异常（漏水）
-	 */
-	@Column(name = "waterLeakageStatus")
-	private Integer waterLeakageStatus ;
-
-
-	/**
-	 * 开关机状态：1-开机，0-关机
-	 */
-	@Column(name = "switchStatus")
-	private Integer switchStatus ;
-
-
-	/**
-	 * 水杯状态：1-正常（被缺杯）；0-异常（缺杯）
-	 */
-	@Column(name = "waterCupStatus")
-	private Integer waterCupStatus ;
-
-
-	/**
-	 * 热水出水状态：1：出水中；0-停止
-	 */
-	@Column(name = "hotWaterOutletStatus")
-	private Integer hotWaterOutletStatus ;
-
-
-	/**
-	 * 冷水出水状态：1：出水中；0-停止
-	 */
-	@Column(name = "coldWaterOutletStatus")
-	private Integer coldWaterOutletStatus ;
-
-
-	/**
-	 * 温水出水状态：1：出水中；0-停止
-	 */
-	@Column(name = "warmWaterOutletStatus")
-	private Integer warmWaterOutletStatus ;
-
-
-	/**
-	 * 加热设备温度
-	 */
-	@Column(name = "heatingTemp")
-	private Integer heatingTemp ;
-
-
-	/**
-	 * 制冷设备温度
-	 */
-	@Column(name = "coolingTemp")
-	private Integer coolingTemp ;
-
-
-	/**
-	 * 冲洗间隔(小时)
-	 */
-	@Column(name = "flushInterval")
-	private Integer flushInterval ;
-
-
-	/**
-	 * 冲洗时长(秒)
-	 */
-	@Column(name = "flushInterval")
-	private Integer flushDuration ;
-    
-    
-	public SysDeviceWaterQualityAO() {
-		super();
-	}
-
-    
 }

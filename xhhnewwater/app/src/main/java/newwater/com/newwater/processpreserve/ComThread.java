@@ -45,7 +45,6 @@ public class ComThread extends Thread {
     private DevUtil devUtil=null;
     private final int MAXERR=5;
     private int errCount=0;
-    private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
     private boolean active = true;//轮询标志
     public Context context;
     public Handler myhandler;
@@ -58,6 +57,7 @@ public class ComThread extends Thread {
     public void setActive(boolean b) {
         active = b;
     }
+
     public ComThread(Context context, Handler handler){
         this.context = context;
         this.myhandler = handler;
@@ -77,7 +77,7 @@ public class ComThread extends Thread {
             if(null==devUtil){
                 devUtil = new DevUtil(null);
             }
-            if(active && nowTick- pollTick > PollTime) {
+            if(active && nowTick- pollTick > Constant.POOL_TIME) {
                 try {
                     devUtil.get_ioRunData();
 //                    String datajiankong =  DeviceLog.updateRunData(true);
@@ -102,7 +102,7 @@ public class ComThread extends Thread {
         //启动水质上报
         String waterqualitylist = RestUtils.getUrl(UriConstant.WATERQUALITYLIST);
         try {
-            //TODO获取值
+            //TODO 获取值
             List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
             if(null==listQualityAO){
 
@@ -132,8 +132,6 @@ public class ComThread extends Thread {
         super.run();
     }
 
-
-
     public void updateRunData(boolean poll) {
         HashMap<String, Object> map;
         String[][] data=devUtil.toArray();
@@ -161,21 +159,14 @@ public class ComThread extends Thread {
         msg.obj = viewShow;
         msg.what =0;
         myhandler.sendMessage(msg);
-
-
-
-
-
     }
+
     //关机
     public void onOrOff(boolean operateflag){
         if(true == operateflag){
             ControllerUtils.operateDevice(3,true);
         }
     }
-
-
-
 
     //滤芯是否用完
 

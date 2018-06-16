@@ -75,6 +75,7 @@ public class UploadLocalData {
 
             @Override
             public void onResponse(String response) {
+                Log.e(TAG, "onFailure: " + "同步成功, errCode = " + response);
                 deleteLocalUploadData(contentList);
             }
         }, contentJSON);

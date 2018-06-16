@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import newwater.com.newwater.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.UploadLocalData;
@@ -79,18 +78,16 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
     private static final String TAG = "MainActivity";
     public static final String FLAG = "UPDATE";
+    private final static int DATA_DELETE = 2;
 
     // 私有变量
     private Context mContext;
-    private int deviceId;
-    private int drinkMode;
-    private String rentDeadline;
-    private String contractInfo;
-    private final static int DATADELETE = 2;
     private MyHandler myHandler;
     private DbManager dbManager;
     private ComThread comThread;//comThread服务是用来获取设备数据
     private DevUtil devUtil;//设备操作的工具类
+    private ConnectionChangeReceiver connectReceiver;
+    private DynamicReceiver dynamicReceiver;
 
     // popWindow
     private PopWantWater popWantWater = null;
@@ -100,6 +97,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     private PopRightOperate popRight = null;
     private PopBuy popBuy = null;
     private PopWarning popWarning = null;
+
+    // 设备信息
+    private int deviceId;
+    private int drinkMode;
+    private String rentDeadline;
+    private String contractInfo;
 
     //左边操作窗口的组件
     private TextView hotWaterText;
@@ -154,8 +157,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         initData();
         initView();
         initVideo();
-        getDevice_Monitor_Config();
-        registerXinGe();
         initComThread();
     }
 
@@ -174,7 +175,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     showPopLeftOperate();
                     showPopRightOperate();
                 } else {
-                    Log.d(TAG, "dismissPop: 要出现了");
+                    Log.d(TAG, "dismissPop: “我要喝水”要出现了");
                     showPopWantWater();
                 }
             }
@@ -195,6 +196,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         myHandler.removeCallbacksAndMessages(null);
         myHandler = null;
         dismissAllPop();
+        if (null != dynamicReceiver) {
+            unregisterReceiver(dynamicReceiver);
+        }
+        if (null != connectReceiver) {
+            unregisterReceiver(connectReceiver);
+        }
         super.onDestroy();
     }
 
@@ -207,10 +214,9 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         getDeviceInfo();
         // 数据库
         dbManager = new XutilsInit(MainActivity.this).getDb();
-        // 网络变化广播接收器
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        ConnectionChangeReceiver myReceiver = new ConnectionChangeReceiver();
-        this.registerReceiver(myReceiver, filter);
+        // 广播接收
+        registerMyReceiver();
+        // 租期检查
         loopCheckRentTime();
         // 视频播放
         DispenserCache.freeAdVideoList = new ArrayList<>();
@@ -218,9 +224,9 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         pushAdVideoList = new ArrayList<>();
         allAdVideoList = new ArrayList<>();
         curAdVideoList = new ArrayList<>();
-        // 从本地文件中取出推送数据，看是否需要处理
+        // （从本地文件中取出推送数据，看是否需要处理）
         getPushStrategy();
-        // 从数据库中取出数据填充列表
+        // （从数据库中取出数据填充列表）
         try {
             List<AdvsVideo> allAds = dbManager.findAll(AdvsVideo.class);
             if (null != allAds && 0 != allAds.size()) {
@@ -248,7 +254,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         coolWaterText = (TextView) view.findViewById(R.id.coolwatertext);
         ppmValue = (TextView) view.findViewById(R.id.ppmvalue);
         ppm = (TextView) view.findViewById(R.id.ppm);
-        //监控预警配置表的操作
     }
 
     private void initVideo() {
@@ -261,31 +266,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         // 获取当前时段应播视频的列表
         loopPlayVideo();
         scheduleUploadVideo();
-    }
-
-    private void getDevice_Monitor_Config() {
-        Sys_Device_Monitor_Config_DbOperate sys_device_monitor_config_dbOperate = new Sys_Device_Monitor_Config_DbOperate(MainActivity.this);
-        try {
-            sys_device_monitor_config_dbOperate.add(null);
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-
-        //查询数据
-//        try {
-//            List warningdata = sys_device_monitor_config_dbOperate.find();
-//            Log.e("waringdata",warningdata.toString());
-//        } catch (DbException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    private void registerXinGe() {
-        DynamicReceiver myReceiver = new DynamicReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MessageReceiver.PUSHACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(myReceiver, filter);
     }
 
     private void initComThread() {
@@ -337,6 +317,19 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         }
     }
 
+    private void registerMyReceiver() {
+        // 网络变化广播接收器
+        IntentFilter connectFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectReceiver = new ConnectionChangeReceiver();
+        this.registerReceiver(connectReceiver, connectFilter);
+        // 信鸽广播接收器
+        dynamicReceiver = new DynamicReceiver();
+        IntentFilter dynamicFilter = new IntentFilter();
+        dynamicFilter.addAction(MessageReceiver.PUSHACTION);
+        dynamicFilter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(connectReceiver, dynamicFilter);
+    }
+
     /**
      * 定期检查租期
      */
@@ -367,7 +360,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         Time uploadTime = new Time();
         uploadTime.setToNow();
         Date updatetime = TimeRun.tasktime(uploadTime.hour, uploadTime.minute, uploadTime.second);
-        TimeRun timeRun = new TimeRun(MainActivity.this, updatetime, myHandler, Constant.UPLOAD_TIME, DATADELETE, Constant.TIME_OPERATE_UPDATEWATER);
+        TimeRun timeRun = new TimeRun(MainActivity.this, updatetime, myHandler, Constant.UPLOAD_TIME, DATA_DELETE, Constant.TIME_OPERATE_UPDATEWATER);
         timeRun.startTimer();
 
         //定时刷新二维码
@@ -729,7 +722,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         String str = deviceInfo.getIMEI(this);
 
         DeviceEntity deviceEntity = new DeviceEntity();
-        deviceEntity.setDevice_number(str);
+//        deviceEntity.setDevice_number(str);
 
         try {
             dbManager.save(deviceEntity);
@@ -888,7 +881,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 //                    byte[] data = (byte[])msg.obj
                     Toast.makeText(mContext, "定时   String[][] data = msg.getData().ge;检测水质", Toast.LENGTH_SHORT).show();
                     break;
-                case DATADELETE:
+                case DATA_DELETE:
                     String test = msg.obj.toString();
                     Toast.makeText(mContext, "定时" + test, Toast.LENGTH_SHORT).show();
                     break;
