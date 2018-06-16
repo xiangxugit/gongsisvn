@@ -407,8 +407,6 @@ public class PopRightOperate extends PopupWindow {
                         Log.e("response", "response" + response);
                     }
                 });
-
-
             } else {
                 Log.e("没有操作", "没有操作");
             }

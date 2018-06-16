@@ -29,7 +29,7 @@ public class SysDeviceNoticeAO implements Serializable {
 	private Integer deviceId;
 
 	/**
-	 * 故障类别（1：断网；2：滤芯不足；3：滤芯用完；4：水质异常；5：纸杯不足；6：纸杯用完；7：耗水量异常；8：漏电；9：漏水；10：原水缺水）
+	 * 故障类别（1：断网；2：滤芯不足；3：滤芯用完；4：水质异常；5：纸杯不足；6：纸杯用完；7：耗水量异常；8：漏电；9：漏水；10：原水缺水；11：视频地址错误）
 	 */
 	@Column(name = "deviceNoticeType")
 	private Integer deviceNoticeType;
@@ -69,6 +69,19 @@ public class SysDeviceNoticeAO implements Serializable {
 	 */
 	@Column(name = "deviceNoticeStatus")
 	private Integer deviceNoticeStatus;
+
+	public SysDeviceNoticeAO() {
+		super();
+	}
+
+	public SysDeviceNoticeAO(Integer deviceId, Integer deviceNoticeType, Integer deviceNoticeLeve, String deviceNoticeSubject, String deviceNoticeContent, String deviceNoticeTime) {
+		this.deviceId = deviceId;
+		this.deviceNoticeType = deviceNoticeType;
+		this.deviceNoticeLeve = deviceNoticeLeve;
+		this.deviceNoticeSubject = deviceNoticeSubject;
+		this.deviceNoticeContent = deviceNoticeContent;
+		this.deviceNoticeTime = deviceNoticeTime;
+	}
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;

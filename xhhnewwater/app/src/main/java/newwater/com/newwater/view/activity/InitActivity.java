@@ -34,13 +34,16 @@ import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import newwater.com.newwater.R;
 import newwater.com.newwater.beans.AdvsVideo;
 import newwater.com.newwater.beans.DispenserCache;
 import newwater.com.newwater.beans.SysDeviceMonitorConfig;
+import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.broadcast.MessageReceiver;
 import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
@@ -50,6 +53,7 @@ import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.Create2QR2;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
+import newwater.com.newwater.utils.TimeUtils;
 import newwater.com.newwater.utils.XutilsInit;
 import okhttp3.Request;
 
@@ -61,12 +65,14 @@ public class InitActivity extends AppCompatActivity {
     private LinearLayout fiststep;
     private LinearLayout laststep;
     private ImageView qcode;//扫描二维码激活系统
+    private Context mContext;
     private MessageReceiver messageReceiver;//信鸽Receiver
     private int dlIndex;
     private List<AdvsVideo> adList;
     // 权限集合
     List<String> permissionList = new ArrayList<>();
     private boolean isDownloading;
+    DynamicReceiver myReceiver;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -93,6 +99,7 @@ public class InitActivity extends AppCompatActivity {
     protected void onDestroy() {
         handler.removeCallbacksAndMessages(null);
         handler = null;
+        unregisterReceiver(myReceiver);
         super.onDestroy();
     }
 
@@ -104,6 +111,7 @@ public class InitActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        mContext = InitActivity.this;
         adList = new ArrayList<>();
         initPermission();
         initPush();
@@ -152,9 +160,7 @@ public class InitActivity extends AppCompatActivity {
                         qcode.setImageBitmap(bit);
                     }
                 });
-
-
-                getDeviceInfo(1);
+//                getDeviceInfo(1);
             }
 
             @Override
@@ -163,7 +169,7 @@ public class InitActivity extends AppCompatActivity {
             }
         });
 
-        DynamicReceiver myReceiver = new DynamicReceiver();
+        myReceiver = new DynamicReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(MessageReceiver.PUSHACTION);
         filter.setPriority(Integer.MAX_VALUE);
@@ -201,10 +207,10 @@ public class InitActivity extends AppCompatActivity {
             JSONObject jsonObject = JSON.parseObject(jsonData);
             int deviceId = jsonObject.getInteger("deviceId");
             if (deviceId == 0) {
-                // TODO: 2018/6/14 上报无deviceId错误
+                moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_id));
                 return;
             }
-            BaseSharedPreferences.setInt(InitActivity.this, Constant.DEVICE_ID_KEY, deviceId);
+            BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
             getDeviceInfo(deviceId);
         }
 
@@ -223,7 +229,7 @@ public class InitActivity extends AppCompatActivity {
         OkHttpUtils.getAsyn(RestUtils.getUrl(UriConstant.GET_DEVICE_CONFIG + deviceId), new OkHttpUtils.StringCallback() {
             @Override
             public void onFailure(int errCode, Request request, IOException e) {
-                // TODO: 2018/6/14 过一分钟再来一次
+                Log.e(TAG, "onFailure: get device info by id -- failed!");
                 dealResponseError();
             }
 
@@ -231,24 +237,25 @@ public class InitActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 JSONObject jsonObject = JSONObject.parseObject(response);
                 if (null == jsonObject) {
+                    Log.e(TAG, "onResponse: get device info by id -- response cannot parse to JsonObject!");
                     dealResponseError();
                     return;
                 }
                 if (0 == jsonObject.getInteger("code")) {
                     String data = jsonObject.getString("data");
                     if (TextUtils.isEmpty(data)) {
+                        Log.e(TAG, "onResponse: get device info by id -- data in response is empty!");
                         dealResponseError();
                         return;
                     }
-                    BaseSharedPreferences.setString(InitActivity.this, Constant.DEVICE_CONFIG_STRING_KEY, data);
-                    moveToMainActivity();
-
+                    BaseSharedPreferences.setString(mContext, Constant.DEVICE_CONFIG_STRING_KEY, data);
                     SysDeviceMonitorConfig deviceConfig = JSONObject.parseObject(data, SysDeviceMonitorConfig.class);
                     if (checkConfigAndSave(deviceConfig)) {
                         dlIndex = 0;
                         downloadInitVideo(adList);
                     }
                 } else {
+                    Log.e(TAG, "onResponse: get device info by id -- code in response is not 0!");
                     dealResponseError();
                 }
 
@@ -256,13 +263,8 @@ public class InitActivity extends AppCompatActivity {
         });
     }
 
-    private void dealResponseError() {
-        // TODO: 2018/6/15 0015 回应出错时的处理
-    }
-
     /**
      * config中是否包含所有所需信息
-     *
      * @param config
      * @return
      */
@@ -270,9 +272,81 @@ public class InitActivity extends AppCompatActivity {
         if (null == config) {
             return false;
         }
+        Integer drinkMode = config.getProductChargMode();
+        BaseSharedPreferences.setInt(mContext, Constant.DRINK_MODE_KEY,
+                null == drinkMode ? Constant.DRINK_MODE_DEFAULT : drinkMode);
+        String rentDeadline = null;
+        Date productRentTime = config.getProductRentTime();
+        if (null != productRentTime) {
+            rentDeadline = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(productRentTime);
+        }
+        BaseSharedPreferences.setString(mContext, Constant.RENT_DEADLINE_KEY,
+                TextUtils.isEmpty(rentDeadline) ? Constant.RENT_DEADLINE_DEFAULT : rentDeadline);
+        String contractInfo = config.getAdminUserTelephone();
+        BaseSharedPreferences.setString(mContext, Constant.CONTRACT_INFO_KEY,
+                TextUtils.isEmpty(contractInfo) ? Constant.CONTRACT_INFO_DEFAULT : contractInfo);
+        Integer ppFlow = config.getMotCfgPpFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_PP_FLOW_KEY,
+                null == ppFlow ? Constant.DEVICE_PP_FLOW_DEFAULT : ppFlow);
+        Integer grainCarbon = config.getMotCfgGrainCarbonFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_GRAIN_CARBON_KEY,
+                null == grainCarbon ? Constant.DEVICE_GRAIN_CARBON_DEFAULT : grainCarbon);
+        Integer pressCarbon = config.getMotCfgPressCarbonFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_PRESS_CARBON_KEY,
+                null == pressCarbon ? Constant.DEVICE_PRESS_CARBON_DEFAULT : pressCarbon);
+        Integer poseCarbon = config.getMotCfgPoseCarbonFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_POSE_CARBON_KEY,
+                null == poseCarbon ? Constant.DEVICE_POSE_CARBON_DEFAULT : poseCarbon);
+        Integer roFlow = config.getMotCfgRoFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_RO_FLOW_KEY,
+                null == roFlow ? Constant.DEVICE_RO_FLOW_DEFAULT : roFlow);
+        Integer upTime = config.getMotCfgUpTime();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_UP_TIME_KEY,
+                null == upTime ? Constant.DEVICE_UP_TIME_DEFAULT : upTime);
+        Integer flushInterval = config.getMotCfgFlushInterval();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_FLUSH_INTERVAL_KEY,
+                null == flushInterval ? Constant.DEVICE_FLUSH_INTERVAL_DEFAULT : flushInterval);
+        Integer flushDuration = config.getMotCfgFlushDuration();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_FLUSH_DURATION_KEY,
+                null == flushDuration ? Constant.DEVICE_FLUSH_DURATION_DEFAULT : flushDuration);
+        Integer heatingTemp = config.getMotCfgHeatingTemp();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_HEATING_TEMP_KEY,
+                null == heatingTemp ? Constant.DEVICE_HEATING_TEMP_DEFAULT : heatingTemp);
+        Integer coolingTemp = config.getMotCfgCoolingTemp();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_COOLING_TEMP_KEY,
+                null == coolingTemp ? Constant.DEVICE_COOLING_TEMP_DEFAULT : coolingTemp);
+        Integer heatingAllday = config.getMotCfgHeatingAllday();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_HEATING_ALL_DAY_KEY,
+                null == heatingAllday ? Constant.DEVICE_HEATING_ALL_DAY_DEFAULT : heatingAllday);
+        Integer coolingAllday = config.getMotCfgCoolingAllday();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_COOLING_ALL_DAY_KEY,
+                null == coolingAllday ? Constant.DEVICE_COOLING_ALL_DAY_DEFAULT : coolingAllday);
+        String heatingInterval = config.getMotCfgHeatingInterval();
+        BaseSharedPreferences.setString(mContext, Constant.DEVICE_HEATING_INTERVAL_KEY,
+                TextUtils.isEmpty(heatingInterval) ? Constant.DEVICE_HEATING_INTERVAL_DEFAULT : heatingInterval);
+        String coolingInterval = config.getMotCfgCoolingInterval();
+        BaseSharedPreferences.setString(mContext, Constant.DEVICE_COOLING_INTERVAL_KEY,
+                TextUtils.isEmpty(coolingInterval) ? Constant.DEVICE_COOLING_INTERVAL_DEFAULT : coolingInterval);
+        Integer maxFlow = config.getMotCfgMaxFlow();
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_MAX_FLOW_KEY,
+                null == maxFlow ? Constant.DEVICE_MAX_FLOW_DEFAULT : maxFlow);
+        BaseSharedPreferences.setInt(mContext, Constant.DEVICE_TDS_THRESHOLD_KEY,
+                Constant.DEVICE_TDS_THRESHOLD_DEFAULT);
+//        public = new AdvsVideo();
+         AdvsVideo testVideo = new AdvsVideo();
+         testVideo.setAdvsVideoDownloadPath("http://mirror.aarnet.edu.au/pub/TED-talks/MarkRonson_2014.mp4");
+         adList.add(testVideo);
 //        adList = ......
-        return false;
+        return true;
 
+    }
+
+    /**
+     * 回应的数据有问题时的处理
+     */
+    private void dealResponseError() {
+        Log.d(TAG, "dealResponseError: 获取设备参数失败");
+        moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_config));
     }
 
     private void downloadInitVideo(List<AdvsVideo> adList) {
@@ -294,7 +368,7 @@ public class InitActivity extends AppCompatActivity {
         // 下载地址为空，上报地址错误
         if (TextUtils.isEmpty(ad.getAdvsVideoDownloadPath())) {
             Log.d(TAG, "onError: dl_info: URL为空！");
-            // TODO: 2018/6/6 0006 上报地址错误
+            saveWrongUrlNotice(ad);
             adList.remove(ad);
             return;
         }
@@ -341,7 +415,7 @@ public class InitActivity extends AppCompatActivity {
                 // 网址错误则上报错误信息；其他错误则放在最后再下
                 if (msg.contains(Constant.DOWN_ERROR_MSG_WRONG_URL) || msg.contains(Constant.DOWN_ERROR_MSG_WRONG_BASE_URL)) {
                     Log.d(TAG, "onError: dl_info: URL有误！");
-                    // TODO: 2018/6/8 0008 上报地址错误
+                    saveWrongUrlNotice(adList.get(dlIndex));
                     adList.remove(dlIndex);
                     downloadInitVideo(adList);
                     return;
@@ -362,8 +436,25 @@ public class InitActivity extends AppCompatActivity {
                 downloadPath, UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
     }
 
+    /**
+     * 存储广告视频下载地址错误的预警信息
+     * @param ad
+     */
+    private void saveWrongUrlNotice(AdvsVideo ad) {
+        SysDeviceNoticeAO notice = new SysDeviceNoticeAO(
+                BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY),
+                Constant.NOTICE_TYPE_AD_URL_WRONG, Constant.NOTICE_LEVEL_ABNORMAL,
+                ad.getAdvsId()+"", ad.getAdvsVideoDownloadPath(),
+                TimeUtils.getCurrentTime());
+        try {
+            new XutilsInit(mContext).getDb().save(notice);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void refreshAllAdVideoData() {
-        DbManager dbManager = new XutilsInit(InitActivity.this).getDb();
+        DbManager dbManager = new XutilsInit(mContext).getDb();
         Log.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
         // 同步数据到数据库
         try {
@@ -379,10 +470,26 @@ public class InitActivity extends AppCompatActivity {
         DispenserCache.initAdVideoList.addAll(adList);
     }
 
+    /**
+     * 跳转到主页
+     */
     private void moveToMainActivity() {
-        Intent intent = new Intent(InitActivity.this, MainActivity.class);
+        Intent intent = new Intent(mContext, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * 跳转到机器故障Activity
+     *
+     * @param errReason
+     */
+    public void moveToBreakDownActivity(String errReason) {
+        Intent intent = new Intent(mContext, BreakDownActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constant.KEY_BREAK_DOWN_ERR_REASON, errReason);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     /**

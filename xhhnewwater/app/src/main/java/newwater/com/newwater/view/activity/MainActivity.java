@@ -3,15 +3,11 @@ package newwater.com.newwater.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
 import android.serialport.DevUtil;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -22,17 +18,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
-import com.tencent.android.tpush.XGPushConfig;
-import com.tencent.android.tpush.XGPushManager;
 import com.tencent.android.tpush.XGPushRegisterResult;
 import com.tencent.android.tpush.XGPushShowedResult;
 import com.tencent.android.tpush.XGPushTextMessage;
@@ -40,19 +32,19 @@ import com.tencent.android.tpush.XGPushTextMessage;
 import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import newwater.com.newwater.Sys_Device_Monitor_Config_DbOperate;
-import newwater.com.newwater.beans.SysDeviceMonitorConfig;
+import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.UploadLocalData;
 import newwater.com.newwater.utils.XutilsInit;
 import newwater.com.newwater.R;
-import newwater.com.newwater.TestJSON;
 import newwater.com.newwater.beans.AdvsPlayRecode;
 import newwater.com.newwater.processpreserve.ComThread;
 import newwater.com.newwater.processpreserve.DaemonService;
@@ -62,7 +54,6 @@ import newwater.com.newwater.beans.DispenserCache;
 import newwater.com.newwater.beans.PushEntity;
 import newwater.com.newwater.broadcast.ConnectionChangeReceiver;
 import newwater.com.newwater.broadcast.MessageReceiver;
-import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.interfaces.DownloadCallback;
@@ -73,7 +64,6 @@ import newwater.com.newwater.utils.CommonUtil;
 import newwater.com.newwater.utils.FileUtil;
 import newwater.com.newwater.utils.ControllerUtils;
 import newwater.com.newwater.utils.GetDeviceInfo;
-import newwater.com.newwater.utils.TimeBack;
 import newwater.com.newwater.utils.TimeRun;
 import newwater.com.newwater.utils.TimeUtils;
 import newwater.com.newwater.utils.VideoUtils;
@@ -85,40 +75,24 @@ import newwater.com.newwater.view.PopWaterSale;
 import newwater.com.newwater.view.PopQrCode;
 import newwater.com.newwater.view.PopWantWater;
 
-import static newwater.com.newwater.utils.PermissionUtils.permissions;
+public class MainActivity extends BaseActivity implements IjkManager.PlayerStateListener {
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, IjkManager.PlayerStateListener {
     private static final String TAG = "MainActivity";
+    public static final String FLAG = "UPDATE";
 
-    public static final String filePath = "/sdcard/xutils/xUtils_1.avi";
-
-    //region 私有变量
-
+    // 私有变量
     private Context mContext;
     private int deviceId;
     private int drinkMode;
     private String rentDeadline;
     private String contractInfo;
-    private TextView dixieccup;//纸杯和我要饮水按钮
-    private Boolean operateornot = false;
-    public static LinearLayout leftoperate;//左边操作区域
-    public static LinearLayout rightoperate;//右边操作区域
-    private ImageView ivWantWater;
-
-    //popwindow操作
-    private View contentView;
-
-    //出杯子的提示
-    private View outCupView;
-    private RelativeLayout outcupleft;
-    private RelativeLayout outcupright;
-
-    private RelativeLayout root;
-    private ImageView qrcode;
-
-    static int pos = 0;
     private final static int DATADELETE = 2;
+    private MyHandler myHandler;
+    private DbManager dbManager;
+    private ComThread comThread;//comThread服务是用来获取设备数据
+    private DevUtil devUtil;//设备操作的工具类
 
+    // popWindow
     private PopWantWater popWantWater = null;
     private PopWaterSale popWaterSale = null;
     private PopQrCode popQrCode = null;
@@ -127,50 +101,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private PopBuy popBuy = null;
     private PopWarning popWarning = null;
 
-    //付工那边的代码start
-    private final int PollTime = 800;//轮询get_ioRunData()时间间隔ms
-
-//    private DevUtil devUtil = null;
-
-    public static final String FLAG = "UPDATE";
-
-    private UpdateBroadcast myBroadcast;
-
     //左边操作窗口的组件
-    private TextView hotwatertext;
-    private TextView coolwatertext;
-    private TextView ppmvalue;
+    private TextView hotWaterText;
+    private TextView coolWaterText;
+    private TextView ppmValue;
     private TextView ppm;//下方的
 
-    //endregion
+    // 四个使能按钮
+    private LinearLayout toBeHot;
+    private LinearLayout toBeCool;
+    private LinearLayout zhiShui;
+    private LinearLayout chongXi;
 
-    //region 四个使能按钮
-    private LinearLayout tobehot;
-    private LinearLayout tobecool;
-    private LinearLayout zhishui;
-    private LinearLayout chongxi;
+    // 设备状态
+    private ImageView hotIcon;//是否加热的imageview
+    private TextView hotText;//是否加热text
+    private ImageView coolIcon;//是否制冷的imageView
+    private TextView coolText;//是否制冷text
+    private ImageView waterProduceIcon;//是否制水的imageView
+    private TextView waterProduceText;//是否制水的text
+    private ImageView flushIcon;//冲洗imageView
+    private TextView flushText;//冲洗text;
     private Button exit;
-
-    private ImageView hotico;//是否加热的imageview
-    private TextView hotornot;//是否加热text
-
-    private ImageView coolico;//是否制冷的imageView
-    private TextView cooltext;//是否制冷text
-
-    private ImageView zhishuiico;//是否制水的imageView
-    private TextView zhishuitext;//是佛止水的text
-
-    private ImageView chongxiimage;//冲洗imageView
-    private TextView chongxitext;//冲洗text;
-    //endregion
-
-    //region 视频变量
 
     // 视频播放
     /*播放器*/
     private IjkManager playerManager;
-    /*初始视频列表*/
-    //private List<AdvsVideo> initAdVideoList;
     /*推送策略中的视频列表*/
     private List<AdvsVideo> pushAdVideoList;
     /*所有要播放的闲时视频列表*/
@@ -183,25 +139,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private int curAdIndex;
     /*当前下载的视频在pushAdVideoList中的index*/
     private int pushAdIndex;
-    /*是否正在播放视频*/
-    private boolean isPlaying;
     /*是否正在下载*/
     private boolean isDownloading;
     /*当前播放的是初始视频*/
     private boolean isPlayInitVideo;
-    /*正处于推送收到后的等待时间*/
-    private boolean isWaitPush;
     /*当前时间*/
     private String curTime;
 
-    //endregion
-
-    private MyHandler myHandler;
-    private DbManager dbManager;
-    private ComThread comThread;//comThread服务是用来获取设备数据
-    private DevUtil devUtil;//设备操作的工具类
-
-    //region -------------------------- 生命周期 start --------------------------
+    // -------------------------- 生命周期 start --------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,7 +179,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         }, 100);
-
     }
 
     @Override
@@ -254,7 +198,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onDestroy();
     }
 
-    //endregion -------------------------- 生命周期 end --------------------------
+    // -------------------------- 生命周期 end --------------------------
 
     private void initData() {
         mContext = MainActivity.this;
@@ -267,6 +211,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         ConnectionChangeReceiver myReceiver = new ConnectionChangeReceiver();
         this.registerReceiver(myReceiver, filter);
+        loopCheckRentTime();
         // 视频播放
         DispenserCache.freeAdVideoList = new ArrayList<>();
         DispenserCache.initAdVideoList = new ArrayList<>();
@@ -289,43 +234,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         curTime = TimeUtils.getCurrentTime();
         curAdIndex = 0;
+        //监控设备
+        listenDevice();
+        startService(new Intent(mContext, DaemonService.class));
     }
 
     private void initView() {
         setContentView(R.layout.activity_main);
-        root = (RelativeLayout) findViewById(R.id.root);
-        ivWantWater = findViewById(R.id.wantwater);
-
-        // 获取当前设备是哪一种模式
-        int model = TestJSON.getModel();
-        if (model == 0) {
-            //售水模式
-        }
-
-        //监控设备
-        listenDevice();
-
-        //监控设备
-//        startService(new Intent(mContext, Service1.class));
-
-        startService(new Intent(mContext, DaemonService.class));
-//        String ACTION = "com.ryantang.service.PollingService";
-//        PollingUtils.startPollingService(this, 5, Service1.class, ACTION);
-        //下载视频
-//        VideoUtils videodownload = new VideoUtils(mContext);
-//        videodownload.downloadvideo();
         //左边的操作界面组件获得
-
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE);
-
         View view = layoutInflater.inflate(R.layout.left_pop, null);
-
-        hotwatertext = (TextView) view.findViewById(R.id.hotwatertext);
-        coolwatertext = (TextView) view.findViewById(R.id.coolwatertext);
-        ppmvalue = (TextView) view.findViewById(R.id.ppmvalue);
+        hotWaterText = (TextView) view.findViewById(R.id.hotwatertext);
+        coolWaterText = (TextView) view.findViewById(R.id.coolwatertext);
+        ppmValue = (TextView) view.findViewById(R.id.ppmvalue);
         ppm = (TextView) view.findViewById(R.id.ppm);
         //监控预警配置表的操作
-
     }
 
     private void initVideo() {
@@ -378,64 +301,89 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 获取设备信息
      */
     private void getDeviceInfo() {
-        // 从configString获取
-        String configString = BaseSharedPreferences.getString(mContext, Constant.DEVICE_CONFIG_STRING_KEY);
-        SysDeviceMonitorConfig config = JSONObject.parseObject(configString, SysDeviceMonitorConfig.class);
-        if (null == config) {
-            // TODO: 2018/6/15 0015 上报数据错误
+        // 1、从SharedPreference获取
+        if (BaseSharedPreferences.containInt(mContext, Constant.DEVICE_ID_KEY)) {
+            deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
         }
-        drinkMode = config.getProductChargMode();
-        BaseSharedPreferences.setInt(mContext, Constant.DRINK_MODE_KEY, 0 == drinkMode ? Constant.DRINK_MODE_WATER_SALE : drinkMode);
-        rentDeadline = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(config.getProductRentTime());
-        BaseSharedPreferences.setString(mContext, Constant.RENT_DEADLINE_KEY, rentDeadline);
-        contractInfo = config.getAdminUserTelephone();
-        BaseSharedPreferences.setString(mContext, Constant.CONTRACT_INFO_KEY, TextUtils.isEmpty(contractInfo) ? "维护人员" : contractInfo);
-        // 2、intent没有则本地获取
+        if (BaseSharedPreferences.containInt(mContext, Constant.DRINK_MODE_KEY)) {
+            drinkMode = BaseSharedPreferences.getInt(mContext, Constant.DRINK_MODE_KEY);
+        }
+        if (BaseSharedPreferences.containInt(mContext, Constant.RENT_DEADLINE_KEY)) {
+            rentDeadline = BaseSharedPreferences.getString(mContext, Constant.RENT_DEADLINE_KEY);
+        }
+        if (BaseSharedPreferences.containInt(mContext, Constant.CONTRACT_INFO_KEY)) {
+            contractInfo = BaseSharedPreferences.getString(mContext, Constant.CONTRACT_INFO_KEY);
+        }
+        // 2、没有则跳转到BreakDown页面
         if (0 == deviceId) {
-            if (BaseSharedPreferences.containInt(mContext, Constant.DEVICE_ID_KEY)) {
-                deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
-            }
-        }
-        if (0 == drinkMode) {
-            if (BaseSharedPreferences.containInt(mContext, Constant.DRINK_MODE_KEY)) {
-                drinkMode = BaseSharedPreferences.getInt(mContext, Constant.DRINK_MODE_KEY);
-            }
-        }
-        if (TextUtils.isEmpty(rentDeadline)) {
-            if (BaseSharedPreferences.containInt(mContext, Constant.KEY_LOAD_SEND_RENT_DEADLINE)) {
-                rentDeadline = BaseSharedPreferences.getString(mContext, Constant.KEY_LOAD_SEND_RENT_DEADLINE);
-            }
-        }
-        if (TextUtils.isEmpty(contractInfo)) {
-            if (BaseSharedPreferences.containInt(mContext, Constant.KEY_LOAD_SEND_CONTRACT_INFO)) {
-                contractInfo = BaseSharedPreferences.getString(mContext, Constant.KEY_LOAD_SEND_CONTRACT_INFO);
-            }
-        }
-        // 3、都没有则上报错误
-        if (0 == deviceId) {
-            // TODO: 2018/6/11 0011 上报无deviceId错误
             Log.d(TAG, "initData: 无deviceId！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_id));
             return;
         }
         if (0 == drinkMode) {
-            // TODO: 2018/6/11 0011 上报无drinkMode错误
             Log.d(TAG, "initData: 无drinkMode！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_drink_mode));
             return;
         }
         if (TextUtils.isEmpty(rentDeadline)) {
-            // TODO: 2018/6/11 0011 上报无rentDeadline错误
             Log.d(TAG, "initData: rentDeadline！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_rent_deadline));
             return;
         }
         if (TextUtils.isEmpty(contractInfo)) {
-            // TODO: 2018/6/11 0011 上报无contractInfo错误
             Log.d(TAG, "initData: contractInfo！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_contract_info));
             return;
         }
+    }
+
+    /**
+     * 定期检查租期
+     */
+    private void loopCheckRentTime() {
+        Time time = new Time();
+        time.setToNow();
+        Date updatetime = TimeRun.tasktime(time.hour, time.minute, time.second);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if (Constant.DRINK_MODE_MACHINE_RENT == drinkMode) {
+                    String deadline = BaseSharedPreferences.getString(mContext, Constant.RENT_DEADLINE_KEY);
+                    String currentTime = TimeUtils.getCurrentTime();
+                    if (!TimeUtils.isAvailDate(deadline, currentTime)) {
+                        Log.i(TAG, "run: 租期已到！currentTime = " + currentTime + ", deadline = " + deadline);
+                        moveToBreakDownActivity(getString(R.string.break_down_reason_expired));
+                    }
+                }
+            }
+        };
+        Timer timer = new Timer(true);
+        timer.schedule(task, updatetime, Constant.CHECK_RENT_DEADLINE_PERIOD * 1000);
+    }
+
+    public void listenDevice() {
+//        if (!Constant.TEST) {
+        //水质监听
+        Time uploadTime = new Time();
+        uploadTime.setToNow();
+        Date updatetime = TimeRun.tasktime(uploadTime.hour, uploadTime.minute, uploadTime.second);
+        TimeRun timeRun = new TimeRun(MainActivity.this, updatetime, myHandler, Constant.UPLOAD_TIME, DATADELETE, Constant.TIME_OPERATE_UPDATEWATER);
+        timeRun.startTimer();
+
+        //定时刷新二维码
+        Time sCodeTime = new Time();
+        sCodeTime.setToNow();
+        Date sCodeTimeUpdate = TimeRun.tasktime(sCodeTime.hour, sCodeTime.minute + 1, sCodeTime.second);
+        TimeRun timeRunScode = new TimeRun(MainActivity.this, sCodeTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
+        timeRunScode.startTimer();
+
+        //预警
+        Time warningTime = new Time();
+        warningTime.setToNow();
+        Date waringTimeUpdate = TimeRun.tasktime(warningTime.hour, warningTime.minute, warningTime.second);
+        TimeRun waringRunScode = new TimeRun(MainActivity.this, waringTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
+        waringRunScode.startTimer();
+//        }
     }
 
     /**
@@ -510,7 +458,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         isPlayInitVideo = true;
         AdvsVideo ad = DispenserCache.initAdVideoList.get(initAdIndex % DispenserCache.initAdVideoList.size());
         playerManager.play(ad.getAdvsVideoLocaltionPath());
-
     }
 
     /**
@@ -533,9 +480,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
         isPlayInitVideo = false;
-//        Log.d(TAG, "playVideo: 本地路径：" + ad.getAdvsVideoLocaltionPath());
+        Log.d(TAG, "playVideo: 本地路径：" + ad.getAdvsVideoLocaltionPath());
         playerManager.play(ad.getAdvsVideoLocaltionPath());
-//        playerManager.play(UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR + "dsadasdas.mp4");
     }
 
     /**
@@ -561,7 +507,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         List<AdvsVideo> adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
         if (null == adList || 0 == adList.size()) {
             Log.d(TAG, "getPushStrategy: 推送数据有误！");
-            // TODO: 2018/6/8 0008 是否上报一次错误？
             return;
         }
         for (AdvsVideo ad : adList) {
@@ -624,7 +569,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         // 下载地址为空，上报地址错误
         if (TextUtils.isEmpty(ad.getAdvsVideoDownloadPath())) {
             Log.d(TAG, "onError: dl_info: URL为空！");
-            // TODO: 2018/6/6 0006 上报地址错误
+            saveWrongUrlNotice(ad);
             pushAdVideoList.remove(ad);
             return;
         }
@@ -665,7 +610,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 // 网址错误则上报错误信息；其他错误则放在最后再下
                 if (msg.contains(Constant.DOWN_ERROR_MSG_WRONG_URL) || msg.contains(Constant.DOWN_ERROR_MSG_WRONG_BASE_URL)) {
                     Log.d(TAG, "onError: dl_info: URL有误！");
-                    // TODO: 2018/6/8 0008 上报地址错误
+                    saveWrongUrlNotice(pushAdVideoList.get(pushAdIndex));
                     pushAdVideoList.remove(pushAdIndex);
                     downloadAllVideo();
                     return;
@@ -688,6 +633,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
         dlManager.startDown(Constant.DOWNLOADAPK_ID, downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1),
                 downloadPath, UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
+    }
+
+    /**
+     * 存储广告视频下载地址错误的预警信息
+     *
+     * @param ad
+     */
+    private void saveWrongUrlNotice(AdvsVideo ad) {
+        SysDeviceNoticeAO notice = new SysDeviceNoticeAO(
+                BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY),
+                Constant.NOTICE_TYPE_AD_URL_WRONG, Constant.NOTICE_LEVEL_ABNORMAL,
+                ad.getAdvsId() + "", ad.getAdvsVideoDownloadPath(),
+                TimeUtils.getCurrentTime());
+        try {
+            new XutilsInit(mContext).getDb().save(notice);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
     }
 
     private void refreshAllAdVideoData() {
@@ -730,89 +693,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    public void listenDevice() {
-
-        //设置设备参数
-        String deviceconfig = BaseSharedPreferences.getString(MainActivity.this,Constant.DEVICE_CONFIG_STRING_KEY);
-        SysDeviceMonitorConfig sysDeviceMonitorConfig = JSONObject.parseObject(deviceconfig,SysDeviceMonitorConfig.class);
-
-
-
-//        motCfgPpFlow
-
-
-        //设置DevUtil里面的初始值
-//        DevUtil
-
-
-
-//        private int run_sTDS=20;     //原水TDS值
-//        private int run_oTDS=10;     //出水TDS值
-//        private int run_hotTemp=42;  //热水温度
-//        private int run_coolTemp=42; //冷水温度
-//        private byte run_bHot=1;     //加热状态，01 未加热，02 加热
-//        private byte run_bCool=1;    //制冷状态，01 未制冷，02 制冷
-//        private byte run_bWater=1;   //制水状态，01 未制水，02 制水
-//        private byte run_bRinse=1;   //冲洗状态，01 未冲洗，02 冲洗
-//        private byte run_bFault=1;   //源水缺水，01 不缺水，02 缺水
-//        private byte run_bLeak=1;    //漏水，01 未漏水，02 漏水
-//        private byte run_bSwitch=1;  //开关机状态，01 ，02 关
-//        private int run_bCup=1;      //缺杯，01 不缺杯，02 缺杯
-//        private boolean run_hotWaterSW=false;     //热水出开关
-//        private boolean run_normalWaterSW=false;  //温水出开关
-//        private boolean run_coolWaterSW=false;    //冷水出开关
-//        private int run_waterFlow=0;     //本次总出水计量
-//
-//
-//        private byte run_bSta=-1;    //通讯状态，0:offline;1:online;-1:Stop
-//        private String run_upTime = ComUtil.getNowStr();//刷新时间
-//
-//        //定值参数
-//        private int pam_rinseInterval=5;     //冲洗间隔，单位分钟
-//        private int pam_rinseTimeLong=10;    //冲洗时长，单位秒
-//        private int pam_hotTemp=75;          //加热温度
-//        private int pam_coolTemp=8;          //制冷温度
-//        private boolean pam_hotEnabled=true;  //加热使能
-//        private boolean pam_coolEnabled=true; //制冷使能
-
-
-
-
-        if(Constant.TEST ==false){
-        //水质监听
-        Time t = new Time();
-        Time tupload = new Time();
-        tupload.setToNow();
-        int houtupload = t.hour;
-        int minuteupload = t.minute;
-        int seconduplod = t.second;
-        Date updatetime = TimeRun.tasktime(houtupload, minuteupload, seconduplod);
-        TimeRun timeRun = new TimeRun(MainActivity.this, updatetime, myHandler, Constant.UPLOAD_TIME, DATADELETE, Constant.TIME_OPERATE_UPDATEWATER);
-        timeRun.startTimer();
-        //定时刷新二维码
-        Time sCodeTime = new Time();
-        sCodeTime.setToNow();
-        int hourscode = t.hour;
-        int minutescode = t.minute + 1;
-        int secondcode = t.second;
-        Date sCodeTimeUpdate = TimeRun.tasktime(houtupload, minuteupload, seconduplod);
-        TimeRun timeRunScode = new TimeRun(MainActivity.this, sCodeTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
-        timeRunScode.startTimer();
-
-        //预警
-        Time wArningTime = new Time();
-        wArningTime.setToNow();
-        int hourwaring = t.hour;
-        int minutewaring  = t.minute + 1;
-        int secondwaring  = t.second;
-        Date waringTimeUpdate = TimeRun.tasktime(hourwaring, minutewaring, secondwaring);
-        TimeRun waringRunScode = new TimeRun(MainActivity.this, waringTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
-        waringRunScode.startTimer();
-        }
-
-
-    }
-
     public Date addDay(Date date, int num) {
         Calendar startDT = Calendar.getInstance();
         startDT.setTime(date);
@@ -826,9 +706,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * @return
      */
     private boolean isActivityValidate() {
-        // TODO: 2018/6/12 0012 判断能弹窗的前提
-        boolean b = this.isDestroyed() || this.isFinishing();
-        return !b;
+        return !(this.isDestroyed() || this.isFinishing());
 //        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 //        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
 //        for (ActivityManager.RunningTaskInfo info : list) {
@@ -861,38 +739,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     // -------------------------- 回调 start --------------------------
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.exit:
-                TimeBack timeback = new TimeBack(exit, 30000, 1000);
-                break;
-            case R.id.leftpop:
-                //免费喝水跳转到广告，倒计时然后进入操作界面，隐藏操作界面
-                leftoperate.setVisibility(View.GONE);
-                rightoperate.setVisibility(View.GONE);
-                break;
-            case R.id.rightpop:
-                //弹出二维码
-                break;
-            case R.id.wantwater:
-                popWaterSale.showPopupWindow(new View(mContext));
-                break;
-            case R.id.tobehot:
-                //加热使能
-                break;
-            case R.id.tobecool:
-                //制冷使能
-                break;
-            case R.id.chongxi:
-                //冲洗使能
-                break;
-        }
-
-    }
-
-    //region --------- ijk 监听 start ---------
+    // --------- ijk 监听 start ---------
 
     @Override
     public void onComplete() {
@@ -938,40 +785,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onInfo(int what, int extra) {
         Log.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
     }
-    //endregion --------- ijk end ---------
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        /*if (requestCode == PermissionUtils.CODE_INTERNET) {
-            showToast("访问网络权限已申请");
-        }
-        if (requestCode == PermissionUtils.CODE_READ_PHONE_STATE) {
-            showToast("访问电话状态权限已申请");
-        }
-        if (requestCode == PermissionUtils.CODE_ACCESS_NETWORK_STATE) {
-            showToast("获取网络信息状态权限已申请");
-        }
-        if (requestCode == PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE) {
-            showToast("读取SD卡权限已申请");
-        }
-        if (requestCode == PermissionUtils.CODE_MOUNT_UNMOUNT_FILESYSTEMS) {
-            showToast("挂载、反挂载外部文件系统权限已申请");
-        }*/
-        for (int i = 0; i < grantResults.length; i++) {
-            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                //判断是否勾选禁止后不再询问
-                boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permissions[i]);
-                if (showRequestPermission) {
-                    Toast.makeText(MainActivity.this, "权限未申请", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
+    // --------- ijk 监听 end ---------
 
     // -------------------------- 回调 end --------------------------
 
@@ -1052,7 +866,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case Constant.PUSH_OPERATION_TYPE_UPDATE_ID:
                     break;
             }
-
         }
 
         @Override
@@ -1241,13 +1054,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         dismissPop(popBuy);
     }
 
-    //region -------------------------- View end --------------------------
+    // -------------------------- View end --------------------------
 
     /**
      * 模拟收到信鸽推送的回调，后面有真的写好了，这里的内容就移过去
      */
     /*private void onReceivePush() {
-        // TODO: 2018/6/5 0005 判断是否是重复推送，重复则忽略
         String pushString = "{" +
                 "\"deviceId\":0," +
                 "\"operationContent\":[" +
@@ -1327,6 +1139,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         return isRunning;
     }*/
-
-    //endregion
 }

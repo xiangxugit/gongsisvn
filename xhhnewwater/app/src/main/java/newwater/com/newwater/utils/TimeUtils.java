@@ -180,4 +180,33 @@ public class TimeUtils {
         return isCurrentDateInSchedule(upDate, downDate, curTimeStr) &&
                 isCurrentTimeInPeriod(beginTime, endTime, curTimeStr);
     }
+
+
+    /**
+     * 某个特定时间是否是在当前时间的当天或者以后
+     * @param spDate 某个特定时间（yyyy-MM-dd HH:mm:ss）
+     * @param curTimeStr 当前时间（yyyy-MM-dd HH:mm:ss），由getCurrentTime获得
+     * @return
+     */
+    public static boolean isAvailDate(String spDate, String curTimeStr) {
+        if (TextUtils.isEmpty(spDate) || TextUtils.isEmpty(curTimeStr)) {
+            Log.d(TAG, "isFutureTime: 特定时间或当前时间为空");
+            return false;
+        }
+        if (19 != spDate.length() || 19 != curTimeStr.length()) {
+            Log.d(TAG, "isFutureTime: 时间格式错误");
+            return false;
+        }
+
+        boolean isFuture = false;
+        Date currentTime;
+        currentTime = strToDateLong(curTimeStr);
+
+        Date endDate = strToDateLong(spDate);
+        if (null != endDate) {
+            Log.d(TAG, "isFutureTime: Date为空！");
+            isFuture = endDate.getTime() >= currentTime.getTime();
+        }
+        return isFuture;
+    }
 }

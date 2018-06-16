@@ -1,14 +1,10 @@
 <resources>
-<string name="app_name">leadapp</string>
-<string name="appnametitle">欢迎使用新鸿海新鲜水管理系统!</string>
-<string name="install">安 装</string>
-<string name="installing">正在安装，请稍后……</string>
-<string name="jihuosucess">激活成功</string>
-<string name="scanqcode">打开手机微信，扫描屏幕上方二维码激活系统</string>
-
-<string name="daojishichongqi">3s后将自动重启</string>
-<string name="restart">正在重启,请稍后</string>
-<string name="download">下载文件</string>
-<string name="dowanloading">下载中....</string>
-
+    <string name="app_name">leadapp</string>
+    <string name="download">下载文件</string>
+    <string name="dowanloading">下载中....</string>
+    <string name="install">安 装</string>
+    <string name="installing">正在安装，请稍后……</string>
+    <string name="scanqcode">打开手机微信，扫描屏幕上方二维码激活系统</string>
+    <string name="actsucess">激活成功</string>
+    <string name="appnametitle">欢迎使用新鸿海新鲜水管理系统!</string>
 </resources>

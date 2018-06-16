@@ -94,14 +94,13 @@ public class PopQrCode extends PopupWindow {
         @Override
         public void onClick(View v) {
             dismiss();
-            switch (v.getId()) {
+            /*switch (v.getId()) {
                 case R.id.qrcode:
                     MainActivity.leftoperate.setVisibility(View.VISIBLE);
                     MainActivity.rightoperate.setVisibility(View.VISIBLE);
 //                    MainActivity.wantwater.setVisibility(View.GONE);
                     break;
-
-            }
+            }*/
         }
 
     };

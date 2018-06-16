@@ -14,8 +14,9 @@ import org.xutils.x;
 
 public class RestUtils {
 
-    public static String IP = "192.168.0.200";
+//    public static String IP = "192.168.0.200";
 
+    public static String IP = "192.168.0.50";
     public static String PORT = "28301";
 
     //获取Token

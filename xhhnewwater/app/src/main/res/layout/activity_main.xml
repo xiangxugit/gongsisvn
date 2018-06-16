@@ -7,24 +7,9 @@
     android:gravity="center"
     android:id="@+id/root">
 
-
     <newwater.com.newwater.media.IjkVideoView
         android:id="@+id/idle_ad_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
-    <RelativeLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="right|bottom"
-        android:gravity="right|bottom">
-
-        <ImageView
-            android:id="@+id/wantwater"
-            android:background="@drawable/wantwater"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:visibility="gone"/>
-    </RelativeLayout>
 
 </RelativeLayout>

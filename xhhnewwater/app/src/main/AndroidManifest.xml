@@ -51,10 +51,10 @@
             </intent-filter>
         </activity>
 
-        <!--<activity
+        <activity
             android:name=".view.activity.MainActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar" />-->
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".view.activity.FreeAdActivity"

@@ -12,6 +12,7 @@ import android.widget.Button;
 import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
+import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.XutilsInit;
 import newwater.com.newwater.R;
 import newwater.com.newwater.beans.AdvsPlayRecode;
@@ -57,8 +58,7 @@ public class FreeAdActivity extends Activity implements IjkManager.PlayerStateLi
 
     private void initData() {
         mContext = FreeAdActivity.this;
-        // TODO: 2018/6/8 0008 deviceId获取
-//        deviceId = ;
+        deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
         dbManager = new XutilsInit(FreeAdActivity.this).getDb();
         playDuration = Constant.DEFAULT_FREE_AD_DURATION;
         Intent intent = getIntent();

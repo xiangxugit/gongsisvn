@@ -13,21 +13,21 @@ import java.util.Date;
 public class SysDeviceMonitorConfig implements Serializable {
 
     @Column(name = "mot_cfg_id", isId = true, autoGen = true)
-    private int motCfgId;
+    private Integer motCfgId;
 
 
     /**
      * 设备ID
      */
     @Column(name = "s")
-    private int deviceId;
+    private Integer deviceId;
 
 
     /**
      * 巡检时间(单位分钟)
      */
     @Column(name = "mot_cfg_network_time")
-    private int motCfgNetworkTime;
+    private Integer motCfgNetworkTime;
 
 
     /**
@@ -41,14 +41,14 @@ public class SysDeviceMonitorConfig implements Serializable {
      * PP棉使用时间(单位天)
      */
     @Column(name = "mot_cfg_pp_time")
-    private int motCfgPpTime;
+    private Integer motCfgPpTime;
 
 
     /**
      * PP棉制水总流量(单位L)
      */
     @Column(name = "mot_cfg_pp_flow")
-    private int motCfgPpFlow;
+    private Integer motCfgPpFlow;
 
 
     /**
@@ -62,14 +62,14 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 颗粒活性炭使用时间(单位天) 注：颗粒活性炭使用时长 100天
      */
     @Column(name = "mot_cfg_grain_carbon_time")
-    private int motCfgGrainCarbonTime;
+    private Integer motCfgGrainCarbonTime;
 
 
     /**
      * 颗粒活性炭使用时间(单位L) 注：颗粒活性炭制水总流量11355L
      */
     @Column(name = "mot_cfg_grain_carbon_flow")
-    private int motCfgGrainCarbonFlow;
+    private Integer motCfgGrainCarbonFlow;
 
 
     /**
@@ -84,7 +84,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：压缩活性炭使用时长 100天
      */
     @Column(name = "mot_cfg_press_carbon_time")
-    private int motCfgPressCarbonTime;
+    private Integer motCfgPressCarbonTime;
 
 
     /**
@@ -92,7 +92,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：压缩活性炭制水总流量11355L
      */
     @Column(name = "mot_cfg_press_carbon_flow")
-    private int motCfgPressCarbonFlow;
+    private Integer motCfgPressCarbonFlow;
 
 
     /**
@@ -107,7 +107,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：后置活性炭使用时长 100天
      */
     @Column(name = "mot_cfg_pose_carbon_time")
-    private int motCfgPoseCarbonTime;
+    private Integer motCfgPoseCarbonTime;
 
 
     /**
@@ -115,7 +115,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：后置活性炭制水总流量11355L
      */
     @Column(name = "mot_cfg_pose_carbon_flow")
-    private int motCfgPoseCarbonFlow;
+    private Integer motCfgPoseCarbonFlow;
 
 
     /**
@@ -130,7 +130,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：RO反渗透膜使用时长 540天
      */
     @Column(name = "mot_cfg_ro_time")
-    private int motCfgRoTime;
+    private Integer motCfgRoTime;
 
 
     /**
@@ -138,7 +138,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 注：RO反渗透膜制水总流量11355L
      */
     @Column(name = "mot_cfg_ro_flow")
-    private int motCfgRoFlow;
+    private Integer motCfgRoFlow;
 
 
     /**
@@ -151,56 +151,56 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 监控数据上报时间间隔（单位分钟）(激活时间开始)
      */
     @Column(name = "mot_cfg_up_time")
-    private int motCfgUpTime;
+    private Integer motCfgUpTime;
 
 
     /**
      * 设备单次最大出水量（单位ml）
      */
     @Column(name = "mot_cfg_max_flow")
-    private int motCfgMaxFlow;
+    private Integer motCfgMaxFlow;
 
 
     /**
      * 音量控制
      */
     @Column(name = "mot_cfg_volume")
-    private int motCfgVolume;
+    private Integer motCfgVolume;
 
 
     /**
      * 冲洗时间间隔(/分/次)
      */
     @Column(name = "mot_cfg_flush_interval")
-    private int motCfgFlushInterval;
+    private Integer motCfgFlushInterval;
 
 
     /**
      * 冲洗持续时长(/次/秒)
      */
     @Column(name = "mot_cfg_flush_duration")
-    private int motCfgFlushDuration;
+    private Integer motCfgFlushDuration;
 
 
     /**
      * 加热临界温度
      */
     @Column(name = "mot_cfg_heating_temp")
-    private int motCfgHeatingTemp;
+    private Integer motCfgHeatingTemp;
 
 
     /**
      * 制冷临界温度
      */
     @Column(name = "mot_cfg_cooling_temp")
-    private int motCfgCoolingTemp;
+    private Integer motCfgCoolingTemp;
 
 
     /**
      * 是否全天加热(0-否 1-是)
      */
     @Column(name = "mot_cfg_heating_allday")
-    private int motCfgHeatingAllday;
+    private Integer motCfgHeatingAllday;
 
 
     /**
@@ -214,7 +214,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 是否全天制冷(0-否 1-是)
      */
     @Column(name = "mot_cfg_cooling_allday")
-    private int motCfgCoolingAllday;
+    private Integer motCfgCoolingAllday;
 
 
     /**
@@ -228,14 +228,14 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 订单子ID（激活时选择）
      */
     @Column(name = "order_dtl_id")
-    private int orderDtlId;
+    private Integer orderDtlId;
 
 
     /**
      * 维护人员
      */
     @Column(name = "maintenance_admin_user_id")
-    private int maintenanceAdminUserId;
+    private Integer maintenanceAdminUserId;
 
 
     /**
@@ -249,7 +249,7 @@ public class SysDeviceMonitorConfig implements Serializable {
      * 收费模式(1:售水；2：租赁；3：销售)
      */
     @Column(name = "product_charg_mode")
-    private int productChargMode;
+    private Integer productChargMode;
 
     /**
      * 手机号
@@ -263,28 +263,27 @@ public class SysDeviceMonitorConfig implements Serializable {
     @Column(name = "product_rent_time")
     private java.util.Date productRentTime;
 
-
-    public int getMotCfgId() {
+    public Integer getMotCfgId() {
         return motCfgId;
     }
 
-    public void setMotCfgId(int motCfgId) {
+    public void setMotCfgId(Integer motCfgId) {
         this.motCfgId = motCfgId;
     }
 
-    public int getDeviceId() {
+    public Integer getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(int deviceId) {
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
 
-    public int getMotCfgNetworkTime() {
+    public Integer getMotCfgNetworkTime() {
         return motCfgNetworkTime;
     }
 
-    public void setMotCfgNetworkTime(int motCfgNetworkTime) {
+    public void setMotCfgNetworkTime(Integer motCfgNetworkTime) {
         this.motCfgNetworkTime = motCfgNetworkTime;
     }
 
@@ -296,19 +295,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgNetworkTimes = motCfgNetworkTimes;
     }
 
-    public int getMotCfgPpTime() {
+    public Integer getMotCfgPpTime() {
         return motCfgPpTime;
     }
 
-    public void setMotCfgPpTime(int motCfgPpTime) {
+    public void setMotCfgPpTime(Integer motCfgPpTime) {
         this.motCfgPpTime = motCfgPpTime;
     }
 
-    public int getMotCfgPpFlow() {
+    public Integer getMotCfgPpFlow() {
         return motCfgPpFlow;
     }
 
-    public void setMotCfgPpFlow(int motCfgPpFlow) {
+    public void setMotCfgPpFlow(Integer motCfgPpFlow) {
         this.motCfgPpFlow = motCfgPpFlow;
     }
 
@@ -320,19 +319,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgPpChangeTime = motCfgPpChangeTime;
     }
 
-    public int getMotCfgGrainCarbonTime() {
+    public Integer getMotCfgGrainCarbonTime() {
         return motCfgGrainCarbonTime;
     }
 
-    public void setMotCfgGrainCarbonTime(int motCfgGrainCarbonTime) {
+    public void setMotCfgGrainCarbonTime(Integer motCfgGrainCarbonTime) {
         this.motCfgGrainCarbonTime = motCfgGrainCarbonTime;
     }
 
-    public int getMotCfgGrainCarbonFlow() {
+    public Integer getMotCfgGrainCarbonFlow() {
         return motCfgGrainCarbonFlow;
     }
 
-    public void setMotCfgGrainCarbonFlow(int motCfgGrainCarbonFlow) {
+    public void setMotCfgGrainCarbonFlow(Integer motCfgGrainCarbonFlow) {
         this.motCfgGrainCarbonFlow = motCfgGrainCarbonFlow;
     }
 
@@ -344,19 +343,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgGrainCarbonChangeTime = motCfgGrainCarbonChangeTime;
     }
 
-    public int getMotCfgPressCarbonTime() {
+    public Integer getMotCfgPressCarbonTime() {
         return motCfgPressCarbonTime;
     }
 
-    public void setMotCfgPressCarbonTime(int motCfgPressCarbonTime) {
+    public void setMotCfgPressCarbonTime(Integer motCfgPressCarbonTime) {
         this.motCfgPressCarbonTime = motCfgPressCarbonTime;
     }
 
-    public int getMotCfgPressCarbonFlow() {
+    public Integer getMotCfgPressCarbonFlow() {
         return motCfgPressCarbonFlow;
     }
 
-    public void setMotCfgPressCarbonFlow(int motCfgPressCarbonFlow) {
+    public void setMotCfgPressCarbonFlow(Integer motCfgPressCarbonFlow) {
         this.motCfgPressCarbonFlow = motCfgPressCarbonFlow;
     }
 
@@ -368,19 +367,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgPressCarbonChangeTime = motCfgPressCarbonChangeTime;
     }
 
-    public int getMotCfgPoseCarbonTime() {
+    public Integer getMotCfgPoseCarbonTime() {
         return motCfgPoseCarbonTime;
     }
 
-    public void setMotCfgPoseCarbonTime(int motCfgPoseCarbonTime) {
+    public void setMotCfgPoseCarbonTime(Integer motCfgPoseCarbonTime) {
         this.motCfgPoseCarbonTime = motCfgPoseCarbonTime;
     }
 
-    public int getMotCfgPoseCarbonFlow() {
+    public Integer getMotCfgPoseCarbonFlow() {
         return motCfgPoseCarbonFlow;
     }
 
-    public void setMotCfgPoseCarbonFlow(int motCfgPoseCarbonFlow) {
+    public void setMotCfgPoseCarbonFlow(Integer motCfgPoseCarbonFlow) {
         this.motCfgPoseCarbonFlow = motCfgPoseCarbonFlow;
     }
 
@@ -392,19 +391,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgPoseCarbonChangeTime = motCfgPoseCarbonChangeTime;
     }
 
-    public int getMotCfgRoTime() {
+    public Integer getMotCfgRoTime() {
         return motCfgRoTime;
     }
 
-    public void setMotCfgRoTime(int motCfgRoTime) {
+    public void setMotCfgRoTime(Integer motCfgRoTime) {
         this.motCfgRoTime = motCfgRoTime;
     }
 
-    public int getMotCfgRoFlow() {
+    public Integer getMotCfgRoFlow() {
         return motCfgRoFlow;
     }
 
-    public void setMotCfgRoFlow(int motCfgRoFlow) {
+    public void setMotCfgRoFlow(Integer motCfgRoFlow) {
         this.motCfgRoFlow = motCfgRoFlow;
     }
 
@@ -416,67 +415,67 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgRoChangeTime = motCfgRoChangeTime;
     }
 
-    public int getMotCfgUpTime() {
+    public Integer getMotCfgUpTime() {
         return motCfgUpTime;
     }
 
-    public void setMotCfgUpTime(int motCfgUpTime) {
+    public void setMotCfgUpTime(Integer motCfgUpTime) {
         this.motCfgUpTime = motCfgUpTime;
     }
 
-    public int getMotCfgMaxFlow() {
+    public Integer getMotCfgMaxFlow() {
         return motCfgMaxFlow;
     }
 
-    public void setMotCfgMaxFlow(int motCfgMaxFlow) {
+    public void setMotCfgMaxFlow(Integer motCfgMaxFlow) {
         this.motCfgMaxFlow = motCfgMaxFlow;
     }
 
-    public int getMotCfgVolume() {
+    public Integer getMotCfgVolume() {
         return motCfgVolume;
     }
 
-    public void setMotCfgVolume(int motCfgVolume) {
+    public void setMotCfgVolume(Integer motCfgVolume) {
         this.motCfgVolume = motCfgVolume;
     }
 
-    public int getMotCfgFlushInterval() {
+    public Integer getMotCfgFlushInterval() {
         return motCfgFlushInterval;
     }
 
-    public void setMotCfgFlushInterval(int motCfgFlushInterval) {
+    public void setMotCfgFlushInterval(Integer motCfgFlushInterval) {
         this.motCfgFlushInterval = motCfgFlushInterval;
     }
 
-    public int getMotCfgFlushDuration() {
+    public Integer getMotCfgFlushDuration() {
         return motCfgFlushDuration;
     }
 
-    public void setMotCfgFlushDuration(int motCfgFlushDuration) {
+    public void setMotCfgFlushDuration(Integer motCfgFlushDuration) {
         this.motCfgFlushDuration = motCfgFlushDuration;
     }
 
-    public int getMotCfgHeatingTemp() {
+    public Integer getMotCfgHeatingTemp() {
         return motCfgHeatingTemp;
     }
 
-    public void setMotCfgHeatingTemp(int motCfgHeatingTemp) {
+    public void setMotCfgHeatingTemp(Integer motCfgHeatingTemp) {
         this.motCfgHeatingTemp = motCfgHeatingTemp;
     }
 
-    public int getMotCfgCoolingTemp() {
+    public Integer getMotCfgCoolingTemp() {
         return motCfgCoolingTemp;
     }
 
-    public void setMotCfgCoolingTemp(int motCfgCoolingTemp) {
+    public void setMotCfgCoolingTemp(Integer motCfgCoolingTemp) {
         this.motCfgCoolingTemp = motCfgCoolingTemp;
     }
 
-    public int getMotCfgHeatingAllday() {
+    public Integer getMotCfgHeatingAllday() {
         return motCfgHeatingAllday;
     }
 
-    public void setMotCfgHeatingAllday(int motCfgHeatingAllday) {
+    public void setMotCfgHeatingAllday(Integer motCfgHeatingAllday) {
         this.motCfgHeatingAllday = motCfgHeatingAllday;
     }
 
@@ -488,11 +487,11 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgHeatingInterval = motCfgHeatingInterval;
     }
 
-    public int getMotCfgCoolingAllday() {
+    public Integer getMotCfgCoolingAllday() {
         return motCfgCoolingAllday;
     }
 
-    public void setMotCfgCoolingAllday(int motCfgCoolingAllday) {
+    public void setMotCfgCoolingAllday(Integer motCfgCoolingAllday) {
         this.motCfgCoolingAllday = motCfgCoolingAllday;
     }
 
@@ -504,19 +503,19 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.motCfgCoolingInterval = motCfgCoolingInterval;
     }
 
-    public int getOrderDtlId() {
+    public Integer getOrderDtlId() {
         return orderDtlId;
     }
 
-    public void setOrderDtlId(int orderDtlId) {
+    public void setOrderDtlId(Integer orderDtlId) {
         this.orderDtlId = orderDtlId;
     }
 
-    public int getMaintenanceAdminUserId() {
+    public Integer getMaintenanceAdminUserId() {
         return maintenanceAdminUserId;
     }
 
-    public void setMaintenanceAdminUserId(int maintenanceAdminUserId) {
+    public void setMaintenanceAdminUserId(Integer maintenanceAdminUserId) {
         this.maintenanceAdminUserId = maintenanceAdminUserId;
     }
 
@@ -528,11 +527,11 @@ public class SysDeviceMonitorConfig implements Serializable {
         this.maintenanceAdminUserName = maintenanceAdminUserName;
     }
 
-    public int getProductChargMode() {
+    public Integer getProductChargMode() {
         return productChargMode;
     }
 
-    public void setProductChargMode(int productChargMode) {
+    public void setProductChargMode(Integer productChargMode) {
         this.productChargMode = productChargMode;
     }
 
@@ -551,7 +550,6 @@ public class SysDeviceMonitorConfig implements Serializable {
     public void setProductRentTime(Date productRentTime) {
         this.productRentTime = productRentTime;
     }
-
 
     @Override
     public String toString() {

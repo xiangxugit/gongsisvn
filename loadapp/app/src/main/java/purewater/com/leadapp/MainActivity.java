@@ -46,6 +46,7 @@ import purewater.com.leadapp.broadcast.MessageReceiver;
 import purewater.com.leadapp.utils.ApkUtils;
 import purewater.com.leadapp.utils.Create2QR2;
 import purewater.com.leadapp.utils.OkHttpUtils;
+import purewater.com.leadapp.utils.PackageUtils;
 import purewater.com.leadapp.utils.RestUtils;
 import purewater.com.leadapp.utils.XutilsHttp;
 
@@ -57,9 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar jindu;
     private LinearLayout fiststep;
     private LinearLayout twostep;
-    private LinearLayout three;
-    private LinearLayout four;
-    private LinearLayout fivestep;
+    private LinearLayout threestep;
+    private LinearLayout fourstep;
     private ImageView qcode;//扫描二维码激活系统
     private MessageReceiver messageReceiver;//信鸽Receiver
 
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //要调用另一个APP的activity所在的包名
     String packageName = "newwater.com.newwater";
     //要调用另一个APP的activity名字
-    String activity = "newwater.com.newwater.MainActivity";
+    String activityName = "newwater.com.newwater.MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intall.setOnClickListener(this);
         fiststep = (LinearLayout) findViewById(R.id.fiststep);
         twostep = (LinearLayout) findViewById(R.id.twostep);
-        three = (LinearLayout) findViewById(R.id.three);
-        four = (LinearLayout) findViewById(R.id.four);
-        fivestep = (LinearLayout) findViewById(R.id.fivestep);
+        threestep = (LinearLayout) findViewById(R.id.threestep);
+        fourstep = (LinearLayout) findViewById(R.id.fourstep);
         qcode = (ImageView) findViewById(R.id.qcode);
         //获得界面布局里面的进度条组件
         jindu = (ProgressBar) findViewById(R.id.jindu);
@@ -117,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(Object data, int flag) {
                 //token在设备卸载重装的时候有可能会变
                 Log.i("TPush", "注册成功，设备token为：" + data);
+                Toast.makeText(MainActivity.this, data.toString(), Toast.LENGTH_LONG).show();
 
                 //TODO 生成二维码
                 //String data = XGPushConfig.getToken(MainActivity.this);
@@ -176,21 +176,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
-            String jsonData = "收到消息:" + xgPushTextMessage.toString();
+            Log.e("收到消息:", xgPushTextMessage.toString());
+            String jsonData = xgPushTextMessage.getContent();
             JSONObject jsonObject = JSON.parseObject(jsonData);
-            Log.e("message", jsonData);
             String deviceId = jsonObject.getString("deviceId");
 
             //String url = RestUtils.getUrl(RestUtils.GET + "?deviceId=" + deviceId);
-            if (deviceId != null && deviceId.length() != 0) {
-                //ApkUtils.startApp("newwater.com.newwater", "MainActivity");
+            /*if (deviceId != null && deviceId.length() != 0) {
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 bundle.putString("load_send_device_id", deviceId);
+                bundle.putString("load_send_drink_mode", deviceMode);
                 intent.putExtras(bundle);
                 intent.setClassName(packageName, activity);
                 startActivityForResult(intent, 1);
-            }
+            }*/
         }
 
         @Override
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 };
                 thread.start();
-                showStep("one");
+                showStep("fist");
 
                 break;
         }
@@ -305,11 +305,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onResponse(String result) {
                     Log.e("onResponse", result);
+                    /*JSONObject jsonObject = JSON.parseObject(result);
+                    String data = jsonObject.getString("data");
+                    SysApkVersionVO sysApkVersionVO = JSONObject.parseObject(data, SysApkVersionVO.class);*/
+//                    doDownload("sysApkVersionVO.getApkUrl()");
+
                     JSONObject jsonObject = JSON.parseObject(result);
                     String data = jsonObject.getString("data");
-                    SysApkVersionVO sysApkVersionVO = JSONObject.parseObject(data, SysApkVersionVO.class);
-                    doDownload(sysApkVersionVO.getApkUrl());
+                    JSONObject dataobj = JSON.parseObject(data);
+                    String url = dataobj.getString("apkUrl");
+                    String urldown = "https://xhh-1256753247.cos.ap-guangzhou.myqcloud.com"+url;
+                    doDownload(urldown);
+
                 }
+
             });
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -322,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param url
      */
     public void doDownload(String url) {
-        url = "http://121.43.198.84:8026/upload/anjian.apk";
+//        url = "http://121.43.198.84:8026/upload/anjian.apk";
         /*RequestParams requestParams = new RequestParams(url);
         requestParams.setAutoResume(true);//设置为断点续传
         requestParams.setAutoRename(false);*/
@@ -370,12 +379,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("tag", "下载成功:" + file.getPath());
                 //TODO 安装
 //                install(file.getPath());
-                //PackageUtils.install(MainActivity.this, file.getPath());
-                showStep("two");
-
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-//                startActivity(intent);
+                  Log.e("a","a"+PackageUtils.install(MainActivity.this, file.getPath()));
+                  if( PackageUtils.install(MainActivity.this, file.getPath())==1){
+//                      ApkUtils.startApp(packageName, activityName);
+                      Intent intent = new Intent(Intent.ACTION_MAIN);
+                      intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                      ComponentName cn = new ComponentName(packageName, activityName);
+                      intent.setComponent(cn);
+                      startActivity(intent);
+                  }
+//                showStep("two");
             }
 
             @Override
@@ -397,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 if (ApkUtils.install(filePath, getApplicationContext())) {
                     apkToast("安裝成功");
+                    ApkUtils.startApp(packageName, activityName);
                 } else {
                     apkToast("安裝失败");
                 }
@@ -412,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void uninstall(final String filePath) {
         new Thread() {
             public void run() {
-                if (ApkUtils.uninstall("newwater.com.newwater", getApplicationContext())) {
+                if (ApkUtils.uninstall(filePath, getApplicationContext())) {
                     apkToast("卸載成功");
                 } else {
                     apkToast("卸載失败");
@@ -422,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showToast(String text) {
-        Toast.makeText(MainActivity.this, text, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
     public void apkToast(final String text) {
@@ -440,21 +454,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param step
      */
     public void showStep(String step) {
-        if (step == "one") {
+        if (step == "fist") {
             fiststep.setVisibility(View.GONE);
             twostep.setVisibility(View.VISIBLE);
         }
         if (step == "two") {
             twostep.setVisibility(View.GONE);
-            three.setVisibility(View.VISIBLE);
+            threestep.setVisibility(View.VISIBLE);
         }
         if (step == "three") {
-            three.setVisibility(View.GONE);
-            four.setVisibility(View.VISIBLE);
-        }
-        if (step == "four") {
-            four.setVisibility(View.GONE);
-            fivestep.setVisibility(View.VISIBLE);
+            threestep.setVisibility(View.GONE);
+            fourstep.setVisibility(View.VISIBLE);
         }
     }
 

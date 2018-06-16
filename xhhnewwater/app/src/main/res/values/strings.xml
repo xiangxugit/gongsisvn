@@ -30,7 +30,9 @@
 
     <!-- 设备故障原因 start -->
     <string name="break_down_reason_default">设备已坏</string>
+    <string name="break_down_reason_expired">设备已到期</string>
     <string name="break_down_reason_no_device_id">设备已坏</string>
+    <string name="break_down_reason_no_device_config">设备已坏</string>
     <string name="break_down_reason_no_drink_mode">设备已坏</string>
     <string name="break_down_reason_no_contract_info">设备已坏</string>
     <string name="break_down_reason_no_rent_deadline">设备已坏</string>

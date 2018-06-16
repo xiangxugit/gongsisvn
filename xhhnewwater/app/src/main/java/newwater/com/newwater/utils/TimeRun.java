@@ -1,11 +1,10 @@
 package newwater.com.newwater.utils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
 import android.serialport.DevUtil;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import org.xutils.DbManager;
@@ -14,7 +13,6 @@ import org.xutils.ex.DbException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,10 +21,9 @@ import newwater.com.newwater.Sys_Device_Monitor_Config_DbOperate;
 import newwater.com.newwater.TestJSON;
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.beans.SysDeviceWaterQualityAO;
-import newwater.com.newwater.beans.SysDeviceMonitorConfig;
 import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
-import newwater.com.newwater.view.activity.MainActivity;
+import newwater.com.newwater.view.activity.BreakDownActivity;
 import okhttp3.Request;
 
 /**
@@ -36,14 +33,25 @@ import okhttp3.Request;
 public class TimeRun {
 
     //    https://blog.csdn.net/qinde025/article/details/6828723
-    public  TimerTask task;
+    public TimerTask task;
     private DevUtil devUtil = null;
     private Handler handler = null;
 
     private DbManager dbManager;
     private Date time;
-    private long loopjiange=1000*60*60*24;
+    private long loopjiange = 1000 * 60 * 60 * 24;
     private Activity context;
+    private Integer motCfgPpFlow;//PP棉制水总流量
+    private Integer motCfgGrainCarbonFlow;//颗粒活性炭使用时间(单位L)
+    private Integer motCfgPressCarbonFlow;//压缩活性炭
+    private Integer motCfgPoseCarbonFlow;//后置活性炭
+    private Integer motCfgRoFlow;//反渗透模
+
+    private Integer motCfgPpFlowWarning;
+    private Integer motCfgGrainCarbonFlowWarning;//颗粒活性炭使用时间(单位L)
+    private Integer motCfgPressCarbonFlowWarning;//压缩活性炭
+    private Integer motCfgPoseCarbonFlowWarning;//后置活性炭
+    private Integer motCfgRoFlowWarning;//反渗透模
 
     /**
      * @param context
@@ -53,9 +61,20 @@ public class TimeRun {
      * @param operateflag 1:水质状态
      */
 
-    public TimeRun( final Activity context, Date time, final Handler handler, final long loopjiange, final int what, final int operateflag) {
+    public TimeRun(final Activity context, Date time, final Handler handler, final long loopjiange, final int what, final int operateflag) {
         if (null == devUtil) {
             devUtil = new DevUtil(null);
+            motCfgPpFlow = Integer.parseInt(BaseSharedPreferences.getString(context, Constant.DEVICE_PP_FLOW_KEY));//PP棉制水总流量
+            motCfgGrainCarbonFlow = Integer.parseInt(BaseSharedPreferences.getString(context, Constant.DEVICE_GRAIN_CARBON_KEY));
+            motCfgPressCarbonFlow = Integer.parseInt(BaseSharedPreferences.getString(context, Constant.DEVICE_PRESS_CARBON_KEY));//压缩活性炭
+            motCfgPoseCarbonFlow = Integer.parseInt(BaseSharedPreferences.getString(context, Constant.DEVICE_POSE_CARBON_KEY));//后置活性炭
+            motCfgRoFlow = Integer.parseInt(BaseSharedPreferences.getString(context, Constant.DEVICE_RO_FLOW_KEY));//反渗透模
+
+            motCfgPpFlowWarning = (int) (motCfgPpFlow * Constant.PERCENT);
+            motCfgGrainCarbonFlowWarning = (int) (motCfgGrainCarbonFlow * Constant.PERCENT);
+            motCfgPressCarbonFlowWarning = (int) (motCfgPressCarbonFlow * Constant.PERCENT);
+            motCfgPoseCarbonFlowWarning = (int) (motCfgPoseCarbonFlow * Constant.PERCENT);
+            motCfgRoFlowWarning = (int) (motCfgRoFlow * Constant.PERCENT);
         }
         this.time = time;
         this.loopjiange = loopjiange;
@@ -69,15 +88,13 @@ public class TimeRun {
                     //上传水质
                     GetDeviceInfo getDeviceInfo = new GetDeviceInfo();
                     String deviceId = "";
-                    if(Constant.TEST == true){
-                         deviceId = "1";
-                    }else{
-                         deviceId = BaseSharedPreferences.getString(context,Constant.DEVICE_ID_KEY);
+                    if (Constant.TEST == true) {
+                        deviceId = "1";
+                    } else {
+                        deviceId = BaseSharedPreferences.getString(context, Constant.DEVICE_ID_KEY);
                     }
-
                     SysDeviceWaterQualityAO sysDeviceWaterQualityAO = new SysDeviceWaterQualityAO();
                     sysDeviceWaterQualityAO.setDeviceId(Integer.parseInt(deviceId));
-
                     sysDeviceWaterQualityAO.setDeviceRawWater(devUtil.get_run_sTDS_value());
                     sysDeviceWaterQualityAO.setDevicePureWater(devUtil.get_run_sTDS_value());
                     sysDeviceWaterQualityAO.setDeviceWaterQualityTime(TimeUtils.getCurrentTime());
@@ -102,7 +119,6 @@ public class TimeRun {
                     } else {
                         sysDeviceWaterQualityAO.setColdWaterOutletStatus(0);
                     }
-
                     //温水出水状态
                     if (devUtil.get_run_normalWaterSW_value() == true) {
                         sysDeviceWaterQualityAO.setWarmWaterOutletStatus(1);
@@ -114,9 +130,7 @@ public class TimeRun {
                     //制冷设备温度
                     sysDeviceWaterQualityAO.setCoolingTemp(devUtil.get_pam_coolTemp_value());
                     //单位是分钟
-
                     sysDeviceWaterQualityAO.setFlushInterval(devUtil.get_pam_rinseTimeLong_value());
-
                     sysDeviceWaterQualityAO.setFlushDuration(devUtil.get_pam_rinseInterval_value());
 
                     try {
@@ -129,11 +143,11 @@ public class TimeRun {
 
                 if (Constant.TIME_OPETATE_UPDATESCODE == operateflag) {
                     String sCodeUrl = "";
-                    String Device = BaseSharedPreferences.getString(context,Constant.DEVICE_ID_KEY);
-                    if(Constant.TEST == true){
-                         sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE)+"/1";
-                    }else{
-                         sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE)+Device;
+                    String Device = BaseSharedPreferences.getString(context, Constant.DEVICE_ID_KEY);
+                    if (Constant.TEST == true) {
+                        sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE) + "/1";
+                    } else {
+                        sCodeUrl = RestUtils.getUrl(UriConstant.GETTEMPQCODE) + Device;
                     }
 
                     OkHttpUtils.getAsyn(sCodeUrl, new OkHttpUtils.StringCallback() {
@@ -145,76 +159,78 @@ public class TimeRun {
                         @Override
                         public void onResponse(String response) {
                             JSONObject scodeobj = JSONObject.parseObject(response);
-
-                            if("0".equals(scodeobj.getString("code"))){
+                            if ("0".equals(scodeobj.getString("code"))) {
                                 String data = scodeobj.getString("data");
-                                BaseSharedPreferences.setString(context,Constant.SCODEKEY,data);
+                                BaseSharedPreferences.setString(context, Constant.SCODEKEY, data);
                             }
                         }
                     });
                 }
 
-                if(Constant.TIME_OPETATE_WARNING == operateflag){
+                if (Constant.TIME_OPETATE_WARNING == operateflag) {
                     String deviceNoticeUrl = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
                     String postdata = "";
                     boolean updateflag = false;
                     boolean operateflag = false;
                     SysDeviceNoticeAO sysDeviceNoticeAO = new SysDeviceNoticeAO();
                     sysDeviceNoticeAO.setDeviceId(Integer.parseInt(TestJSON.getDeviceid()));
-                    if(DevUtil.ERR_TIMEOUT==1){
-                        sysDeviceNoticeAO.setDeviceNoticeType(1);
+                    if (DevUtil.ERR_TIMEOUT == 1) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_NO_NETWORK);
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
                         updateflag = true;
+                        breakDown();
                     }
                     //滤芯过了
                     boolean filterflag = filterOver();
-                    if(false == filterflag){
-                        sysDeviceNoticeAO.setDeviceNoticeType(2);
+                    if (false == filterflag) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_LESS_FILTER);
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_ABNORMAL);
                         updateflag = true;
 
                     }
                     //滤芯是否用完
                     boolean filterend = filterend();
-                    if(false == filterend){
-                        sysDeviceNoticeAO.setDeviceNoticeType(3);
+                    if (false == filterend) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_NO_FILTER);
                         operateflag = true;
                         updateflag = true;
-
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
+                        breakDown();
                     }
                     //水质是否异常
-                    if(Constant.TDSERROR>devUtil.get_run_oTDS_value()){
-                        sysDeviceNoticeAO.setDeviceNoticeType(4);
+                    if (Constant.TDSERROR > devUtil.get_run_oTDS_value()) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_WATER_QUALITY_UNUSUAL);
                         updateflag = true;
                         operateflag = true;
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
+                        breakDown();
 
                     }
                     //纸杯不足
-                    if(devUtil.get_run_bCup_value()==0){
-                        sysDeviceNoticeAO.setDeviceNoticeType(5);
+                    if (devUtil.get_run_bCup_value() == 0) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_NO_CUP);
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_ABNORMAL);
                         updateflag = true;
-
                     }
                     //耗水量异常
                     //漏电
-                    if(devUtil.get_run_bLeak_value()==02){
-                        sysDeviceNoticeAO.setDeviceNoticeType(9);
+                    if (devUtil.get_run_bLeak_value() == 02) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_WATER_LEAK);
                         updateflag = true;
                         operateflag = true;
-
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
+                        breakDown();
                     }
-
-
-
                     //原水缺水
-                    if(devUtil.get_run_bLeak_value()==02){
-                        sysDeviceNoticeAO.setDeviceNoticeType(10);
+                    if (devUtil.get_run_bLeak_value() == 02) {
+                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_ORIGIN_WATER_LACK);
                         updateflag = true;
                         operateflag = true;
-
+                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
+                        breakDown();
                     }
 
                     //警告的类型
-                    sysDeviceNoticeAO.setDeviceNoticeLeve(0);
-
                     sysDeviceNoticeAO.setDeviceNoticeSubject("");
                     sysDeviceNoticeAO.setDeviceNoticeContent("");
 
@@ -225,119 +241,102 @@ public class TimeRun {
                     } catch (DbException e) {
                         e.printStackTrace();
                     }
-
                 }
-
             }
         };
-
     }
 
 
-    public void startTimer(){
+    public void breakDown() {
+        ControllerUtils.operateDevice(3, false);
+        Intent it = new Intent(context, BreakDownActivity.class);
+        context.startActivity(it);
+
+
+    }
+
+    public void startTimer() {
         Timer timer = new Timer(true);
         timer.schedule(task, time, loopjiange);
-    };
+    }
+
+    ;
 
 
     public boolean filterOver() {
         Boolean filterOverflag = true;
         Sys_Device_Monitor_Config_DbOperate SysDeviceMonitorConfig_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
-        String[][] data=devUtil.toArray();
-        try {
-            List warningdata = SysDeviceMonitorConfig_dbOperate.find();
-            SysDeviceMonitorConfig monitor = (SysDeviceMonitorConfig) warningdata.get(0);
-            if (monitor.getMotCfgGrainCarbonFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_GRAIN_CARBON_FLOW) {
-                monitor.setMotCfgGrainCarbonFlow(monitor.getMotCfgGrainCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = false;
-            }
-
-            if (monitor.getMotCfgPoseCarbonFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_POSE_CARBON_FLOW) {
-                monitor.setMotCfgPoseCarbonFlow(monitor.getMotCfgPoseCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = false;
-            }
-
-            if (monitor.getMotCfgPressCarbonFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_PRESS_CARBON_FLOW) {
-                monitor.setMotCfgPressCarbonFlow(monitor.getMotCfgPressCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = false;
-            }
-
-            if (monitor.getMotCfgPpFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_PP_FLOW) {
-                monitor.setMotCfgPpFlow(monitor.getMotCfgPpFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = false;
-            }
-
-
-            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
-                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = false;
-            }
-        } catch (DbException e) {
-            e.printStackTrace();
+        String[][] data = devUtil.toArray();
+        if (motCfgPpFlow - Integer.parseInt(data[17][1]) < motCfgPpFlowWarning) {
+            //TODO 准备上传
+            filterOverflag = false;
         }
-        return  filterOverflag;
-    }
 
+        if (motCfgGrainCarbonFlow - Integer.parseInt(data[17][1]) < motCfgGrainCarbonFlowWarning) {
+            //TODO 准备上传
+            filterOverflag = false;
+        }
+
+        if (motCfgPressCarbonFlow - Integer.parseInt(data[17][1]) < motCfgPressCarbonFlowWarning) {
+            //TODO 准备上传
+            filterOverflag = false;
+        }
+
+        if (motCfgPoseCarbonFlow - Integer.parseInt(data[17][1]) < motCfgPoseCarbonFlowWarning) {
+            //TODO 准备上传
+            filterOverflag = false;
+        }
+
+        if (motCfgRoFlow - Integer.parseInt(data[17][1]) < motCfgRoFlowWarning) {
+            //TODO 准备上传
+            filterOverflag = false;
+        }
+
+
+//            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
+//                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
+//                SysDeviceMonitorConfig_dbOperate.update(monitor);
+//                //TODO 准备上传
+//                filterOverflag = false;
+//            }
+        return filterOverflag;
+    }
 
 
     public boolean filterend() {
-        Boolean filterOverflag = false;
+
+        Boolean filterend = false;
         Sys_Device_Monitor_Config_DbOperate SysDeviceMonitorConfig_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
-        String[][] data=devUtil.toArray();
-        try {
-            List warningdata = SysDeviceMonitorConfig_dbOperate.find();
-            SysDeviceMonitorConfig monitor = (SysDeviceMonitorConfig) warningdata.get(0);
-            if (monitor.getMotCfgGrainCarbonFlow() - Integer.parseInt(data[17][1]) <= 0) {
-                monitor.setMotCfgGrainCarbonFlow(monitor.getMotCfgGrainCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = true;
-            }
-
-            if (monitor.getMotCfgPoseCarbonFlow() - Integer.parseInt(data[17][1]) <= 0) {
-                monitor.setMotCfgPoseCarbonFlow(monitor.getMotCfgPoseCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = true;
-            }
-
-            if (monitor.getMotCfgPressCarbonFlow() - Integer.parseInt(data[17][1]) <= 0) {
-                monitor.setMotCfgPressCarbonFlow(monitor.getMotCfgPressCarbonFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = true;
-            }
-
-            if (monitor.getMotCfgPpFlow() - Integer.parseInt(data[17][1]) <= 0) {
-                monitor.setMotCfgPpFlow(monitor.getMotCfgPpFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = true;
-            }
-
-
-            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) <= 0) {
-                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
-                SysDeviceMonitorConfig_dbOperate.update(monitor);
-                //TODO 准备上传
-                filterOverflag = true;
-            }
-        } catch (DbException e) {
-            e.printStackTrace();
+        String[][] data = devUtil.toArray();
+        if (motCfgPpFlow - Integer.parseInt(data[17][1]) < 0) {
+            //TODO 准备上传
+            filterend = true;
         }
-        return  filterOverflag;
-    }
 
+        if (motCfgGrainCarbonFlow - Integer.parseInt(data[17][1]) < 0) {
+            //TODO 准备上传
+            filterend = true;
+        }
+
+        if (motCfgPressCarbonFlow - Integer.parseInt(data[17][1]) < 0) {
+            //TODO 准备上传
+            filterend = true;
+        }
+
+        if (motCfgRoFlow - Integer.parseInt(data[17][1]) < 0) {
+            //TODO 准备上传
+            filterend = true;
+        }
+
+
+//            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
+//                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
+//                SysDeviceMonitorConfig_dbOperate.update(monitor);
+//                //TODO 准备上传
+//                filterOverflag = false;
+//            }
+        return filterend;
+    }
 
 
     public void cancelTimer() {

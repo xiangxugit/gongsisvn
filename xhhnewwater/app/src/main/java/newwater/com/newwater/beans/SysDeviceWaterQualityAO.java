@@ -343,7 +343,6 @@ public class SysDeviceWaterQualityAO implements Serializable{
     
 	public SysDeviceWaterQualityAO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
     
