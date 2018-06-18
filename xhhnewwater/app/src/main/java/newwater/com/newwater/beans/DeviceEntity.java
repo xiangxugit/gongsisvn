@@ -9,30 +9,27 @@ import org.xutils.db.annotation.Table;
 
 @Table(name = "DeviceEntity")
 public class DeviceEntity {
-    //设备编号
-    @Column(name = "device_number",isId = true,autoGen = true)
-    private int device_number;
-    @Column(name = "test")
-    private String test;
 
-    public int getDevice_number() {
-        return device_number;
-    }
-    public void setDevice_number(int device_number) {
-        this.device_number = device_number;
-    }
+    @Column(name="id",isId=true,autoGen=true)
+    private int id;
+    //姓名
+    @Column(name = "deviceId")
+    private Integer deviceId;
+    @Column(name = "hotTemp")
+    private Integer coldTemp;
 
-    public String getTest() {
-        return test;
+    public Integer getDeviceId() {
+        return deviceId;
     }
-
-    public void setTest(String test) {
-        this.test = test;
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
     }
 
-    @Override
-    public String toString() {
-        return "DeviceEntity [device_number=" + device_number +",test="+test+ "]";
+    public Integer getColdTemp() {
+        return coldTemp;
     }
 
+    public void setColdTemp(Integer coldTemp) {
+        this.coldTemp = coldTemp;
+    }
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import newwater.com.newwater.beans.SysDeviceNoticeAO;
+import newwater.com.newwater.beans.SysDeviceWaterQualityAO;
 import newwater.com.newwater.view.activity.MainActivity;
 import okhttp3.Request;
 
@@ -27,20 +29,27 @@ public class UploadLocalData {
     private static UploadLocalData instance;
     private Context context;
     private String url;
-    private List<? extends Object> contentList;
+//    private List<? extends Object> contentList;
+    List<? extends Object> contentList;
     private String tablename;
     private long cycle;
-    private String operateflag;
+    private int operateflag;
     private DbManager dbManager;
     private MainActivity.MyHandler myHandler;
     public TimerTask task;
+    public String postdata;
+//    private String operateflag;
 
 
-    public static UploadLocalData getInstance(Context context, String url, List<? extends Object> contentList, long cycle) {
+
+
+//    public static UploadLocalData getInstance(Context context, String url, List<? extends Object> contentList, long cycle) {
+public static UploadLocalData getInstance(Context context, String url, int operateFlag, long cycle) {
+
         if (instance == null) {
             synchronized (UploadLocalData.class) {
                 if (instance == null) {
-                    instance = new UploadLocalData(context, url, contentList, cycle);
+                    instance = new UploadLocalData(context, url, operateFlag, cycle);
                 }
             }
         }
@@ -50,13 +59,12 @@ public class UploadLocalData {
     /**
      * @param context
      * @param url
-     * @param contentList
      * @param cycle     循环存入数据库和上报
      */
-    private UploadLocalData(Context context, String url, List<? extends Object> contentList, long cycle) {
+    private UploadLocalData(Context context, String url, int operateflag, long cycle) {
         this.context = context;
         this.url = url;
-        this.contentList = contentList;
+        this.operateflag = operateflag;
         this.cycle = cycle;
         if (null == dbManager) {
             dbManager = new XutilsInit(context).getDb();
@@ -65,7 +73,36 @@ public class UploadLocalData {
     }
 
     private void uploaddata() {
-        String contentJSON = JSON.toJSONString(contentList);
+//        String contentJSON = JSON.toJSONString(uploaddata);
+
+//        判断是哪一种的东西
+        String url = this.url;
+
+        if(this.operateflag==1){
+            //水质上报
+            try {
+               this.contentList = dbManager.findAll(SysDeviceWaterQualityAO.class);
+                this.postdata = JSON.toJSONString(contentList);
+//                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if(this.operateflag==3){
+            //水质上报
+            try {
+                this.contentList = dbManager.findAll(SysDeviceNoticeAO.class);
+                this.postdata = JSON.toJSONString(contentList);
+//                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
         OkHttpUtils.postAsyn(url, new OkHttpUtils.StringCallback() {
             @Override
             public void onFailure(int errCode, Request request, IOException e) {
@@ -78,7 +115,7 @@ public class UploadLocalData {
                 Log.e(TAG, "onFailure: " + "同步成功, errCode = " + response);
                 deleteLocalUploadData(contentList);
             }
-        }, contentJSON);
+        }, this.postdata);
     }
 
 

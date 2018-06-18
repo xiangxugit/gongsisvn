@@ -101,34 +101,40 @@ public class ComThread extends Thread {
 
         //启动水质上报
         String waterqualitylist = RestUtils.getUrl(UriConstant.WATERQUALITYLIST);
-        try {
-            //TODO 获取值
-            List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
-            if(null==listQualityAO){
+        UploadLocalData.getInstance(context,waterqualitylist,Constant.TIME_OPERATE_UPDATEWATER,Constant.UPLOAD_TIME).upload();
+        //预警信息上报
+        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
+        UploadLocalData.getInstance(context,waterqualitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME).upload();
 
-            }else{
-                UploadLocalData.getInstance(context,waterqualitylist,listQualityAO,Constant.UPLOAD_TIME).upload();
-            }
 
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //TODO 获取值
+//            List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
+//            if(null==listQualityAO){
+//
+//            }else{
+//                UploadLocalData.getInstance(context,waterqualitylist,listQualityAO,Constant.UPLOAD_TIME).upload();
+//            }
+//
+//        } catch (DbException e) {
+//            e.printStackTrace();
+//        }
         //启动售水上报
 
         //预警定时上报
-        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
-        try {
-            //TODO 获取值
-            List<SysDeviceNoticeAO> sysDeviceNoticeAOList = dbManager.findAll(SysDeviceNoticeAO.class);
-            if(null==sysDeviceNoticeAOList){
-
-            }else{
-                UploadLocalData.getInstance(context,noticequalitylist,sysDeviceNoticeAOList, Constant.UPLOAD_TIME).upload();
-            }
-
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
+//        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
+//        try {
+//            //TODO 获取值
+//            List<SysDeviceNoticeAO> sysDeviceNoticeAOList = dbManager.findAll(SysDeviceNoticeAO.class);
+//            if(null==sysDeviceNoticeAOList){
+//
+//            }else{
+//                UploadLocalData.getInstance(context,noticequalitylist,sysDeviceNoticeAOList, Constant.UPLOAD_TIME).upload();
+//            }
+//
+//        } catch (DbException e) {
+//            e.printStackTrace();
+//        }
         super.run();
     }
 

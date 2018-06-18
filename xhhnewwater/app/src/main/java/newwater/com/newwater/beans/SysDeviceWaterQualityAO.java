@@ -1,9 +1,6 @@
 package newwater.com.newwater.beans;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
@@ -149,9 +146,7 @@ public class SysDeviceWaterQualityAO implements Serializable {
     private Integer flushDuration;
 
 
-    public SysDeviceWaterQualityAO() {
-        super();
-    }
+
 
 //    public static long getSerialVersionUID() {
 //        return serialVersionUID;

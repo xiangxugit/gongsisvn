@@ -89,16 +89,15 @@ public class TimeRun {
             public void run() {
                 if (Constant.TIME_OPERATE_UPDATEWATER == operateflag) {
                     //上传水质
-                    GetDeviceInfo getDeviceInfo = new GetDeviceInfo();
+                    SysDeviceWaterQualityAO sysDeviceWaterQualityAO = new SysDeviceWaterQualityAO();
                     String deviceId = "";
                     if (Constant.TEST == true) {
                         deviceId = "1";
                     } else {
                         deviceId = BaseSharedPreferences.getString(context, Constant.DEVICE_ID_KEY);
                     }
-                    SysDeviceWaterQualityAO sysDeviceWaterQualityAO = new SysDeviceWaterQualityAO();
-                    sysDeviceWaterQualityAO.setDeviceId(Integer.parseInt(deviceId));
-                    /*sysDeviceWaterQualityAO.setDeviceRawWater(devUtil.get_run_sTDS_value());
+
+                    sysDeviceWaterQualityAO.setDeviceRawWater(devUtil.get_run_sTDS_value());
                     sysDeviceWaterQualityAO.setDevicePureWater(devUtil.get_run_sTDS_value());
                     sysDeviceWaterQualityAO.setDeviceWaterQualityTime(TimeUtils.getCurrentTime());
                     sysDeviceWaterQualityAO.setHotTemp(devUtil.get_run_hotTemp_value());
@@ -134,23 +133,26 @@ public class TimeRun {
                     sysDeviceWaterQualityAO.setCoolingTemp(devUtil.get_pam_coolTemp_value());
                     //单位是分钟
                     sysDeviceWaterQualityAO.setFlushInterval(devUtil.get_pam_rinseTimeLong_value());
-                    sysDeviceWaterQualityAO.setFlushDuration(devUtil.get_pam_rinseInterval_value());*/
-                    DeviceEntity test = new DeviceEntity();
-//                    test.setDevice_number("aaaa");
-                    test.setTest("cao");
+                    sysDeviceWaterQualityAO.setFlushDuration(devUtil.get_pam_rinseInterval_value());
+//                    DeviceEntity test = new DeviceEntity();
+////                    test.setDevice_number("aaaa");
+//                    test.setDeviceId(1);
+//                    test.setColdTemp(10);
                     try {
-//                        dbManager.save(sysDeviceWaterQualityAO);
-                        Log.e("sysDeviceWaterQualityAO","执行水质保存");
-                        dbManager.save(test);
+                        dbManager.dropTable(SysDeviceWaterQualityAO.class);
+                        dbManager.save(sysDeviceWaterQualityAO);
+//                        List<SysDeviceWaterQualityAO> deviceEntityList = dbManager.findAll(SysDeviceWaterQualityAO.class);
+
+//                        Log.e("deviceentityList","deviceentityList"+deviceEntityList.toString());
                     } catch (DbException e) {
                         e.printStackTrace();
                     }
 
-                    try {
-                        List<DeviceEntity> testlist = dbManager.findAll(DeviceEntity.class);
-                    } catch (DbException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+////                        List<DeviceEntity> testlist = dbManager.findAll(DeviceEntity.class);
+//                    } catch (DbException e) {
+//                        e.printStackTrace();
+//                    }
 
                 }
 
@@ -255,6 +257,7 @@ public class TimeRun {
 
                     try {
                         Log.e("执行水质保存","执行水质保存");
+                        dbManager.dropTable(SysDeviceNoticeAO.class);
                         dbManager.save(sysDeviceNoticeAO);
 //                        dbManager.save(test);
                     } catch (DbException e) {
@@ -268,9 +271,9 @@ public class TimeRun {
 
 
     public void breakDown() {
-        ControllerUtils.operateDevice(3, false);
-        Intent it = new Intent(context, BreakDownActivity.class);
-        context.startActivity(it);
+//        ControllerUtils.operateDevice(3, false);
+//        Intent it = new Intent(context, BreakDownActivity.class);
+//        context.startActivity(it);
 
 
     }

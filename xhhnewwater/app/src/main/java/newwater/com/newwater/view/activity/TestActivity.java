@@ -188,7 +188,7 @@ public class TestActivity extends Activity implements View.OnClickListener, IjkM
                 }
                 break;
             case R.id.btn_upload:
-                UploadLocalData.getInstance(this, "adhakdh", adList, 10000).upload();
+//                UploadLocalData.getInstance(this, "adhakdh", adList, 10000).upload();
                 break;
         }
     }

@@ -374,7 +374,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         Time warningTime = new Time();
         warningTime.setToNow();
         Date waringTimeUpdate = TimeRun.tasktime(warningTime.hour, warningTime.minute, warningTime.second);
-        TimeRun waringRunScode = new TimeRun(MainActivity.this, waringTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
+        TimeRun waringRunScode = new TimeRun(MainActivity.this, waringTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_WARNING);
         waringRunScode.startTimer();
 //        }
     }
@@ -384,15 +384,19 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      */
     private void scheduleUploadVideo() {
         String url = RestUtils.getUrl(UriConstant.AD_VIDEO_RECORD_LIST);
-        try {
-            List<AdvsPlayRecode> adRecordList = dbManager.findAll(AdvsPlayRecode.class);
-            if (null != adRecordList) {
-                UploadLocalData.getInstance(mContext, url, adRecordList,
-                        Constant.AD_RECORD_UPLOAD_PERIOD * 1000).upload();
-            }
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
+
+//        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
+//        UploadLocalData.getInstance(MainActivity.this,waterqualitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME).upload();
+
+//        try {
+//            List<AdvsPlayRecode> adRecordList = dbManager.findAll(AdvsPlayRecode.class);
+//            if (null != adRecordList) {
+//                UploadLocalData.getInstance(mContext, url, adRecordList,
+//                        Constant.AD_RECORD_UPLOAD_PERIOD * 1000).upload();
+//            }
+//        } catch (DbException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
