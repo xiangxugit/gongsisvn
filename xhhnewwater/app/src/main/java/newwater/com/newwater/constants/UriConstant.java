@@ -4,11 +4,11 @@ import android.os.Environment;
 
 public class UriConstant {
 
-    public static String IP = "192.168.0.200";//外网服务器
+//    public static String IP = "192.168.0.200";//外网服务器
 
 //    public static String IP="192.168.0.61";//季工的ip
 
-//    public static String IP = "192.168.0.61";//阿强
+    public static String IP = "192.168.0.50";//阿强
 
 
     public static String PORT = "28301";
