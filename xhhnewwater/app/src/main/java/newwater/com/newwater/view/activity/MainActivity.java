@@ -890,21 +890,25 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                                     Constant.RECEIVE_PUSH_VIDEO_STRATEGY_WAIT_TIME * 1000);
                         }
                     });
-
-                     Log.d(TAG, "onTextMessage: 推送类型为：登录。");
-                    // TODO: 2018/6/20 0020 登录
+                    break;
+//                    case Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH;
+//                     Log.d(TAG, "onTextMessage: 推送类型为：登录。");
+//                    // TODO: 2018/6/20 0020 登录
+//
+//                    break;
+                case Constant.PUSH_OPERATION_TYPE_LOGIN:
+                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
+                    // TODO: 2018/6/20 0020 更新apk
                     String userId = pushEntity.getOperationContent();
                     DispenserCache.userIdTemp = userId;
                     dismissPop(popQrCode);
                     showPopLeftOperate();
                     showPopRightOperate();
                     break;
-                case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
-                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
-                    // TODO: 2018/6/20 0020 更新apk
-                    break;
 
-                case Constant.AD_TYPE_FREE
+                case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
+
+                    break;
             }
         }
 
