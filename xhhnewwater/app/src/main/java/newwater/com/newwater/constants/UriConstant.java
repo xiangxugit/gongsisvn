@@ -5,10 +5,9 @@ import android.os.Environment;
 public class UriConstant {
 
 //    public static String IP = "192.168.0.200";//外网服务器
-
 //    public static String IP="192.168.0.61";//季工的ip
-
-    public static String IP = "192.168.0.50";//阿强
+//    public static String IP = "192.168.0.50";//阿强
+    public static String IP = "192.168.0.50";//韦英
 
 
     public static String PORT = "28301";
@@ -42,11 +41,18 @@ public class UriConstant {
     //设备配置信息获取
     public final static String GET_DEVICE_CONFIG = "api/v1/device/config/";
 
+    // 获取广告视频列内容
+    public static final String GET_AD_VIDEO_LIST = "/api/v1/advs/config/advsPlayConfigId/";
+
+    // 广告视频播放记录
     public static final String AD_VIDEO_RECORD_LIST = "api/v1/advs/play/advsPlayQualityList";
 
     // 根目录
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
 //    Environment.getExternalStorageDirectory().getPath()
+
+    // 日志文件夹
+    public static final String LOG_DIR = "log/";
 
     // 视频文件夹
     public static final String VIDEO_DIR = "video/";
@@ -63,8 +69,4 @@ public class UriConstant {
 
     // 分隔符
     public static final String FILE_SEPARATE = "/";
-
-    // 广告视频的baseUrl
-    public static final String AD_VIDEO_BASE_URL= "http://mirror.aarnet.edu.au/pub/TED-talks/";
-//    public static final String AD_VIDEO_BASE_URL= "http://220.170.49.117/";
 }

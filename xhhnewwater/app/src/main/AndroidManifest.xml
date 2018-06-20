@@ -145,14 +145,14 @@
 
         <!-- 【可选】APP实现的Receiver，用于接收消息透传和操作结果的回调，请根据需要添加 -->
         <!-- YOUR_PACKAGE_PATH.CustomPushReceiver需要改为自己的Receiver： -->
-        <!--<receiver
-            android:name=".broadcast.MessageReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />
-                <action android:name="com.tencent.android.tpush.action.FEEDBACK" />
-            </intent-filter>
-        </receiver>-->
+       <!--<receiver-->
+            <!--android:name=".broadcast.MessageReceiver"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />-->
+                <!--<action android:name="com.tencent.android.tpush.action.FEEDBACK" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <!-- 【必须】 通知service，其中android:name部分要改为当前包名 -->
         <service
@@ -186,11 +186,11 @@
         <!-- 【必须】 请修改为APP的AccessId，“21”开头的10位数字，中间没空格 -->
         <meta-data
             android:name="XG_V2_ACCESS_ID"
-            android:value="2100296536" />
+            android:value="2100294624" />
         <!-- 【必须】 请修改为APP的AccessKey，“A”开头的12位字符串，中间没空格 -->
         <meta-data
             android:name="XG_V2_ACCESS_KEY"
-            android:value="ACHX289F25IH" />
+            android:value="AI89KG975GRE" />
 
     </application>
 

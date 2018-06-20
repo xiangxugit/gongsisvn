@@ -20,7 +20,7 @@ public class TimeBack {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+
 
 			}
 		});*/
@@ -29,22 +29,19 @@ public class TimeBack {
 
         public TimeCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
-            // TODO Auto-generated constructor stub
+
 
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
-            // TODO Auto-generated method stub
             showTextView.setClickable(false);
             showTextView.setText(millisUntilFinished/1000+"秒");
         }
 
         @Override
         public void onFinish() {
-            // TODO Auto-generated method stub
             showTextView.setText("");
-
             showTextView.setClickable(true);
         }
 

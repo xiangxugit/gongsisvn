@@ -27,7 +27,6 @@ public class Service1 extends Service {
         //https://www.jianshu.com/p/7d3ff0a11ab8  数据库操作  https://blog.csdn.net/imxiangzi/article/details/76039978
 
         //闹钟定时播放视频
-        // TODO 此处应该是读取本地的配置，本地的配置应该是在服务器获取的
         //开机器隔一段时间去监听查询
         Time t=new Time();
         t.setToNow();
@@ -85,7 +84,6 @@ public class Service1 extends Service {
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             switch (msg.what){
                 case 0:
                     Toast.makeText(Service1.this,"定时检测水质",Toast.LENGTH_SHORT).show();

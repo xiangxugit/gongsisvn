@@ -20,11 +20,12 @@ public class Constant {
     public static final int ALL_DOWN_WAIT_TIME = 3000; // 全部下载完毕后等多久在开始刷新及播放（毫秒）
     public static final int DEFAULT_FREE_AD_DURATION = 10;  // 默认一次免费喝水广告的播放时长（秒）
     public static final int QUIT_DRINK_INTERFACE_WAIT_TIME = 15;  // 喝水的时候，多少秒无操作则退出（秒）
-    public static final int UPDATE_SCODE = 60 * 1000 * 60 * 24;// 一天一更新
+    public static final int UPDATE_SCODE = 60 * 1000 * 60; // 一天一更新
     public static final long UPLOAD_TIME = 20 * 1000;// 没一分钟上报一次 水质
     public static final long TEMPSCODE_TIME= 24 * 60 * 60 * 1000;
-    public static final long AD_RECORD_UPLOAD_PERIOD = 24 * 60 * 60;// 上报一次视频播放记录的周期（秒）
+    public static final long AD_RECORD_UPLOAD_PERIOD = 24 * 1 * 60;// 广告视频上报播放记录的周期（秒）
     public static final long CHECK_RENT_DEADLINE_PERIOD = 24 * 60 * 60;// 检查一次租期是否到期的周期（秒）
+    public static final int CRASH_LOG_DELETE_TIME = 30; // 崩溃日志保留的天数
 
     /*水的各种标准*/
     public static final int MOT_CFG_PP_FLOW = 5000;//pp棉制水预警值 90%  根据制水量 设备激活以后才出来
@@ -40,6 +41,7 @@ public class Constant {
     public static final int PUSH_OPERATION_TYPE_CONFIG = 2; // 配置
     public static final int PUSH_OPERATION_TYPE_LOGIN = 3; // 登录
     public static final int PUSH_OPERATION_TYPE_UPDATE_ID = 4; // 更新信鸽ID
+    public static final int PUSH_OPERATION_TYPE_UPDATE_APK = 5; // 更新APK
 
     /*预警故障类别*/
     public static final int NOTICE_TYPE_NO_NETWORK = 1;  // 断网
@@ -53,6 +55,11 @@ public class Constant {
     public static final int NOTICE_TYPE_WATER_LEAK = 9;  // 漏水
     public static final int NOTICE_TYPE_ORIGIN_WATER_LACK = 10;  // 原水缺水
     public static final int NOTICE_TYPE_AD_URL_WRONG = 11;  // 广告视频下载地址错误
+
+    /*设备操作*/
+    public static final String DEVICE_OPERATE_FLUSH = "1";
+    public static final String DEVICE_OPERATE_UNCAP = "2";
+    public static final String DEVICE_OPERATE_ON_OFF = "3";
 
     /*预警级别*/
     public static final int NOTICE_LEVEL_ABNORMAL = 0;

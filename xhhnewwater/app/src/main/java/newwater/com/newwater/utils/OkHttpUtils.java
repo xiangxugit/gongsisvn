@@ -161,7 +161,7 @@ public class OkHttpUtils {
         if(null==jsonEntity){
             return;
         }
-        RetrofitHttp.getInstance(url).isUrlAvailable(url, 2000, new RetrofitHttp.UrlCheckCallback() {
+        RetrofitHttp.getInstance(url.substring(0, url.lastIndexOf('/') + 1)).isUrlAvailable(url, 2000, new RetrofitHttp.UrlCheckCallback() {
             @Override
             public void onSuccess() {
                 RequestBody body = RequestBody.create(JSON, jsonEntity);

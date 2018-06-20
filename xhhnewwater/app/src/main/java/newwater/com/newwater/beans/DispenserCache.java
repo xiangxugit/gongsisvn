@@ -10,4 +10,5 @@ public class DispenserCache {
     public static List<AdvsVideo> freeAdVideoList;
     public static boolean isFreeAdDone;
     public static List<AdvsVideo> initAdVideoList = new ArrayList<>();
+    public static String userIdTemp;
 }

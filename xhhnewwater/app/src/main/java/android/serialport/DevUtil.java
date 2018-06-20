@@ -372,7 +372,7 @@ public class DevUtil {
         buf[7] = (byte) 0xFF;
         len = 8;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF, false);
 
         if(len< 0){
             checkSta();
@@ -409,8 +409,8 @@ public class DevUtil {
         run_upTime = ComUtil.getNowStr();
 
         ip +=6;
-        run_sTDS     = buf[ip]  *0x100 + buf[ip+1];
-        run_oTDS     = buf[ip+2]*0x100 + buf[ip+3];
+        run_sTDS     = (int)buf[ip]*0x100 + buf[ip+1];
+        run_oTDS     = (int)buf[ip+2]*0x100 + buf[ip+3];
         run_hotTemp  = buf[ip+4];
         run_coolTemp = buf[ip+5];
         run_bHot     = buf[ip+6];
@@ -474,7 +474,7 @@ public class DevUtil {
         buf[21] = (byte) 0xFF;
         len = 22;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF, true);
 
         if(len< 0){
             checkSta();
@@ -533,7 +533,7 @@ public class DevUtil {
         buf[9] = (byte) 0xFF;
         len = 10;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF, true);
 
         if(len< 0){
             checkSta();
@@ -601,12 +601,12 @@ public class DevUtil {
             byte[] head6 = getHead6((byte) 0xFF, (byte) 0x03);
             int ip = findHead6Byte(buf, len, head6);
             if (ip < 0) {
-                run_waterFlow =0;
+                //run_waterFlow =0;
                 //return ERR_BUFFER;
             }
             else {
                 ip += 7;
-                run_waterFlow = buf[ip];
+                run_waterFlow = (int)buf[ip]*0x100 + buf[ip+1];
             }
         }
 
@@ -632,7 +632,7 @@ public class DevUtil {
         buf[7] = (byte) 0xFF;
         len = 8;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();
@@ -688,7 +688,7 @@ public class DevUtil {
         buf[8] = (byte) 0xFF;
         len = 9;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();
@@ -744,7 +744,7 @@ public class DevUtil {
         buf[8] = (byte) 0xFF;
         len = 9;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();
@@ -802,7 +802,7 @@ public class DevUtil {
         buf[8] = (byte) 0xFF;
         len = 9;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF, true);
 
         if(len< 0){
             checkSta();
@@ -854,7 +854,7 @@ public class DevUtil {
         buf[7] = (byte) 0xFF;
         len = 8;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();
@@ -906,7 +906,7 @@ public class DevUtil {
         buf[7] = (byte) 0xFF;
         len = 8;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();
@@ -966,7 +966,7 @@ public class DevUtil {
         buf[7] = (byte) 0xFF;
         len = 8;
 
-        len = mComUtil.pollData(buf, len, MAXBUF);
+        len = mComUtil.pollData(buf, len, MAXBUF,true);
 
         if(len< 0){
             checkSta();

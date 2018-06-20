@@ -52,7 +52,10 @@ public class FileUtil {
         } else {
             file.mkdirs();
         }
+    }
 
+    public static boolean hasSdCard() {
+        return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
     }
 
     public String getFileFromSdcard(String filename) {

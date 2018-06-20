@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import newwater.com.newwater.TestJSON;
 import newwater.com.newwater.constants.Constant;
@@ -55,6 +57,19 @@ public class CommonUtil {
             }
         }
         return result;
+    }
+
+    // "^-?\\d+$"
+    // /^-?[0-9]\d*$/
+    // ^\d+$
+    // [0-9]*
+    public static boolean isNumeric(String str){
+        Pattern pattern = Pattern.compile("^-?\\d+$");
+        Matcher isNum = pattern.matcher(str);
+        if( !isNum.matches() ){
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -175,6 +175,9 @@ public class TimeRun {
                         public void onResponse(String response) {
 
                             JSONObject scodeobj = JSONObject.parseObject(response);
+                            if (null == scodeobj) {
+                                return;
+                            }
                             if ("0".equals(scodeobj.getString("code"))) {
                                 String data = scodeobj.getString("data");
                                 BaseSharedPreferences.setString(context, Constant.SCODEKEY, data);
@@ -290,27 +293,22 @@ public class TimeRun {
         Sys_Device_Monitor_Config_DbOperate SysDeviceMonitorConfig_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
         String[][] data = devUtil.toArray();
         if (motCfgPpFlow - Integer.parseInt(data[17][1]) < motCfgPpFlowWarning) {
-            //TODO 准备上传
             filterOverflag = false;
         }
 
         if (motCfgGrainCarbonFlow - Integer.parseInt(data[17][1]) < motCfgGrainCarbonFlowWarning) {
-            //TODO 准备上传
             filterOverflag = false;
         }
 
         if (motCfgPressCarbonFlow - Integer.parseInt(data[17][1]) < motCfgPressCarbonFlowWarning) {
-            //TODO 准备上传
             filterOverflag = false;
         }
 
         if (motCfgPoseCarbonFlow - Integer.parseInt(data[17][1]) < motCfgPoseCarbonFlowWarning) {
-            //TODO 准备上传
             filterOverflag = false;
         }
 
         if (motCfgRoFlow - Integer.parseInt(data[17][1]) < motCfgRoFlowWarning) {
-            //TODO 准备上传
             filterOverflag = false;
         }
 
@@ -318,7 +316,6 @@ public class TimeRun {
 //            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
 //                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
 //                SysDeviceMonitorConfig_dbOperate.update(monitor);
-//                //TODO 准备上传
 //                filterOverflag = false;
 //            }
         return filterOverflag;
@@ -331,22 +328,18 @@ public class TimeRun {
         Sys_Device_Monitor_Config_DbOperate SysDeviceMonitorConfig_dbOperate = new Sys_Device_Monitor_Config_DbOperate(context);
         String[][] data = devUtil.toArray();
         if (motCfgPpFlow - Integer.parseInt(data[17][1]) < 0) {
-            //TODO 准备上传
             filterend = true;
         }
 
         if (motCfgGrainCarbonFlow - Integer.parseInt(data[17][1]) < 0) {
-            //TODO 准备上传
             filterend = true;
         }
 
         if (motCfgPressCarbonFlow - Integer.parseInt(data[17][1]) < 0) {
-            //TODO 准备上传
             filterend = true;
         }
 
         if (motCfgRoFlow - Integer.parseInt(data[17][1]) < 0) {
-            //TODO 准备上传
             filterend = true;
         }
 
@@ -354,7 +347,6 @@ public class TimeRun {
 //            if (monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]) < Constant.MOT_CFG_RO_FLOW) {
 //                monitor.setMotCfgRoFlow(monitor.getMotCfgRoFlow() - Integer.parseInt(data[17][1]));
 //                SysDeviceMonitorConfig_dbOperate.update(monitor);
-//                //TODO 准备上传
 //                filterOverflag = false;
 //            }
         return filterend;

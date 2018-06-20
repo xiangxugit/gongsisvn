@@ -95,7 +95,7 @@ public class ComUtil {
     }
 
     //发送及接收
-    public /*synchronized*/ int  pollData(byte[] data, int count, int bufSize) throws NullPointerException {
+    public /*synchronized*/ int  pollData(byte[] data, int count, int bufSize, boolean clsBuf) throws NullPointerException {
 
         if (mOutputStream == null) {
             //throw new NullPointerException("outputStream is null");
@@ -107,7 +107,24 @@ public class ComUtil {
             sendMessage(MESSAGE_RX, "serial port can't read");
             return -2; //Read Exception
         }
-        //Send Data
+        //清缓存
+        byte[] buf = new byte[bufSize];
+        //delay(20);
+        if (clsBuf) {
+            try {
+                for (int i = 0; i < 3; i++) {
+                    if (mInputStream.available() > 0)
+                        mInputStream.read(buf);
+                    else
+                        break;
+                }
+            } catch (IOException e) {
+                //do nothing
+            }
+        }
+
+            //Send Data
+
         try {
             mOutputStream.write(data, 0, count);
             sendMessage(MESSAGE_TX, buff2String(data, count));
@@ -120,7 +137,7 @@ public class ComUtil {
 
         // receive data
         try {
-            byte[] buf = new byte[bufSize];
+            //byte[] buf = new byte[bufSize];
             int rLen = 0;
             int len = 0;
 

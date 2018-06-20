@@ -168,7 +168,6 @@ public class ComThread extends Thread {
             ControllerUtils.operateDevice(3,true);
         }
     }
-
     //滤芯是否用完
 
 

@@ -9,6 +9,7 @@ import com.marswin89.marsdaemon.DaemonConfigurations;
 
 import org.xutils.x;
 
+import newwater.com.newwater.manager.CrashHandler;
 import newwater.com.newwater.processpreserve.Receiver1;
 import newwater.com.newwater.processpreserve.Receiver2;
 import newwater.com.newwater.processpreserve.Service1;
@@ -37,6 +38,9 @@ public class App extends DaemonApplication {
         super.onCreate();
         Log.e("进入app的时候执行","进入app的时候执行");
         instance = this;
+
+        // 初始化崩溃日志收集器
+//        CrashHandler.getInstance().init(this);
 
         //初始化xutils
         //

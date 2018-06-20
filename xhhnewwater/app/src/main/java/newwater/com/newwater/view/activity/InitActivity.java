@@ -42,6 +42,7 @@ import java.util.List;
 import newwater.com.newwater.R;
 import newwater.com.newwater.beans.AdvsVideo;
 import newwater.com.newwater.beans.DispenserCache;
+import newwater.com.newwater.beans.PushEntity;
 import newwater.com.newwater.beans.SysDeviceMonitorConfig;
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
 import newwater.com.newwater.broadcast.MessageReceiver;
@@ -61,6 +62,8 @@ import static newwater.com.newwater.utils.PermissionUtils.permissions;
 
 public class InitActivity extends AppCompatActivity {
     private static final String TAG = "InitActivity";
+    public static final int STEP_UNACTIVATE = 1;
+    public static final int STEP_ACTIVATED = 2;
 
     private LinearLayout firstStep;
     private LinearLayout secondStep;
@@ -97,9 +100,13 @@ public class InitActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        handler.removeCallbacksAndMessages(null);
-        handler = null;
-        unregisterReceiver(myReceiver);
+        if (null != handler) {
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+        }
+        if (null != myReceiver) {
+            unregisterReceiver(myReceiver);
+        }
         super.onDestroy();
     }
 
@@ -115,7 +122,11 @@ public class InitActivity extends AppCompatActivity {
         adList = new ArrayList<>();
         initPermission();
         initPush();
-
+        if(BaseSharedPreferences.getInt(InitActivity.this,Constant.DEVICE_ID_KEY)!=0){
+            moveToMainActivity();
+            Log.e(TAG,"已激活，直接跳转至主页！");
+            return;
+        }
 //        // -------------------------
 //        AdvsVideo testVideo = new AdvsVideo();
 //        testVideo.setAdvsPlayScene(Constant.AD_TYPE_INIT);
@@ -160,7 +171,6 @@ public class InitActivity extends AppCompatActivity {
                 //token在设备卸载重装的时候有可能会变
                 Log.i(TAG, "TPush: " + "注册成功，设备token为：" + data);
 
-                //TODO 生成二维码
                 //String data = XGPushConfig.getToken(MainActivity.this);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -211,17 +221,42 @@ public class InitActivity extends AppCompatActivity {
 
         @Override
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
-            Log.e(TAG, "onTextMessage: 收到消息:"+ xgPushTextMessage.toString());
-            String jsonData = xgPushTextMessage.getContent();
-            JSONObject jsonObject = JSON.parseObject(jsonData);
-            int deviceId = jsonObject.getInteger("deviceId");
-            if (deviceId == 0) {
-                moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_id));
+
+            Log.d(TAG, "onTextMessage: receive new push");
+            String pushString = xgPushTextMessage.getContent();
+            Log.e(TAG, "onTextMessage: 收到消息: " + pushString);
+            PushEntity pushEntity = JSONObject.parseObject(pushString, PushEntity.class);
+            if (null == pushEntity) {
+                Log.d(TAG, "onTextMessage: 推送为空！");
                 return;
             }
-            showStep(2);
-            BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
-            getDeviceInfo(deviceId);
+            // 获取内容
+            String content = pushEntity.getOperationContent();
+            if (TextUtils.isEmpty(content)) {
+                Log.d(TAG, "onTextMessage: 推送内容为空！");
+                Log.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
+                return;
+            }
+            Log.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
+            switch (pushEntity.getOperationType()) {
+                case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
+                    Log.d(TAG, "onTextMessage: 收到更新APK的推送");
+                    // TODO: 2018/6/20 0020 更新apk
+                    break;
+                case Constant.PUSH_OPERATION_TYPE_UPDATE_ID:
+                    Log.d(TAG, "onTextMessage: 收到信鸽Id的推送");
+                    JSONObject jsonObject = JSON.parseObject(pushString);
+                    int deviceId = jsonObject.getInteger("deviceId");
+                    if (deviceId == 0) {
+                        moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_id));
+                        return;
+                    }
+                    showStep(STEP_ACTIVATED);
+                    BaseSharedPreferences.setInt(mContext, Constant.DEVICE_ID_KEY, deviceId);
+                    getDeviceInfo(deviceId);
+                    break;
+            }
+
         }
 
         @Override
@@ -533,12 +568,14 @@ public class InitActivity extends AppCompatActivity {
      * @param step
      */
     public void showStep(int step) {
-        if (step == 1) {
-            firstStep.setVisibility(View.GONE);
-            secondStep.setVisibility(View.VISIBLE);
-        } else if (step == 2) {
+        if (step == STEP_UNACTIVATE) {
+            Log.d(TAG, "showStep: STEP_UNACTIVATE");
             firstStep.setVisibility(View.VISIBLE);
             secondStep.setVisibility(View.GONE);
+        } else if (step == STEP_ACTIVATED) {
+            Log.d(TAG, "showStep: STEP_ACTIVATED");
+            firstStep.setVisibility(View.GONE);
+            secondStep.setVisibility(View.VISIBLE);
         }
     }
 }

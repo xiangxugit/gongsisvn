@@ -86,6 +86,7 @@ public class UploadLocalData {
                 try {
                     contentList = dbManager.findAll(SysDeviceWaterQualityAO.class);
                     postdata = JSON.toJSONString(contentList);
+                    Log.e("水质上报","水质上报");
 //                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
                 } catch (DbException e) {
                     e.printStackTrace();
@@ -96,6 +97,7 @@ public class UploadLocalData {
                 try {
                     contentList = dbManager.findAll(SysDeviceNoticeAO.class);
                     postdata = JSON.toJSONString(contentList);
+                    Log.e("预警上报","预警上报");
 //                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
                 } catch (DbException e) {
                     e.printStackTrace();
@@ -106,6 +108,7 @@ public class UploadLocalData {
                 try {
                     contentList = dbManager.findAll(AdvsPlayRecode.class);
                     postdata = JSON.toJSONString(contentList);
+                    Log.e("广告上报","广告上报");
 //                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(AdvsPlayRecode.class);
                 } catch (DbException e) {
                     e.printStackTrace();
@@ -124,7 +127,7 @@ public class UploadLocalData {
             @Override
             public void onResponse(String response) {
                 Log.e(TAG, "onResponse: " + "同步成功, errCode = " + response);
-//                deleteLocalUploadData(finalContentList);
+                deleteLocalUploadData(finalContentList);
             }
         }, postdata);
     }

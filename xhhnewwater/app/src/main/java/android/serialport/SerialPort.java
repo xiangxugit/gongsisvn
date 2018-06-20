@@ -30,7 +30,9 @@ import java.io.OutputStream;
  *
  */
 public class SerialPort {
+
 	private static final String TAG = "SerialPort";
+
 	/*
 	 * Do not remove or rename the field mFd: it is used by native method close();
 	 */

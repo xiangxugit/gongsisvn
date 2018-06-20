@@ -150,7 +150,6 @@ public class MessageReceiver extends XGPushBaseReceiver {
     @Override
     public void onRegisterResult(Context context, int errorCode,
                                  XGPushRegisterResult message) {
-        // TODO Auto-generated method stub
         if (context == null || message == null) {
             return;
         }
@@ -173,7 +172,7 @@ public class MessageReceiver extends XGPushBaseReceiver {
      */
     @Override
     public void onTextMessage(Context context, XGPushTextMessage message) {
-        // TODO Auto-generated method stub
+
 
         String text = "收到消息:" + message.toString();
         Log.e("MessageReceiver: 收到消息", "" + text);

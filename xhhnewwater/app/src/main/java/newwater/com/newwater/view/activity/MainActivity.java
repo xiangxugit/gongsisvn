@@ -1,5 +1,6 @@
 package newwater.com.newwater.view.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -22,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
 import com.tencent.android.tpush.XGPushRegisterResult;
@@ -32,6 +35,7 @@ import com.tencent.android.tpush.XGPushTextMessage;
 import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,6 +44,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
+import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.UploadLocalData;
 import newwater.com.newwater.utils.XutilsInit;
@@ -71,6 +76,7 @@ import newwater.com.newwater.view.PopWarning;
 import newwater.com.newwater.view.PopWaterSale;
 import newwater.com.newwater.view.PopQrCode;
 import newwater.com.newwater.view.PopWantWater;
+import okhttp3.Request;
 
 public class MainActivity extends BaseActivity implements IjkManager.PlayerStateListener {
 
@@ -146,6 +152,11 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     private boolean isPlayInitVideo;
     /*当前时间*/
     private String curTime;
+
+    //要调用另一个APP的activity所在的包名
+    String packageName = "purewater.com.leadapp";
+    //要调用另一个APP的activity名字
+    String activityName = "purewater.com.leadapp.MainActivity";
 
     // -------------------------- 生命周期 start --------------------------
 
@@ -282,8 +293,8 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     private void getDeviceInfo() {
         // 1、从SharedPreference获取
         if (BaseSharedPreferences.containInt(mContext, Constant.DEVICE_ID_KEY)) {
-//            deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
-            deviceId = 1;
+            deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
+//            deviceId = 1;
         }
         if (BaseSharedPreferences.containInt(mContext, Constant.DRINK_MODE_KEY)) {
             drinkMode = BaseSharedPreferences.getInt(mContext, Constant.DRINK_MODE_KEY);
@@ -369,7 +380,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         Time sCodeTime = new Time();
         sCodeTime.setToNow();
         Date sCodeTimeUpdate = TimeRun.tasktime(sCodeTime.hour, sCodeTime.minute + 1, sCodeTime.second);
-        TimeRun timeRunScode = new TimeRun(MainActivity.this, sCodeTimeUpdate, myHandler, Constant.UPLOAD_TIME, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
+        TimeRun timeRunScode = new TimeRun(MainActivity.this, sCodeTimeUpdate, myHandler, Constant.UPDATE_SCODE, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
         timeRunScode.startTimer();
 
         //预警
@@ -505,7 +516,13 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             Log.d(TAG, "getPushStrategy: 已经处理过推送，不响应");
             return;
         }
-        List<AdvsVideo> adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
+//        List<AdvsVideo> adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
+        List<AdvsVideo> adList = null;
+        try {
+            adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
+        } catch (JSONException e) {
+            Log.d(TAG, "getPushStrategy: 推送数据无法转换成 AdvsVideo！");
+        }
         if (null == adList || 0 == adList.size()) {
             Log.d(TAG, "getPushStrategy: 推送数据有误！");
             return;
@@ -799,12 +816,8 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         @Override
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
             Log.d(TAG, "onTextMessage: receive new push");
-            String pushString = xgPushTextMessage.toString();
-            Log.e(TAG, "onTextMessage: 收到消息: " + pushString);
-
-//            JSONObject jsonObject = JSONObject.parseObject(pushString);
-//            String pushContent = jsonObject.getString("content");
-
+            String pushString = xgPushTextMessage.getContent();
+            Log.i(TAG, "onTextMessage: 收到消息: " + pushString);
             PushEntity pushEntity = JSONObject.parseObject(pushString, PushEntity.class);
             if (null == pushEntity) {
                 Log.d(TAG, "onTextMessage: 推送为空！");
@@ -820,41 +833,78 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             Log.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
             switch (pushEntity.getOperationType()) {
                 case Constant.PUSH_OPERATION_TYPE_OPERATE:
+                    Log.d(TAG, "onTextMessage: 推送类型为：操作。");
                     //TODO 收到推送后的操作  1冲洗 2开盖 3开关机
                     String operateflag = "1";
-                    if ("1".equals(operateflag)) {
+                    if (Constant.DEVICE_OPERATE_FLUSH.equals(operateflag)) {
                         ControllerUtils.operateDevice(6, false);
                     }
 
-                    if ("2".equals(operateflag)) {
+                    if (Constant.DEVICE_OPERATE_UNCAP.equals(operateflag)) {
                         ControllerUtils.operateDevice(5, false);
                     }
 
-                    if ("3".equals(operateflag)) {
+                    if (Constant.DEVICE_OPERATE_ON_OFF.equals(operateflag)) {
                         ControllerUtils.operateDevice(2, false);
                     }
 
                     break;
                 case Constant.PUSH_OPERATION_TYPE_CONFIG:
-                    // 存入本地文件
-                    Log.d(TAG, "onTextMessage: 推送类型为：配置。开始将push的strategy存入本地..");
-                    FileUtil.saveContentToSdcard(UriConstant.APP_ROOT_PATH +
-                                    UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME,
-                            CommonUtil.encode(Constant.VIDEO_PUSH_HANDLE_TO_DO + content));
-                    // 发送延时消息处理
-                    if (myHandler.hasMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH)) {
-                        myHandler.removeMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH);
-                    }
-                    myHandler.sendEmptyMessageDelayed(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH,
-                            Constant.RECEIVE_PUSH_VIDEO_STRATEGY_WAIT_TIME * 1000);
-                    break;
-                case Constant.PUSH_OPERATION_TYPE_LOGIN:
+                    Log.d(TAG, "onTextMessage: 推送类型为：配置。");
+//                    if (!CommonUtil.isNumeric(content)) {
+//                        Log.d(TAG, "onTextMessage: content不为整数。return..");
+//                        return;
+//                    }
+//                    int adConfigId = Integer.parseInt(content);
+                    String url = RestUtils.getUrl(UriConstant.GET_AD_VIDEO_LIST + content);
+                    OkHttpUtils.postAsyn(url, new OkHttpUtils.StringCallback() {
+                        @Override
+                        public void onFailure(int errCode, Request request, IOException e) {
+                            Log.d(TAG, "onFailure: 获取视频策略失败！errCode = " + errCode +
+                                    ", response = " + request.toString());
+                        }
 
-//                    登录接口
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d(TAG, "onResponse: 获取视频策略成功！ response = " + response);
+                            JSONObject jsonObject = JSONObject.parseObject(response);
+                            if (null == jsonObject) {
+                                Log.d(TAG, "onResponse: 视频策略获取response数据错误！");
+                                return;
+                            }
+                            Object data = jsonObject.get("data");
+                            if (null == data) {
+                                Log.d(TAG, "onResponse: 视频策略获取response的data数据错误！");
+                                return;
+                            }
+                            // 存入本地文件
+                            Log.d(TAG, "onTextMessage: 开始将push的strategy存入本地..");
+                            FileUtil.saveContentToSdcard(UriConstant.APP_ROOT_PATH +
+                                            UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME,
+                                    CommonUtil.encode(Constant.VIDEO_PUSH_HANDLE_TO_DO + data.toString()));
+                            // 发送延时消息处理
+                            if (myHandler.hasMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH)) {
+                                myHandler.removeMessages(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH);
+                            }
+                            myHandler.sendEmptyMessageDelayed(Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH,
+                                    Constant.RECEIVE_PUSH_VIDEO_STRATEGY_WAIT_TIME * 1000);
+                        }
+                    });
 
-//                    break;
-                case Constant.PUSH_OPERATION_TYPE_UPDATE_ID:
+                     Log.d(TAG, "onTextMessage: 推送类型为：登录。");
+                    // TODO: 2018/6/20 0020 登录
+                    String userId = pushEntity.getOperationContent();
+                    DispenserCache.userIdTemp = userId;
+                    dismissPop(popQrCode);
+                    showPopLeftOperate();
+                    showPopRightOperate();
                     break;
+                case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
+                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
+                    // TODO: 2018/6/20 0020 更新apk
+                    break;
+
+                case Constant.AD_TYPE_FREE
             }
         }
 
@@ -872,7 +922,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             switch (msg.what) {
                 case 0:
 //                    byte[] data = (byte[])msg.obj
@@ -1044,8 +1093,22 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         dismissPop(popBuy);
     }
 
+    /**
+     * 执行更新或卸载指令
+     */
+    private void executeCom(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        ComponentName cn = new ComponentName(packageName, activityName);
+        Bundle bundle = new Bundle();
+//        bundle.putString("command", command);
+        intent.putExtras(bundle);
+        intent.setComponent(cn);
+        startActivity(intent);
+    }
     // -------------------------- View end --------------------------
 
+    //region **
     /**
      * 模拟收到信鸽推送的回调，后面有真的写好了，这里的内容就移过去
      */
@@ -1129,4 +1192,5 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         }
         return isRunning;
     }*/
+    //endregion
 }
