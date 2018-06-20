@@ -20,9 +20,11 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# 参考资料：https://blog.csdn.net/guolipeng_network/article/details/74551968
+
 ##############################-------- Android基本配置 start ----------##############################
 
-#-ignorewarnings                     # 忽略警告，避免打包时某些警告出现
+-ignorewarnings                     # 忽略警告，避免打包时某些警告出现
 -optimizationpasses 5               # 指定代码的压缩级别
 -dontusemixedcaseclassnames         # 是否使用大小写混合包名 混淆时不会产生形形色色的类名
 -dontskipnonpubliclibraryclasses    # 是否混淆第三方jar（非公共的库类）
@@ -63,19 +65,26 @@
 }
 
 -keepclasseswithmembernames class * {     # 保持 native 方法不被混淆
-    native ;
+    native <methods>;
 }
 
--keepclasseswithmembers class * {         # 保持自定义控件类不被混淆
-    public (android.content.Context, android.util.AttributeSet);
+-keepclassmembers public class * extends android.view.View {        # 保持自定义控件类不被混淆
+ public <init>(android.content.Context);
+ public <init>(android.content.Context, android.util.AttributeSet);
+ public <init>(android.content.Context, android.util.AttributeSet, int);
+ public void set*(***);
 }
 
--keepclasseswithmembers class * {         # 保持自定义控件类不被混淆
-    public (android.content.Context, android.util.AttributeSet, int);
+-keepclasseswithmembers class * {        # 保持自定义控件类不被混淆
+    public <init>(android.content.Context,android.util.AttributeSet);
 }
 
--keepclasseswithmembers class * {
-  public (android.content.Context, android.util.AttributeSet, int, int);
+-keepclasseswithmembers class * {        # 保持自定义控件类不被混淆
+    public <init>(android.content.Context,android.util.AttributeSet,int);
+}
+
+-keepclassmembers class * extends android.app.Activity {        # 保持自定义控件类不被混淆
+    public void *(android.view.View);
 }
 
 -keepclassmembers class * extends android.app.Activity { #保持类成员
@@ -105,15 +114,13 @@
   java.lang.Object readResolve();
 }
 
--libraryjars   libs/treecore.jar   #缺省proguard 会检查每一个引用是否正确，但是第三方库里面往往有些不会用到的类，没有正确引用。如果不配置的话，系统就会报错。
--dontwarn android.support.v4.**
 -dontwarn android.support.**
 -dontwarn android.os.**
 
-##############################-------- Android基本配置 end ----------##############################
+###############################-------- Android基本配置 end ----------##############################
 
 
-##############################-------- 第三方依赖配置 start ----------##############################
+###############################-------- 第三方依赖配置 start ----------##############################
 
 ## for sharedSDK
 -keep class android.net.http.SslError
@@ -130,22 +137,18 @@
 -keepattributes Exceptions  # Retain declared checked exceptions for use by a Proxy instance.
 -dontwarn retrofit2.**
 -keep class retrofit2.** { *; }
--keepattributes Signature-keepattributes Exceptions
 
 ## for fastjson
 -dontwarn com.alibaba.fastjson.**
--libraryjars libs/fastjson.jar
+#-libraryjars libs/fastjson.jar
 -keep class com.alibaba.fastjson.** { *; }
 -keepclassmembers class * {
-public <methods>;
+    public <methods>;
 }
 
 ## for zxing
 -keep class com.google.zxing.** {*;}
 -dontwarn com.google.zxing.**
-
-## for BASE64Decoder
--libraryjars libs/sun.misc.BASE64Decoder.jar
 
 ## for xutils
 -keep class com.lidroid.** { *; }
@@ -187,6 +190,4 @@ public <methods>;
 -keepattributes EnclosingMethod
 -keep class newwater.com.newwater.beans.**{*;}  ## 实体类不混淆（因为Gson中用到了反射）
 
-##############################-------- 第三方依赖配置 end ----------##############################
-
-
+###############################-------- 第三方依赖配置 end ----------##############################
