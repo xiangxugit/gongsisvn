@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Handler;
@@ -25,7 +27,6 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
 import com.tencent.android.tpush.XGPushRegisterResult;
@@ -156,7 +157,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     //要调用另一个APP的activity所在的包名
     String packageName = "purewater.com.leadapp";
     //要调用另一个APP的activity名字
-    String activityName = "purewater.com.leadapp.MainActivity";
+    String activityName = ".MainActivity";
 
     // -------------------------- 生命周期 start --------------------------
 
@@ -341,7 +342,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         dynamicFilter.setPriority(Integer.MAX_VALUE);
         registerReceiver(dynamicReceiver, dynamicFilter);
 
-
     }
 
     /**
@@ -379,7 +379,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         //定时刷新二维码
         Time sCodeTime = new Time();
         sCodeTime.setToNow();
-        Date sCodeTimeUpdate = TimeRun.tasktime(sCodeTime.hour, sCodeTime.minute + 1, sCodeTime.second);
+        Date sCodeTimeUpdate = TimeRun.tasktime(sCodeTime.hour, sCodeTime.minute, sCodeTime.second);
         TimeRun timeRunScode = new TimeRun(MainActivity.this, sCodeTimeUpdate, myHandler, Constant.UPDATE_SCODE, Constant.MSG_UPDATE_SCODE, Constant.TIME_OPETATE_UPDATESCODE);
         timeRunScode.startTimer();
 
@@ -392,14 +392,14 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
         //启动水质上报
         String waterqualitylist = RestUtils.getUrl(UriConstant.WATERQUALITYLIST);
-//        UploadLocalData uploadLocalData = new UploadLocalData(MainActivity.this,waterqualitylist,Constant.TIME_OPERATE_UPDATEWATER,Constant.UPLOAD_TIME);
-//        uploadLocalData.upload();
-        UploadLocalData.getInstance(mContext).upload(waterqualitylist,Constant.TIME_OPERATE_UPDATEWATER,Constant.UPLOAD_TIME);
+//        UploadLocalData uploadLocalData = new UploadLocalData(mContext);
+//        uploadLocalData.upload(waterqualitylist,Constant.TIME_OPERATE_UPDATEWATER,Constant.UPLOAD_TIME);
+        UploadLocalData.getInstance(mContext).upload(waterqualitylist, Constant.TIME_OPERATE_UPDATEWATER, Constant.UPLOAD_TIME);
         //预警信息上报
-        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITY);
-//        UploadLocalData uploadLocalDatatwo = new UploadLocalData(MainActivity.this,noticequalitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME);
-//        uploadLocalDatatwo.upload();
-        UploadLocalData.getInstance(mContext).upload(noticequalitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME);
+        String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITYLIST);
+//        UploadLocalData uploadLocalData1 = new UploadLocalData(mContext);
+//        uploadLocalData1.upload(noticequalitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME);
+        UploadLocalData.getInstance(mContext).upload(noticequalitylist, Constant.TIME_OPETATE_WARNING, Constant.UPLOAD_TIME);
     }
 
     /**
@@ -410,8 +410,10 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 //        UploadLocalData uploadLocalDataVideo = new UploadLocalData(mContext, url, Constant.TIME_OPETATE_VIDEO,
 //                Constant.AD_RECORD_UPLOAD_PERIOD * 1000);
 //        uploadLocalDataVideo.upload();
-        UploadLocalData.getInstance(mContext).upload(url, Constant.TIME_OPETATE_VIDEO,
-                Constant.AD_RECORD_UPLOAD_PERIOD * 1000);
+//        UploadLocalData ulManager = new UploadLocalData(mContext);
+//        ulManager.upload(url, Constant.TIME_OPETATE_VIDEO, Constant.UPLOAD_TIME);
+        UploadLocalData.getInstance(mContext).upload(url, Constant.TIME_OPETATE_VIDEO, Constant.UPLOAD_TIME);
+//                Constant.AD_RECORD_UPLOAD_PERIOD * 1000);
     }
 
     /**
@@ -440,6 +442,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             int index = VideoUtils.getAdIndexFromList(ad, curAdVideoList);
             if (-1 == index) {
                 // 列表中不存在此广告，则加入此广告
+                Log.d(TAG, "getCurrentVideoList: 当前视频列表中无此广告，加入" + ad.getAdvsVideoLocaltionPath());
                 if (TimeUtils.isCurrentDateTimeInPlan(
                         ad.getAdvsPlayBeginDatetimes(), ad.getAdvsPlayEndDatetimes(),
                         ad.getAdvsPlayBeginTime(), ad.getAdvsPlayEndTime(), curTime)) {
@@ -448,6 +451,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                 }
             } else if (-1 < index) {
                 // 列表中存在此广告，则更新此广告数据
+                Log.d(TAG, "getCurrentVideoList: 当前视频列表中有此广告，更新");
                 if (TimeUtils.isCurrentDateTimeInPlan(
                         ad.getAdvsPlayBeginDatetimes(), ad.getAdvsPlayEndDatetimes(),
                         ad.getAdvsPlayBeginTime(), ad.getAdvsPlayEndTime(), curTime)) {
@@ -697,7 +701,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             return;
         }
         for (AdvsVideo ad : adVideoList) {
-            switch (ad.getAdvsPlayScene()) {
+            switch (ad.getAdvsType()) {
                 case Constant.AD_TYPE_IDLE:
                     allAdVideoList.add(ad);
                     break;
@@ -716,6 +720,46 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         startDT.setTime(date);
         startDT.add(Calendar.DAY_OF_MONTH, num);
         return startDT.getTime();
+    }
+
+    /**
+     * 跳转到LoadApp执行更新或卸载指令
+     */
+    private void launchLoadApp(){
+        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resolveIntent.setPackage(packageName);
+
+        final PackageManager packageManager = mContext.getPackageManager();
+        List<ResolveInfo> resolveInfo =
+                packageManager.queryIntentActivities(resolveIntent, 0);
+
+        if (resolveInfo != null && resolveInfo.size() != 0) {
+            ResolveInfo ri = resolveInfo.iterator().next();
+            if (ri != null) {
+                packageName = ri.activityInfo.packageName;
+                activityName = ri.activityInfo.name;
+
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                ComponentName cn = new ComponentName(packageName, activityName);
+                Bundle bundle = new Bundle();
+                bundle.putString("command", "update");
+                intent.putExtras(bundle);
+                intent.setComponent(cn);
+                startActivity(intent);
+                finish();
+            }
+        } else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            ComponentName cn = new ComponentName(packageName, activityName);
+            Bundle bundle = new Bundle();
+            bundle.putString("command", "update");
+            intent.putExtras(bundle);
+            intent.setComponent(cn);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -751,9 +795,11 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             AdvsVideo curAd = allAdVideoList.get(curAdIndex % curAdVideoList.size());
             AdvsPlayRecode curAdRecord = new AdvsPlayRecode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
                     curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
-                    curAd.getAdvsIndustry(), curAd.getAdvsPlayScene());
+                    curAd.getAdvsIndustry(), curAd.getAdvsType());
             try {
                 dbManager.save(curAdRecord);
+                List<AdvsPlayRecode> all = dbManager.findAll(AdvsPlayRecode.class);
+                Log.d(TAG, "onComplete: all.size = " + all.size());
             } catch (DbException e) {
                 e.printStackTrace();
             }
@@ -773,12 +819,18 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 //        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
         if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
             //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
-            Toast.makeText(mContext, "网络服务错误", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "onError: 视频播放：网络服务错误");
         } else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
-            Toast.makeText(mContext, "文件不存在或错误，或网络不可访问错误", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "onError: 视频播放：文件不存在或错误，或网络不可访问错误");
+        }
+        if (isPlayInitVideo) {
+            initAdIndex += 1;
+        } else {
+            curAdIndex += 1;
         }
         playerManager.onDestroy();//释放
-        playVideo();//播放
+        loopPlayVideo();
+//        playVideo();//播放
     }
 
     @Override
@@ -794,18 +846,18 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     public class DynamicReceiver extends XGPushBaseReceiver {
         @Override
         public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
-            Log.e(TAG, "onRegisterResult: " );
+            Log.e(TAG, "onRegisterResult: ");
 
         }
 
         @Override
         public void onUnregisterResult(Context context, int i) {
-            Log.e(TAG, "onUnregisterResult: " );
+            Log.e(TAG, "onUnregisterResult: ");
         }
 
         @Override
         public void onSetTagResult(Context context, int i, String s) {
-            Log.e(TAG, "onSetTagResult: " );
+            Log.e(TAG, "onSetTagResult: ");
         }
 
         @Override
@@ -847,15 +899,10 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     if (Constant.DEVICE_OPERATE_ON_OFF.equals(operateflag)) {
                         ControllerUtils.operateDevice(2, false);
                     }
-
                     break;
                 case Constant.PUSH_OPERATION_TYPE_CONFIG:
-                    Log.d(TAG, "onTextMessage: 推送类型为：配置。");
-//                    if (!CommonUtil.isNumeric(content)) {
-//                        Log.d(TAG, "onTextMessage: content不为整数。return..");
-//                        return;
-//                    }
-//                    int adConfigId = Integer.parseInt(content);
+                case Constant.PUSH_OPERATION_TYPE_TARGET:
+                    Log.d(TAG, "onTextMessage: 推送类型为：视频（配置/行业）。");
                     String url = RestUtils.getUrl(UriConstant.GET_AD_VIDEO_LIST + content);
                     OkHttpUtils.postAsyn(url, new OkHttpUtils.StringCallback() {
                         @Override
@@ -890,24 +937,20 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                                     Constant.RECEIVE_PUSH_VIDEO_STRATEGY_WAIT_TIME * 1000);
                         }
                     });
+
                     break;
-//                    case Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH;
-//                     Log.d(TAG, "onTextMessage: 推送类型为：登录。");
-//                    // TODO: 2018/6/20 0020 登录
-//
-//                    break;
                 case Constant.PUSH_OPERATION_TYPE_LOGIN:
-                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
-                    // TODO: 2018/6/20 0020 更新apk
+                    Log.d(TAG, "onTextMessage: 推送类型为：登录。");
+                    // TODO: 2018/6/20 0020 登录
                     String userId = pushEntity.getOperationContent();
                     DispenserCache.userIdTemp = userId;
                     dismissPop(popQrCode);
                     showPopLeftOperate();
                     showPopRightOperate();
                     break;
-
                 case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
-
+                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
+                    launchLoadApp();
                     break;
             }
         }
@@ -954,11 +997,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     refreshAllAdVideoData();
                     loopPlayVideo();
                     break;
-                /*case 1002:
-                    // 模拟接受到推送消息
-                    Log.d(TAG, "handleMessage: 33333333333333333 接到消息了");
-                    onReceivePush();
-                    break;*/
             }
         }
     }
@@ -972,7 +1010,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      *
      * @param errReason
      */
-    public void moveToBreakDownActivity(String errReason) {
+    public  void moveToBreakDownActivity(String errReason) {
         dismissAllPop();
         Intent intent = new Intent(mContext, BreakDownActivity.class);
         Bundle bundle = new Bundle();
@@ -1097,19 +1135,6 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         dismissPop(popBuy);
     }
 
-    /**
-     * 执行更新或卸载指令
-     */
-    private void executeCom(){
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        ComponentName cn = new ComponentName(packageName, activityName);
-        Bundle bundle = new Bundle();
-//        bundle.putString("command", command);
-        intent.putExtras(bundle);
-        intent.setComponent(cn);
-        startActivity(intent);
-    }
     // -------------------------- View end --------------------------
 
     //region **

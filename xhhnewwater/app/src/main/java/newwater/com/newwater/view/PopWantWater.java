@@ -59,6 +59,7 @@ public class PopWantWater extends PopupWindow {
             // showAtLocation方法，在parent的某个位置参数，具体哪个位置由后三个参数决定
             this.showAtLocation(parent, Gravity.RIGHT, 0, 100);
         } else {
+            this.showAtLocation(parent, Gravity.RIGHT, 0, 100);
 //            this.dismiss();
         }
     }

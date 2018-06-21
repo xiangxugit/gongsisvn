@@ -97,8 +97,9 @@
             android:name=".processpreserve.Receiver2"
             android:process=":process2" />
         <!-- android:process=":daemon" -->
-        <!-- android:exported="true" -->
-        <service android:name=".processpreserve.DaemonService" />
+        <!-- android:exported="true" android:exported="true" -->
+        <service android:name=".processpreserve.DaemonService"
+           />
 
         <!-- 【必须】 信鸽receiver广播接收 -->
         <receiver
@@ -145,14 +146,14 @@
 
         <!-- 【可选】APP实现的Receiver，用于接收消息透传和操作结果的回调，请根据需要添加 -->
         <!-- YOUR_PACKAGE_PATH.CustomPushReceiver需要改为自己的Receiver： -->
-       <!--<receiver-->
-            <!--android:name=".broadcast.MessageReceiver"-->
-            <!--android:exported="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />-->
-                <!--<action android:name="com.tencent.android.tpush.action.FEEDBACK" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+       <receiver
+            android:name=".broadcast.MessageReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />
+                <action android:name="com.tencent.android.tpush.action.FEEDBACK" />
+            </intent-filter>
+        </receiver>
 
         <!-- 【必须】 通知service，其中android:name部分要改为当前包名 -->
         <service
@@ -176,7 +177,6 @@
             android:name="com.tencent.android.tpush.SettingsContentProvider"
             android:authorities="newwater.com.newwater.TPUSH_PROVIDER"
             android:exported="false" />
-
         <!-- 【必须】 【注意】authorities修改为 包名.TENCENT.MID.V3, 如demo的包名为：com.qq.xgdemo -->
         <provider
             android:name="com.tencent.mid.api.MidProvider"

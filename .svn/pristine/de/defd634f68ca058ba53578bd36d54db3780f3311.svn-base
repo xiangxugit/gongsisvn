@@ -1,0 +1,161 @@
+package newwater.com.newwater.utils;
+
+import android.content.Context;
+import android.text.format.Time;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+
+import org.xutils.DbManager;
+import org.xutils.ex.DbException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import newwater.com.newwater.beans.AdvsPlayRecode;
+import newwater.com.newwater.beans.SysDeviceNoticeAO;
+import newwater.com.newwater.beans.SysDeviceWaterQualityAO;
+import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.view.activity.MainActivity;
+import okhttp3.Request;
+
+/**
+ * Created by Administrator on 2018/5/10 0010.
+ */
+
+public class UploadLocalData {
+    private static final String TAG = "UploadLocalData";
+    private static UploadLocalData instance;
+    private Context context;
+//    private String url;
+//    private List<? extends Object> contentList;
+//    private String tablename;
+//    private long cycle;
+//    private int operateflag;
+    private DbManager dbManager;
+    public TimerTask task;
+//    public String postdata;
+
+//     public UploadLocalData(Context context, String url, int operateFlag, long cycle){
+//        this.context = context;
+//        this.url = url;
+//        this.operateflag = operateFlag;
+//        this.cycle = cycle;
+//        dbManager = new XutilsInit(context).getDb();
+//    }
+
+
+    //    public static UploadLocalData getInstance(Context context, String url, List<? extends Object> contentList, long cycle) {
+    public static UploadLocalData getInstance(Context context) {
+        if (instance == null) {
+            synchronized (UploadLocalData.class) {
+                if (instance == null) {
+                    instance = new UploadLocalData(context);
+                }
+            }
+        }
+        return instance;
+    }
+
+
+    private UploadLocalData(Context context/*, String url, int operateflag, long cycle*/) {
+        this.context = context;
+//        this.url = url;
+//        this.operateflag = operateflag;
+//        this.cycle = cycle;
+        if (null == dbManager) {
+            dbManager = new XutilsInit(context).getDb();
+        }
+//        upload();
+    }
+
+    private void uploadData(int operateflag, String urlString) {
+//        String contentJSON = JSON.toJSONString(uploaddata);
+//        判断是哪一种的东西
+        String url = urlString;
+        List<? extends Object> contentList =  new ArrayList<>();
+        String postdata = "";
+        switch (operateflag) {
+            case Constant.TIME_OPERATE_UPDATEWATER:
+                //水质上报
+                try {
+                    contentList = dbManager.findAll(SysDeviceWaterQualityAO.class);
+                    postdata = JSON.toJSONString(contentList);
+                    Log.e(TAG,"水质上报");
+//                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Constant.TIME_OPETATE_WARNING:
+                //水质上报
+                try {
+                    contentList = dbManager.findAll(SysDeviceNoticeAO.class);
+                    postdata = JSON.toJSONString(contentList);
+                    Log.e(TAG,"预警上报");
+//                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(SysDeviceWaterQualityAO.class);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Constant.TIME_OPETATE_VIDEO:
+                // 广告视频播放记录上报
+                try {
+                    contentList = dbManager.findAll(AdvsPlayRecode.class);
+                    postdata = JSON.toJSONString(contentList);
+                    Log.e(TAG,"广告上报");
+//                List<SysDeviceWaterQualityAO> listQualityAO = dbManager.findAll(AdvsPlayRecode.class);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+
+        final List<?> finalContentList = contentList;
+        OkHttpUtils.getInstance().postAsyn(url, new OkHttpUtils.StringCallback() {
+            @Override
+            public void onFailure(int errCode, Request request, IOException e) {
+//                Toast.makeText(context, "同步失败, errCode = " + errCode, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onFailure: " + "同步失败, errCode = " + errCode);
+            }
+
+            @Override
+            public void onResponse(String response) {
+                Log.e(TAG, "onResponse: " + "同步成功, response = " + response);
+                deleteLocalUploadData(finalContentList);
+            }
+        }, postdata);
+    }
+
+
+    public void upload(final String url, final int operateFlag, long cycle) {
+        Log.d(TAG, "upload: url = " + url + ", flag = " + operateFlag + ", cycle = " + cycle);
+        Time sCodeTime = new Time();
+        sCodeTime.setToNow();
+        Date updatetime = TimeRun.tasktime(sCodeTime.hour, sCodeTime.minute, sCodeTime.second);
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                uploadData(operateFlag, url);
+            }
+        };
+        Timer timer = new Timer(true);
+        timer.schedule(task, updatetime, cycle);
+    }
+
+
+    private void deleteLocalUploadData(List<? extends Object> content) {
+        try {
+            if(null==content){return;}
+            dbManager.delete(content);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}

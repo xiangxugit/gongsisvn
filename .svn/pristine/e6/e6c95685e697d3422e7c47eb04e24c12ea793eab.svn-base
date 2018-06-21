@@ -1,0 +1,178 @@
+package newwater.com.newwater.view.activity;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import org.xutils.DbManager;
+import org.xutils.ex.DbException;
+
+import newwater.com.newwater.utils.BaseSharedPreferences;
+import newwater.com.newwater.utils.XutilsInit;
+import newwater.com.newwater.R;
+import newwater.com.newwater.beans.AdvsPlayRecode;
+import newwater.com.newwater.beans.AdvsVideo;
+import newwater.com.newwater.beans.DispenserCache;
+import newwater.com.newwater.constants.Constant;
+import newwater.com.newwater.manager.IjkManager;
+import newwater.com.newwater.utils.TimeUtils;
+import newwater.com.newwater.view.CircleTextProgressbar;
+
+public class FreeAdActivity extends Activity implements IjkManager.PlayerStateListener, CircleTextProgressbar.OnCountdownProgressListener, View.OnClickListener {
+
+    private static final String TAG = "FreeAdActivity";
+
+    private CircleTextProgressbar cpbProgress;
+    private Button btnQuit;
+    private Context mContext;
+    private IjkManager playerManager;
+    private DbManager dbManager;
+    private int deviceId;
+    private int playDuration;  // 秒
+    private boolean isPlayInitVideo;
+    private int initAdIndex;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: -----------");
+        initData();
+        initView();
+        initCountDown();
+        initVideo();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (null != playerManager) {
+            playerManager.stop();
+            playerManager.onDestroy();
+            playerManager = null;
+        }
+        super.onDestroy();
+    }
+
+    private void initData() {
+        mContext = FreeAdActivity.this;
+        deviceId = BaseSharedPreferences.getInt(mContext, Constant.DEVICE_ID_KEY);
+        dbManager = new XutilsInit(FreeAdActivity.this).getDb();
+        playDuration = Constant.DEFAULT_FREE_AD_DURATION;
+        Intent intent = getIntent();
+        if (null != intent) {
+            Bundle bundle = intent.getExtras();
+            if (null != bundle && bundle.containsKey(Constant.KEY_FREE_AD_DURATION)) {
+                playDuration = bundle.getInt(Constant.KEY_FREE_AD_DURATION);
+            }
+        }
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_free_ad);
+        cpbProgress = findViewById(R.id.free_ad_progress_cpb);
+        btnQuit = findViewById(R.id.free_ad_quit_btn);
+        cpbProgress.setOutLineColor(getResources().getColor(R.color.dark_gray));
+        cpbProgress.setInCircleColor(getResources().getColor(R.color.light_gray));
+        cpbProgress.setProgressColor(getResources().getColor(R.color.royalblue));
+        cpbProgress.setProgressLineWidth(5);
+        cpbProgress.setText(playDuration + "");
+        cpbProgress.setVisibility(View.VISIBLE);
+        cpbProgress.setCountdownProgressListener(1, this);
+        btnQuit.setVisibility(View.GONE);
+        btnQuit.setOnClickListener(this);
+    }
+
+    private void initCountDown() {
+        CountDownTimer timer = new CountDownTimer(playDuration * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int leftSec = (int) (millisUntilFinished / 1000);
+                Log.d(TAG, "onTick: left = " + millisUntilFinished);
+                cpbProgress.setProgress((playDuration - leftSec) * 100 / playDuration);
+                cpbProgress.setText(leftSec + "");
+            }
+
+            @Override
+            public void onFinish() {
+                cpbProgress.setVisibility(View.GONE);
+                btnQuit.setVisibility(View.VISIBLE);
+            }
+        }.start();
+    }
+
+    private void initVideo() {
+        // 初始化播放器
+        playerManager = new IjkManager(this, R.id.free_ad_video);
+        playerManager.setFullScreenOnly(true);
+        playerManager.setScaleType(IjkManager.SCALETYPE_FILLPARENT);
+        playerManager.playInFullScreen(true);
+        playerManager.setOnPlayerStateChangeListener(this);
+        playVideo();
+    }
+
+    private void playVideo() {
+        if (null != DispenserCache.freeAdVideoList && 0 != DispenserCache.freeAdVideoList.size()) {
+            Log.d(TAG, "playVideo: 有广告，播放广告视频");
+            isPlayInitVideo = false;
+            String proxyUrl = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex
+                    % DispenserCache.freeAdVideoList.size()).getAdvsVideoLocaltionPath();
+            playerManager.play(proxyUrl);
+        } else if (null != DispenserCache.initAdVideoList && 0 != DispenserCache.initAdVideoList.size()) {
+            Log.d(TAG, "playVideo: 无广告，播放初始视频");
+            isPlayInitVideo = true;
+            String proxyUrl = DispenserCache.initAdVideoList.get(initAdIndex
+                    % DispenserCache.initAdVideoList.size()).getAdvsVideoLocaltionPath();
+            playerManager.play(proxyUrl);
+        }
+    }
+
+    // ------------ ijk 监听 start ------------
+    @Override
+    public void onComplete() {
+        if (isPlayInitVideo) {
+            Log.d(TAG, "onComplete: initIndex = " +initAdIndex);
+            initAdIndex += 1;
+        } else {
+            Log.d(TAG, "onComplete: freeIndex = " + DispenserCache.freeAdIndex);
+            AdvsVideo curAd = DispenserCache.freeAdVideoList.get(DispenserCache.freeAdIndex
+                    % DispenserCache.freeAdVideoList.size());
+            AdvsPlayRecode curAdRecord = new AdvsPlayRecode(curAd.getAdvsId(), deviceId, TimeUtils.getCurrentTime(),
+                    curAd.getAdvsVideoLengthOfTime(), curAd.getAdvsChargMode(),
+                    curAd.getAdvsIndustry(), curAd.getAdvsType());
+            try {
+                dbManager.save(curAdRecord);
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+            DispenserCache.freeAdIndex++;
+            playVideo();
+        }
+    }
+
+    @Override
+    public void onError(int what, int extra) {
+        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
+    }
+
+    @Override
+    public void onInfo(int what, int extra) {
+
+    }
+    // ------------ ijk 监听 end ------------
+
+    @Override
+    public void onClick(View v) {
+        DispenserCache.isFreeAdDone = true;
+        finish();
+    }
+
+    @Override
+    public void onProgress(int what, int progress) {
+        Log.d(TAG, "onProgress: what = " + what + ", progress = " + progress);
+    }
+}

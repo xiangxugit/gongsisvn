@@ -54,7 +54,7 @@ public class PopRightOperate extends PopupWindow {
     private ComThread comThread;
 
     private WaterSaleRecordAO waterSaleRecordAO;
-    private int waterRecordType = 1;//售水模式
+    private int waterRecordType = 10;//售水模式
     private int waterRecordIsCup = 0;//是否有纸杯
     private int waterFlow = 0;//售水量
     private int waterRecordCupNum = 0;//纸杯数量
@@ -414,19 +414,33 @@ public class PopRightOperate extends PopupWindow {
             //设置纸杯数量
             waterSaleRecordAO.setWaterRecordCupNum(2);
 
+
+
+
             if (chushuiflag == false) {
                 //所有的设置为不可用
+                //重新设置各种过滤设备的数值
+                //重新设置pp棉制水量
+                BaseSharedPreferences.setInt(context,Constant.DEVICE_PP_FLOW_KEY,BaseSharedPreferences.getInt(context, Constant.DEVICE_PP_FLOW_KEY)-waterSaleRecordAO.getWaterFlow());
+                //重新设置
+                BaseSharedPreferences.setInt(context,Constant.DEVICE_GRAIN_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_GRAIN_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+
+                BaseSharedPreferences.setInt(context,Constant.DEVICE_PRESS_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_PRESS_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+
+                BaseSharedPreferences.setInt(context,Constant.DEVICE_POSE_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_POSE_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+
+                BaseSharedPreferences.setInt(context,Constant.DEVICE_RO_FLOW_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_RO_FLOW_KEY)-waterSaleRecordAO.getWaterFlow());
                 //上传售水记录
                 String salewater;
                 if(operateType=="1"){
-                    salewater  = RestUtils.getUrl(UriConstant.GET_DEVICE_CONFIG) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
+                    salewater  = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                             "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
                             "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + waterSaleRecordAO.getWaterFlow() +
                             "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
                     context.dismissPop(pop);
                     dismiss();
                 }else{
-                     salewater = RestUtils.getUrl(UriConstant.GET_DEVICE_CONFIG) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
+                     salewater = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                             "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
                             "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + 0 +
                             "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
