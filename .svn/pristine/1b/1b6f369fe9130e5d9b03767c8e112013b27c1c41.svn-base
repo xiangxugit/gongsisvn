@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/margintop"
+    android:background="@color/grey"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/waring_ico"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="!"
+            android:textColor="@color/blood_red" />
+
+        <TextView
+            android:id="@+id/right_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/waring_ico"
+            android:gravity="center"
+            android:padding="@dimen/margintop"
+            android:text="@string/get_water_warning"
+            android:textColor="@color/blood_red" />
+        <!--操作按钮-->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/out_cup_left"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circlebuttonred"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/top_sure"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="13dp"
+                android:gravity="center"
+                android:text="√"
+                android:textColor="@color/white"
+                android:textSize="@dimen/verybig" />
+
+            <TextView
+                android:id="@+id/bottom_sure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/top_sure"
+                android:gravity="center"
+                android:text="@string/sure"
+                android:textColor="@color/white" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/out_cup_right"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/margintop"
+            android:background="@drawable/circlebuttonblue"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/top_cancel_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="13dp"
+                android:gravity="center"
+                android:text="X"
+                android:textColor="@color/white"
+                android:textSize="@dimen/verybig" />
+
+            <TextView
+                android:id="@+id/bottom_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/top_cancel_image"
+                android:gravity="center"
+                android:text="@string/cancel" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -65,15 +65,6 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.Translucent"/>
 
-        <activity android:name=".view.activity.TestActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
-
         <service
             android:name=".processpreserve.Service1"
             android:process=":process1" />

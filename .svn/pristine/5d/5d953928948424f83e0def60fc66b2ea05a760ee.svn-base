@@ -1,0 +1,164 @@
+package newwater.com.newwater.view;
+
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.serialport.DevUtil;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import newwater.com.newwater.processpreserve.ComThread;
+import newwater.com.newwater.R;
+import newwater.com.newwater.utils.CommonUtil;
+import newwater.com.newwater.view.activity.BaseActivity;
+import static newwater.com.newwater.processpreserve.DaemonService.comThread;
+
+/**
+ * 自定义的PopupWindow
+ */
+public class PopWarning extends PopupWindow {
+    private BaseActivity context;
+    private RelativeLayout outcupleft;
+    private RelativeLayout outcupright;
+    private TextView bottomsure;
+    private DevUtil devUtil;
+
+    public PopWarning(BaseActivity context) {
+        // 通过layout的id找到布局View
+        this.context = context;
+        View contentView = LayoutInflater.from(context).inflate(R.layout.prompt_pop, null);
+        // 获取PopupWindow的宽高
+        int h = context.getWindowManager().getDefaultDisplay().getHeight();
+        int w = context.getWindowManager().getDefaultDisplay().getWidth();
+        // 设置PopupWindow的View
+        this.setContentView(contentView);
+        // 设置PopupWindow弹出窗体的宽高
+        this.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        // 设置PopupWindow弹出窗体可点击（下面两行代码必须同时出现）
+        this.setFocusable(true);
+        this.setOutsideTouchable(false); // 当点击外围的时候隐藏PopupWindow
+        // 刷新状态
+        this.update();
+        // 设置PopupWindow的背景颜色为半透明的黑色
+        ColorDrawable dw = new ColorDrawable(Color.parseColor("#66000000"));
+        this.setBackgroundDrawable(dw);
+        // 设置PopupWindow弹出窗体动画效果
+        this.setAnimationStyle(R.style.PopWindowAnimStyle);
+
+        // 这里也可以从contentView中获取到控件，并为它们绑定控件
+        outcupleft = (RelativeLayout) contentView.findViewById(R.id.outcupleft);
+        outcupleft.setOnClickListener(onclick);
+        outcupright = (RelativeLayout) contentView.findViewById(R.id.outcupright);
+        outcupright.setOnClickListener(onclick);
+        bottomsure = (TextView) contentView.findViewById(R.id.bottomsure);
+
+    }
+
+    // 显示PopupWindow，有两种方法：showAsDropDown、showAtLocation
+    public void showPopupWindow(View parent) {
+        if (!this.isShowing()) {
+            // showAsDropDown方法，在parent下方的(x,y)位置显示，x、y是第二和第三个参数
+            // this.showAsDropDown(parent, parent.getWidth() / 2 - 400, 18);
+
+            // showAtLocation方法，在parent的某个位置参数，具体哪个位置由后三个参数决定
+            this.showAtLocation(parent, Gravity.CENTER, 0, 0);
+        } else {
+//            this.dismiss();
+        }
+    }
+
+
+    View.OnClickListener onclick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dismiss();
+            switch (v.getId()) {
+                case R.id.outcupleft:
+                    devUtil = new DevUtil(null);
+                    if (null == comThread) {
+                        Toast.makeText(context, "通讯未启动", Toast.LENGTH_SHORT).show();
+                        comThread = new ComThread(context, null);
+                    } else {
+                        Toast.makeText(context, "通讯启动", Toast.LENGTH_SHORT).show();
+                        comThread.setActive(false);
+                    }
+
+                    String hotwatertext = PopRightOperate.hotwater.getText().toString();
+                    if (CommonUtil.isFastClick()) {
+                        Toast.makeText(context, "操作过快，请稍后再取", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+                        if ("热水".equals(hotwatertext)) {
+                            PopRightOperate.hotwater.setText("停止取水");
+                            PopRightOperate.hotwater.setBackgroundResource(R.drawable.hotwaterstop);
+                            int sw = 1;
+                            try {
+                                if (devUtil.do_ioWater(1, sw) == 0) {
+//                                    String userid = ""
+                                    Toast.makeText(context, "操作成功", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, "操作失败", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                 Toast.makeText(context, "报错", Toast.LENGTH_SHORT).show();
+                            } finally {
+                                comThread.setActive(true);
+                            }
+                        } else {
+                            //关闭取热水
+                            PopRightOperate.hotwater.setText("热水");
+                            String s = "出热水指令执行";
+                            int sw = 2;
+                            try {
+                                if (devUtil.do_ioWater(1, sw) == 0) {
+                                    Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } catch (Exception e) {
+                                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                            } finally {
+                                comThread.setActive(true);
+                            }
+                            //获取到本次出水的量
+                            String[][] data = devUtil.toArray();
+                            int getwaterdata = Integer.parseInt(data[17][1]);
+
+                        }
+                    }
+
+                   /* if(devUtil.isComOpened()==true){
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+
+                        if (devUtil.do_ioWater(1, sw) == 0) {
+                            Toast.makeText(context, s + "成功", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(context, s + "失败", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }*/
+
+
+                    // 延迟15秒
+                    break;
+//                case R.id.outcupright:
+//                    Toast.makeText(context,"取消水",Toast.LENGTH_SHORT).show();
+//                    break;
+            }
+        }
+
+    };
+
+}

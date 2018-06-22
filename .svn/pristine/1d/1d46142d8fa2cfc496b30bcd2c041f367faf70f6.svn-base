@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/left_operate"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_toRightOf="@+id/middleimg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <!--温度计-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/thermometer"
+                android:layout_width="50dp"
+                android:layout_height="160dp"
+                android:background="@drawable/thermometer" />
+
+            <TextView
+                android:id="@+id/hot_water_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/thermometer"
+                android:text="热93℃"
+                android:textColor="@color/red_index" />
+
+            <TextView
+                android:id="@+id/cool_water_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/hot_water_text"
+                android:layout_toRightOf="@+id/thermometer"
+                android:gravity="bottom"
+                android:text="冷18℃"
+                android:textColor="@color/blue_index" />
+        </RelativeLayout>
+
+        <!--水质监测-->
+        <LinearLayout
+            android:layout_width="@dimen/leftonewidth"
+            android:layout_height="@dimen/shuidiheightall"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="@dimen/leftonewidth"
+                android:layout_height="@dimen/dtsheight"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/Dts"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="@dimen/leftonewidth"
+                android:layout_height="@dimen/shuidiheight"
+                android:background="@drawable/shuidi"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ppm_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="50dp"
+                    android:text="91"
+                    android:textColor="@color/blue_index"
+                    android:textSize="@dimen/verybig" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:text="ppm"
+                    android:textColor="@color/blue_index"
+                    android:textSize="@dimen/verybig" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--水滴下方-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/raw_water_tds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="原水TDS"
+                android:textColor="@color/white"
+                android:textSize="@dimen/middle_big" />
+
+
+            <TextView
+                android:id="@+id/ppm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="2184ppm"
+                android:textColor="@color/white"
+                android:textSize="@dimen/middle_big" />
+
+
+        </LinearLayout>
+
+
+        <!--deviceoperate-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/middlemargin">
+
+            <LinearLayout
+                android:id="@+id/to_be_hot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/hot_ico"
+                    android:layout_width="@dimen/littleico"
+                    android:layout_height="@dimen/littleico"
+                    android:background="@drawable/hot" />
+
+                <TextView
+                    android:id="@+id/hot_or_not"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/hot_ico"
+                    android:text="@string/jiare"
+                    android:textColor="@color/red_index"
+                    android:textSize="@dimen/middle_big" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/to_be_cool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/cool_ico"
+                    android:layout_width="@dimen/littleico"
+                    android:layout_height="@dimen/littleico"
+                    android:background="@drawable/cool" />
+
+                <TextView
+                    android:id="@+id/cooltext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/zhileng"
+                    android:textColor="@color/blue_index"
+                    android:textSize="@dimen/middle_big" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/produce_water"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/to_be_hot"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/produce_water_ico"
+                    android:layout_width="@dimen/littleico"
+                    android:layout_height="@dimen/littleico"
+                    android:background="@drawable/zhishui" />
+
+                <TextView
+                    android:id="@+id/produce_water_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zhishui"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/middle_big" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/flush"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/to_be_cool"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/flush_ico"
+                    android:layout_width="@dimen/littleico"
+                    android:layout_height="@dimen/littleico"
+                    android:background="@drawable/clean" />
+
+                <TextView
+                    android:id="@+id/flush_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/chongxi"
+                    android:textColor="@color/blue_index"
+                    android:textSize="@dimen/middle_big" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!--设备操作-->
+        <Button
+            android:id="@+id/exit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/little"
+            android:layout_marginRight="@dimen/little"
+            android:text="@string/openorclose"
+            android:textColor="@color/blue_index"
+            android:textSize="@dimen/middle_big" />
+
+    </LinearLayout>
+
+</LinearLayout>

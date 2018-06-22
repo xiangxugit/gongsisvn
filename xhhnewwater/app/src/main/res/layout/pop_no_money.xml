@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/grey"
+    android:gravity="center">
+
+
+    <ImageView
+        android:id="@+id/left_error_ico"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/sorrypng" />
+
+
+    <ImageView
+        android:id="@+id/middle_ico"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_toRightOf="@+id/left_error_ico" />
+
+    <TextView
+        android:id="@+id/account_no_money"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@+id/middle_ico"
+        android:gravity="center"
+        android:text="@string/accoutnomoney"
+        android:textColor="@color/blood_red" />
+
+
+    <TextView
+        android:id="@+id/to_buy"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@+id/account_no_money"
+        android:layout_toRightOf="@+id/middle_ico"
+        android:gravity="center"
+        android:text="@string/tobuy"
+        android:textColor="@color/blood_red" />
+
+</RelativeLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/right_operate"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/hot_water"
+            android:layout_width="@dimen/righticowidth"
+            android:layout_height="@dimen/righticoheight"
+            android:layout_gravity="center"
+            android:background="@drawable/hot_water"
+            android:gravity="center"
+            android:text="热水"
+            android:textColor="@color/blood_red"
+            android:textSize="0sp" />
+
+        <TextView
+            android:id="@+id/warm_water"
+            android:layout_width="@dimen/righticowidth"
+            android:layout_height="@dimen/righticoheight"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/warm_water"
+            android:gravity="center"
+            android:text="@string/warm_water"
+            android:textSize="0sp" />
+
+        <TextView
+            android:id="@+id/cool_water"
+            android:layout_width="@dimen/righticowidth"
+            android:layout_height="@dimen/righticoheight"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/cool_water"
+            android:gravity="center"
+            android:text="@string/coolwater"
+            android:textSize="0sp" />
+
+
+        <TextView
+            android:id="@+id/get_cup"
+            android:layout_width="@dimen/righticowidth"
+            android:layout_height="@dimen/righticoheight"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/getcup"
+            android:gravity="center"
+            android:text="@string/getcup" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
