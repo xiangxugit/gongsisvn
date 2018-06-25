@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- 【必须】 信鸽SDK所需权限 -->
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -74,9 +73,9 @@
             android:process=":process1" />
         <receiver android:name=".broadcast.BootReceiver">
             <intent-filter>
-
                 <!-- 系统启动完成后会调用 -->
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
 
@@ -182,6 +181,9 @@
         <meta-data
             android:name="XG_V2_ACCESS_KEY"
             android:value="AI89KG975GRE" />
+
+        <meta-data android:value="5b2de845b27b0a7248000049" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="wandoujia" android:name="UMENG_CHANNEL"/>
 
     </application>
 

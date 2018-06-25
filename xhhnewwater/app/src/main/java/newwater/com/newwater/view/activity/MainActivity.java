@@ -46,6 +46,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import newwater.com.newwater.beans.SysDeviceNoticeAO;
+import newwater.com.newwater.utils.LogUtils;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.UploadLocalData;
@@ -182,12 +183,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             @Override
             public void run() {
                 if (DispenserCache.isFreeAdDone) {
-                    Log.d(TAG, "dismissPop: 看完广告视频，可以喝水了");
+                    LogUtils.d(TAG, "dismissPop: 看完广告视频，可以喝水了");
                     dismissPop(popWantWater);
                     showPopLeftOperate();
                     showPopRightOperate();
                 } else {
-                    Log.d(TAG, "dismissPop: “我要喝水”要出现了");
+                    LogUtils.d(TAG, "dismissPop: “我要喝水”要出现了");
                     showPopWantWater();
                 }
             }
@@ -220,6 +221,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     // -------------------------- 生命周期 end --------------------------
 
     private void initData() {
+//        int a = 1/0;
         mContext = MainActivity.this;
         myHandler = new MyHandler();
         // 获取设备信息
@@ -255,6 +257,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         //监控设备
 
         startService(new Intent(mContext, DaemonService.class));
+        setTingDevice();
         listenDevice();
     }
 
@@ -311,22 +314,22 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         }
         // 2、没有则跳转到BreakDown页面
         if (0 == deviceId) {
-            Log.d(TAG, "initData: 无deviceId！");
+            LogUtils.d(TAG, "getDeviceInfo: 无deviceId！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_id));
             return;
         }
         if (0 == drinkMode) {
-            Log.d(TAG, "initData: 无drinkMode！");
+            LogUtils.d(TAG, "getDeviceInfo: 无drinkMode！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_drink_mode));
             return;
         }
         if (TextUtils.isEmpty(rentDeadline)) {
-            Log.d(TAG, "initData: rentDeadline！");
+            LogUtils.d(TAG, "getDeviceInfo: rentDeadline！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_rent_deadline));
             return;
         }
         if (TextUtils.isEmpty(contractInfo)) {
-            Log.d(TAG, "initData: contractInfo！");
+            LogUtils.d(TAG, "getDeviceInfo: contractInfo！");
             moveToBreakDownActivity(getString(R.string.break_down_reason_no_contract_info));
             return;
         }
@@ -360,7 +363,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     String deadline = BaseSharedPreferences.getString(mContext, Constant.RENT_DEADLINE_KEY);
                     String currentTime = TimeUtils.getCurrentTime();
                     if (!TimeUtils.isAvailDate(deadline, currentTime)) {
-                        Log.i(TAG, "run: 租期已到！currentTime = " + currentTime + ", deadline = " + deadline);
+                        LogUtils.i(TAG, "run: 租期已到！currentTime = " + currentTime + ", deadline = " + deadline);
                         moveToBreakDownActivity(getString(R.string.break_down_reason_expired));
                     }
                 }
@@ -396,14 +399,25 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         String waterqualitylist = RestUtils.getUrl(UriConstant.WATERQUALITYLIST);
 //        UploadLocalData uploadLocalData = new UploadLocalData(mContext);
 //        uploadLocalData.upload(waterqualitylist,Constant.TIME_OPERATE_UPDATEWATER,Constant.UPLOAD_TIME);
-        UploadLocalData.getInstance(mContext).upload(waterqualitylist, Constant.TIME_OPERATE_UPDATEWATER, Constant.UPLOAD_TIME);
+        long uploadwarningtime = BaseSharedPreferences.getInt(MainActivity.this,Constant.DEVICE_UP_TIME_KEY)*60*1000;
+        UploadLocalData.getInstance(mContext).upload(waterqualitylist, Constant.TIME_OPERATE_UPDATEWATER, uploadwarningtime);
         //预警信息上报
         String noticequalitylist = RestUtils.getUrl(UriConstant.NOTICEQUALITYLIST);
 //        UploadLocalData uploadLocalData1 = new UploadLocalData(mContext);
 //        uploadLocalData1.upload(noticequalitylist,Constant.TIME_OPETATE_WARNING,Constant.UPLOAD_TIME);
         UploadLocalData.getInstance(mContext).upload(noticequalitylist, Constant.TIME_OPETATE_WARNING, Constant.UPLOAD_TIME);
     }
+    public void setTingDevice(){
+        //设置加热的参数
+        ControllerUtils controllerUtils = new ControllerUtils(MainActivity.this);
+        controllerUtils.operateDevice(11,true);
+        controllerUtils.operateDevice(0,true);
+        controllerUtils.operateDevice(1,true);
 
+        //按照时段播放
+
+
+    }
     /**
      * 定时上报视频播放记录
      */
@@ -419,7 +433,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      * 循环播放广告视频
      */
     private void loopPlayVideo() {
-        Log.d(TAG, "loopPlayVideo: 开始循环播放广告视频");
+        LogUtils.d(TAG, "loopPlayVideo: 开始循环播放广告视频");
         if (getCurrentVideoList()) {
             // 有视频，则顺序播放
             playVideo();
@@ -435,25 +449,25 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      * @return 返回值为当前时段是否有videoList
      */
     private boolean getCurrentVideoList() {
-        Log.d(TAG, "getCurrentVideoList: 开始获取当前应播视频列表");
+        LogUtils.d(TAG, "getCurrentVideoList: 开始获取当前应播视频列表");
         boolean hasVideo = false;
         for (AdvsVideo ad : allAdVideoList) {
             int index = VideoUtils.getAdIndexFromList(ad, curAdVideoList);
             if (-1 == index) {
                 // 列表中不存在此广告，则加入此广告
-                Log.d(TAG, "getCurrentVideoList: 当前视频列表中无此广告，查看是否加入" + ad.getAdvsVideoLocaltionPath());
+                LogUtils.d(TAG, "getCurrentVideoList: 当前视频列表中无此广告，查看是否加入" + ad.getAdvsVideoLocaltionPath());
                 if (TimeUtils.isCurrentDateTimeInPlan(
                         ad.getAdvsPlayBeginDatetimes(), ad.getAdvsPlayEndDatetimes(),
                         ad.getAdvsPlayBeginTime(), ad.getAdvsPlayEndTime(), curTime)) {
-                    Log.d(TAG, "getCurrentVideoList: 时辰已到，加入");
+                    LogUtils.d(TAG, "getCurrentVideoList: 时辰已到，加入");
                     curAdVideoList.add(ad);
                     hasVideo = true;
                 } else {
-                    Log.d(TAG, "getCurrentVideoList: 时辰未到，再等等");
+                    LogUtils.d(TAG, "getCurrentVideoList: 时辰未到，再等等");
                 }
             } else if (-1 < index) {
                 // 列表中存在此广告，则更新此广告数据
-                Log.d(TAG, "getCurrentVideoList: 当前视频列表中有此广告，更新");
+                LogUtils.d(TAG, "getCurrentVideoList: 当前视频列表中有此广告，更新");
                 if (TimeUtils.isCurrentDateTimeInPlan(
                         ad.getAdvsPlayBeginDatetimes(), ad.getAdvsPlayEndDatetimes(),
                         ad.getAdvsPlayBeginTime(), ad.getAdvsPlayEndTime(), curTime)) {
@@ -463,7 +477,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             }
         }
         if (!hasVideo)
-            Log.d(TAG, "getCurrentVideoList: 当前时段无视频！");
+            LogUtils.d(TAG, "getCurrentVideoList: 当前时段无视频！");
         return hasVideo;
     }
 
@@ -472,7 +486,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      */
     private void playInitVideo() {
         if (null == DispenserCache.initAdVideoList || 0 == DispenserCache.initAdVideoList.size()) {
-            Log.d(TAG, "playInitVideo: 无初始视频！");
+            LogUtils.d(TAG, "playInitVideo: 无初始视频！");
             return;
         }
         isPlayInitVideo = true;
@@ -500,7 +514,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             }
         }
         isPlayInitVideo = false;
-        Log.d(TAG, "playVideo: 本地路径：" + ad.getAdvsVideoLocaltionPath());
+        LogUtils.d(TAG, "playVideo: 本地路径：" + ad.getAdvsVideoLocaltionPath());
         playerManager.play(ad.getAdvsVideoLocaltionPath());
     }
 
@@ -508,12 +522,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      * 从推送中解析出pushAdVideoList
      */
     private void getPushStrategy() {
-        Log.d(TAG, "getPushStrategy: 开始处理strategy的json数据");
+        LogUtils.d(TAG, "getPushStrategy: 开始处理strategy的json数据");
         // 从本地文件取出数据，如果是已经处理的数据，则不响应；反之则处理。
         String decode = CommonUtil.decode(FileUtil.readTxtFile(UriConstant.APP_ROOT_PATH +
                 UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME));
         if (TextUtils.isEmpty(decode)) {
-            Log.d(TAG, "getPushStrategy: 无推送数据！");
+            LogUtils.d(TAG, "getPushStrategy: 无推送数据！");
             return;
         }
         FileUtil.saveContentToSdcard(UriConstant.APP_ROOT_PATH +
@@ -521,7 +535,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                 CommonUtil.encode(Constant.VIDEO_PUSH_HANDLE_DOING + decode.substring(1)));
         String status = decode.substring(0, 1);
         if (Constant.VIDEO_PUSH_HANDLE_DOING.equals(status)) {
-            Log.d(TAG, "getPushStrategy: 已经处理过推送，不响应");
+            LogUtils.d(TAG, "getPushStrategy: 已经处理过推送，不响应");
             return;
         }
 //        List<AdvsVideo> adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
@@ -529,32 +543,32 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         try {
             adList = JSONArray.parseArray(decode.substring(1), AdvsVideo.class);
         } catch (JSONException e) {
-            Log.d(TAG, "getPushStrategy: 推送数据无法转换成 AdvsVideo！");
+            LogUtils.d(TAG, "getPushStrategy: 推送数据无法转换成 AdvsVideo！");
         }
         if (null == adList || 0 == adList.size()) {
-            Log.d(TAG, "getPushStrategy: 推送数据有误！");
+            LogUtils.d(TAG, "getPushStrategy: 推送数据有误！");
             return;
         }
         for (AdvsVideo ad : adList) {
             if (null == ad) continue;
             String upDate = ad.getAdvsPlayBeginDatetimes();
             String downDate = ad.getAdvsPlayEndDatetimes();
-            Log.d(TAG, "getPushStrategy: upDate = " + upDate + ", downDate = " + downDate + ", url = " + ad.getAdvsVideoDownloadPath());
+            LogUtils.d(TAG, "getPushStrategy: upDate = " + upDate + ", downDate = " + downDate + ", url = " + ad.getAdvsVideoDownloadPath());
             if (TimeUtils.isFutureSchedule(upDate, downDate, curTime)) {
-                Log.d(TAG, "getPushStrategy: ooooooooooooooook! put!");
+                LogUtils.d(TAG, "getPushStrategy: ooooooooooooooook! put!");
                 pushAdVideoList.add(ad);
             }
         }
-        Log.d(TAG, "getPushStrategy: json处理完毕");
+        LogUtils.d(TAG, "getPushStrategy: json处理完毕");
         // 删除本次策略中没有的广告的本地文件
         try {
             List<AdvsVideo> allDbAdList = dbManager.findAll(AdvsVideo.class);
             for (AdvsVideo ad : allDbAdList) {
                 int index = VideoUtils.getAdIndexFromList(ad, pushAdVideoList);
-                Log.d(TAG, "refreshAllAdVideoData: index = " + index);
+                LogUtils.d(TAG, "refreshAllAdVideoData: index = " + index);
                 if (-1 == index) {
                     String localPath = ad.getAdvsVideoLocaltionPath();
-                    Log.d(TAG, "refreshAllAdVideoData: 删除本地文件：" + localPath);
+                    LogUtils.d(TAG, "refreshAllAdVideoData: 删除本地文件：" + localPath);
                     FileUtil.deleteFile(localPath);
 
                 }
@@ -565,10 +579,10 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     }
 
     public void downloadAllVideo() {
-        Log.d(TAG, "getPushStrategy: dl_info: 进入循环下载");
+        LogUtils.d(TAG, "getPushStrategy: dl_info: 进入循环下载");
         // 下载完毕，则去同步各种数据
         if (pushAdIndex >= pushAdVideoList.size()) {
-            Log.d(TAG, "getPushStrategy: dl_info: 全部视频状态为已下载，return");
+            LogUtils.d(TAG, "getPushStrategy: dl_info: 全部视频状态为已下载，return");
             myHandler.sendEmptyMessageDelayed(Constant.MSG_ALL_DOWN_COMPLETE, Constant.ALL_DOWN_WAIT_TIME);
             return;
         }
@@ -576,7 +590,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         AdvsVideo ad = pushAdVideoList.get(pushAdIndex);
         // 如果为空，则下载下一个
         if (null == ad) {
-            Log.d(TAG, "getPushStrategy: dl_info: 本条广告为空，return");
+            LogUtils.d(TAG, "getPushStrategy: dl_info: 本条广告为空，return");
             pushAdIndex++;
             downloadAllVideo();
             return;
@@ -584,7 +598,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         // 已经是本地的，则更新isLocal并下载下一个
         String localPath = VideoUtils.checkIfVideoIsLocal(ad, allAdVideoList);
         if (!TextUtils.isEmpty(localPath)) {
-            Log.d(TAG, "getPushStrategy: dl_info: 本条广告已有本地路径，return");
+            LogUtils.d(TAG, "getPushStrategy: dl_info: 本条广告已有本地路径，return");
             ad.setLocal(true);
             ad.setAdvsVideoLocaltionPath(localPath);
             pushAdVideoList.set(pushAdIndex, ad);
@@ -594,7 +608,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
         }
         // 下载地址为空，上报地址错误
         if (TextUtils.isEmpty(ad.getAdvsVideoDownloadPath())) {
-            Log.d(TAG, "onError: dl_info: URL为空！");
+            LogUtils.d(TAG, "onError: dl_info: URL为空！");
             saveWrongUrlNotice(ad);
             pushAdVideoList.remove(ad);
             return;
@@ -604,7 +618,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
     private void downloadVideo(AdvsVideo ad) {
         if (isDownloading) {
-            Log.d(TAG, "downloadVideo: dl_info: 正在下载，return..");
+            LogUtils.d(TAG, "downloadVideo: dl_info: 正在下载，return..");
             if (myHandler.hasMessages(Constant.MSG_WAITING_THEN_DOWNLOAD)) {
                 myHandler.removeMessages(Constant.MSG_WAITING_THEN_DOWNLOAD);
             }
@@ -613,13 +627,13 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             return;
         }
         String downloadPath = ad.getAdvsVideoDownloadPath();
-        Log.d(TAG, "downloadVideo: dl_info: 开始下载广告视频 pushAdIndex = " + pushAdIndex + ", url = " + downloadPath);
+        LogUtils.d(TAG, "downloadVideo: dl_info: 开始下载广告视频 pushAdIndex = " + pushAdIndex + ", url = " + downloadPath);
         isDownloading = true;
         DownloadManager dlManager = DownloadManager.getInstance();
         dlManager.setDownloadCallback(new DownloadCallback() {
             @Override
             public void onComplete(String localPath) {
-                Log.d(TAG, "onComplete: dl_info: 下载完成！localPath -- " + localPath);
+                LogUtils.d(TAG, "onComplete: dl_info: 下载完成！localPath -- " + localPath);
                 isDownloading = false;
                 AdvsVideo ad = pushAdVideoList.get(pushAdIndex);
                 ad.setLocal(true);
@@ -631,17 +645,17 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
             @Override
             public void onError(String msg) {
-                Log.d(TAG, "onError: dl_info: 下载错误！msg -- " + msg);
+                LogUtils.d(TAG, "onError: dl_info: 下载错误！msg -- " + msg);
                 isDownloading = false;
                 // 网址错误则上报错误信息；其他错误则放在最后再下
                 if (msg.contains(Constant.DOWN_ERROR_MSG_WRONG_URL) || msg.contains(Constant.DOWN_ERROR_MSG_WRONG_BASE_URL)) {
-                    Log.d(TAG, "onError: dl_info: URL有误！");
+                    LogUtils.d(TAG, "onError: dl_info: URL有误！");
                     saveWrongUrlNotice(pushAdVideoList.get(pushAdIndex));
                     pushAdVideoList.remove(pushAdIndex);
                     downloadAllVideo();
                     return;
                 }
-                Log.d(TAG, "onError: dl_info: 将本广告视频移动至list最后");
+                LogUtils.d(TAG, "onError: dl_info: 将本广告视频移动至list最后");
                 AdvsVideo advsVideo = pushAdVideoList.get(pushAdIndex);
                 pushAdVideoList.remove(pushAdIndex);
                 pushAdVideoList.add(advsVideo);
@@ -654,11 +668,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
             @Override
             public void onProgress(int progress) {
-                Log.d(TAG, "onProgress: dl_info: 正在下载.. progress = " + progress);
+                LogUtils.d(TAG, "onProgress: dl_info: 正在下载.. progress = " + progress);
             }
         });
-        dlManager.startDown(Constant.DOWNLOADAPK_ID, downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1),
-                downloadPath, UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
+        dlManager.startDown(mContext, Constant.DOWNLOADAPK_ID,
+                downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1), downloadPath,
+                UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
     }
 
     /**
@@ -680,7 +695,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     }
 
     private void refreshAllAdVideoData() {
-        Log.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
+        LogUtils.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
         playerManager.stop();
         // 同步数据到数据库
         try {
@@ -699,9 +714,9 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     }
 
     private void dividerAds(List<AdvsVideo> adVideoList) {
-        Log.d(TAG, "refreshAllAdVideoData: 开始广告视频分类");
+        LogUtils.d(TAG, "refreshAllAdVideoData: 开始广告视频分类");
         if (null == adVideoList || 0 == adVideoList.size()) {
-            Log.d(TAG, "dividerAds: adVideoList为空");
+            LogUtils.d(TAG, "dividerAds: adVideoList为空");
             return;
         }
         for (AdvsVideo ad : adVideoList) {
@@ -778,11 +793,11 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 //        for (ActivityManager.RunningTaskInfo info : list) {
 //            // 注意这里的 topActivity 包含 packageName和className
 //            if (info.topActivity.toString().equals(this) || info.baseActivity.toString().equals(this)) {
-//                Log.i(TAG, info.topActivity.getPackageName() + " info.baseActivity.getPackageName()=" + info.baseActivity.getPackageName());
+//                LogUtils.i(TAG, info.topActivity.getPackageName() + " info.baseActivity.getPackageName()=" + info.baseActivity.getPackageName());
 //                return true;
 //            }
 //        }
-//        Log.d(TAG, "isActivityValidate: 不可用！");
+//        LogUtils.d(TAG, "isActivityValidate: 不可用！");
 //        return false;
     }
 
@@ -791,7 +806,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
     @Override
     public void onComplete() {
-        Log.d(TAG, "onComplete: isPlayInitVideo = " + isPlayInitVideo);
+        LogUtils.d(TAG, "onComplete: isPlayInitVideo = " + isPlayInitVideo);
         curTime = TimeUtils.getCurrentTime();
         if (isPlayInitVideo) {
             initAdIndex += 1;
@@ -803,7 +818,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
             try {
                 dbManager.save(curAdRecord);
                 List<AdvsPlayRecode> all = dbManager.findAll(AdvsPlayRecode.class);
-                Log.d(TAG, "onComplete: all.size = " + all.size());
+                LogUtils.d(TAG, "onComplete: all.size = " + all.size());
             } catch (DbException e) {
                 e.printStackTrace();
             }
@@ -820,12 +835,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
      */
     @Override
     public void onError(int what, int extra) {
-//        Log.d(TAG, "onError: what = " + what + ", extra = " + extra);
+//        LogUtils.d(TAG, "onError: what = " + what + ", extra = " + extra);
         if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
             //媒体服务器挂掉了。此时，程序必须释放MediaPlayer 对象，并重新new 一个新的。
-            Log.e(TAG, "onError: 视频播放：网络服务错误");
+            LogUtils.e(TAG, "onError: 视频播放：网络服务错误");
         } else if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
-            Log.e(TAG, "onError: 视频播放：文件不存在或错误，或网络不可访问错误");
+            LogUtils.e(TAG, "onError: 视频播放：文件不存在或错误，或网络不可访问错误");
         }
         if (isPlayInitVideo) {
             initAdIndex += 1;
@@ -839,7 +854,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
     @Override
     public void onInfo(int what, int extra) {
-        Log.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
+        LogUtils.d(TAG, "onInfo: what = " + what + ", extra = " + extra);
     }
     // --------- ijk 监听 end ---------
 
@@ -850,87 +865,99 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     public class DynamicReceiver extends XGPushBaseReceiver {
         @Override
         public void onRegisterResult(Context context, int i, XGPushRegisterResult xgPushRegisterResult) {
-            Log.e(TAG, "onRegisterResult: ");
+            LogUtils.e(TAG, "onRegisterResult: ");
 
         }
 
         @Override
         public void onUnregisterResult(Context context, int i) {
-            Log.e(TAG, "onUnregisterResult: ");
+            LogUtils.e(TAG, "onUnregisterResult: ");
         }
 
         @Override
         public void onSetTagResult(Context context, int i, String s) {
-            Log.e(TAG, "onSetTagResult: ");
+            LogUtils.e(TAG, "onSetTagResult: ");
         }
 
         @Override
         public void onDeleteTagResult(Context context, int i, String s) {
-            Log.e(TAG, "onDeleteTagResult: ");
+            LogUtils.e(TAG, "onDeleteTagResult: ");
         }
 
         @Override
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
-            Log.d(TAG, "onTextMessage: receive new push");
+            LogUtils.d(TAG, "onTextMessage: receive new push");
             String pushString = xgPushTextMessage.getContent();
-            Log.i(TAG, "onTextMessage: 收到消息: " + pushString);
+            LogUtils.i(TAG, "onTextMessage: 收到消息: " + pushString);
             PushEntity pushEntity = JSONObject.parseObject(pushString, PushEntity.class);
             if (null == pushEntity) {
-                Log.d(TAG, "onTextMessage: 推送为空！");
+                LogUtils.d(TAG, "onTextMessage: 推送为空！");
                 return;
             }
             // 获取内容
             String content = pushEntity.getOperationContent();
             if (TextUtils.isEmpty(content)) {
-                Log.d(TAG, "onTextMessage: 推送内容为空！");
-                Log.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
+                LogUtils.d(TAG, "onTextMessage: 推送内容为空！");
+                LogUtils.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
                 return;
             }
-            Log.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
+            LogUtils.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
             String url;
             switch (pushEntity.getOperationType()) {
                 case Constant.PUSH_OPERATION_TYPE_OPERATE:
-                    Log.d(TAG, "onTextMessage: 推送类型为：操作。");
+                    LogUtils.d(TAG, "onTextMessage: 推送类型为：操作。");
                     //TODO 收到推送后的操作  1冲洗 2开盖 3开关机
+                    ControllerUtils controllerUtils = new ControllerUtils(MainActivity.this);
                     String operateflag = "1";
                     if (Constant.DEVICE_OPERATE_FLUSH.equals(operateflag)) {
-                        ControllerUtils.operateDevice(6, false);
+                        controllerUtils.operateDevice(6, false);
                     }
-
                     if (Constant.DEVICE_OPERATE_UNCAP.equals(operateflag)) {
-                        ControllerUtils.operateDevice(5, false);
+                        controllerUtils.operateDevice(5, false);
                     }
-
                     if (Constant.DEVICE_OPERATE_ON_OFF.equals(operateflag)) {
-                        ControllerUtils.operateDevice(2, false);
+                        controllerUtils.operateDevice(2, false);
+                    }
+                    if(Constant.DO_HOTTING == operateflag){
+                        controllerUtils.operateDevice(ControllerUtils.DO_HOTTING,false);
+                    }
+                    if(Constant.DO_COOLING == operateflag){
+                        controllerUtils.operateDevice(ControllerUtils.DO_COOLING,false);
+                    }
+                    if(Constant.DO_TURNOFFHOTTING==operateflag){
+                        controllerUtils.operateDevice(ControllerUtils.DO_TURNOFFHOTTING,false);
+                    }
+                    if(Constant.DO_TURNOFFCOOLING==operateflag){
+                        controllerUtils.operateDevice(ControllerUtils.DO_TURNOFFCOOLING,false);
                     }
                     break;
                 case Constant.PUSH_OPERATION_TYPE_CONFIG:
+                    break;
                 case Constant.PUSH_OPERATION_TYPE_TARGET:
-                    Log.d(TAG, "onTextMessage: 推送类型为：视频（配置/行业）。");
+                    LogUtils.d(TAG, "onTextMessage: 推送类型为：视频（配置/行业）。");
                     url = RestUtils.getUrl(UriConstant.GET_AD_VIDEO_LIST + content);
                     OkHttpUtils.postAsyn(url, new OkHttpUtils.StringCallback() {
                         @Override
                         public void onFailure(int errCode, Request request, IOException e) {
-                            Log.d(TAG, "onFailure: 获取视频策略失败！errCode = " + errCode +
+                            LogUtils.d(TAG, "onFailure: 获取视频策略失败！errCode = " + errCode +
                                     ", response = " + request.toString());
                         }
 
                         @Override
                         public void onResponse(String response) {
-                            Log.d(TAG, "onResponse: 获取视频策略成功！ response = " + response);
+                            LogUtils.d(TAG, "onResponse: 获取视频策略成功！ response = " + response);
                             JSONObject jsonObject = JSONObject.parseObject(response);
                             if (null == jsonObject) {
-                                Log.d(TAG, "onResponse: 视频策略获取response数据错误！");
+                                LogUtils.d(TAG, "onResponse: 视频策略获取response数据错误！");
                                 return;
                             }
                             Object data = jsonObject.get("data");
                             if (null == data) {
-                                Log.d(TAG, "onResponse: 视频策略获取response的data数据错误！");
+                                LogUtils.d(TAG, "onResponse: 视频策略获取response的data数据错误！");
                                 return;
                             }
                             // 存入本地文件
-                            Log.d(TAG, "onTextMessage: 开始将push的strategy存入本地..");
+                            LogUtils.d(TAG, "onTextMessage: 开始将push的strategy存入本地..");
                             FileUtil.saveContentToSdcard(UriConstant.APP_ROOT_PATH +
                                             UriConstant.VIDEO_DIR + UriConstant.VIDEO_PUSH_FILE_NAME,
                                     CommonUtil.encode(Constant.VIDEO_PUSH_HANDLE_TO_DO + data.toString()));
@@ -945,20 +972,20 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
                     break;
                 case Constant.PUSH_OPERATION_TYPE_LOGIN:
-                    Log.d(TAG, "onTextMessage: 推送类型为：登录。");
+                    LogUtils.d(TAG, "onTextMessage: 推送类型为：登录。");
                     // TODO: 2018/6/20 0020 登录
                     String userId = pushEntity.getOperationContent();
                     url = RestUtils.getUrl(UriConstant.GET_USER_INFO + userId);
                     OkHttpUtils.getAsyn(url, new OkHttpUtils.StringCallback() {
                         @Override
                         public void onFailure(int errCode, Request request, IOException e) {
-                            Log.d(TAG, "onFailure: 获取用户登录信息失败！errCode = " + errCode +
+                            LogUtils.d(TAG, "onFailure: 获取用户登录信息失败！errCode = " + errCode +
                                     ", response = " + request.toString());
                         }
 
                         @Override
                         public void onResponse(String response) {
-                            Log.d(TAG, "onResponse: 获取用户登录信息成功！ response = " + response);
+                            LogUtils.d(TAG, "onResponse: 获取用户登录信息成功！ response = " + response);
                         }
                     });
                     DispenserCache.userIdTemp = userId;
@@ -968,7 +995,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     showPopRightOperate();
                     break;
                 case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
-                    Log.d(TAG, "onTextMessage: 推送类型为：更新。");
+                    LogUtils.d(TAG, "onTextMessage: 推送类型为：更新。");
                     launchLoadApp();
                     break;
             }
@@ -976,12 +1003,12 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
 
         @Override
         public void onNotifactionClickedResult(Context context, XGPushClickedResult xgPushClickedResult) {
-            Log.d(TAG, "onNotifactionClickedResult:");
+            LogUtils.d(TAG, "onNotifactionClickedResult:");
         }
 
         @Override
         public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
-            Log.d(TAG, "onNotifactionShowedResult:");
+            LogUtils.d(TAG, "onNotifactionShowedResult:");
         }
     }
 
@@ -998,7 +1025,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     Toast.makeText(mContext, "定时" + test, Toast.LENGTH_SHORT).show();
                     break;
                 case Constant.MSG_NEW_AD_VIDEO_STRATEGY_PUSH:
-                    Log.d(TAG, "handleMessage: start deal video strategy push");
+                    LogUtils.d(TAG, "handleMessage: start deal video strategy push");
                     pushAdIndex = 0;
                     curTime = TimeUtils.getCurrentTime();
                     getPushStrategy();
@@ -1006,7 +1033,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
                     break;
 
                 case Constant.MSG_UPDATE_SCODE:
-                    Log.e(TAG, "成功" + "更新二维码成功");
+                    LogUtils.e(TAG, "成功" + "更新二维码成功");
                     break;
 
                 case Constant.MSG_WAITING_THEN_DOWNLOAD:
@@ -1138,7 +1165,7 @@ public class MainActivity extends BaseActivity implements IjkManager.PlayerState
     public void dismissPop(PopupWindow pop) {
         if (isActivityValidate()) {
             if (null != pop && pop.isShowing()) {
-                Log.d(TAG, "dismissPop: ");
+                LogUtils.d(TAG, "dismissPop: ");
                 pop.dismiss();
             }
         }

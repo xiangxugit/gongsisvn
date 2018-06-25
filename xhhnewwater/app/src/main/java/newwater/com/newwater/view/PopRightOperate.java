@@ -32,6 +32,7 @@ import newwater.com.newwater.constants.Constant;
 import newwater.com.newwater.constants.UriConstant;
 import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.CommonUtil;
+import newwater.com.newwater.utils.LogUtils;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.TimeRun;
@@ -43,7 +44,7 @@ import okhttp3.Request;
  */
 public class PopRightOperate extends PopupWindow {
     private final PopupWindow pop;
-//    private final PopupWindow leftpop;
+    //    private final PopupWindow leftpop;
     public static TextView hotwater;//取热水
     private TextView warmwater;//温水
     private TextView coolwater;//冷水
@@ -76,20 +77,25 @@ public class PopRightOperate extends PopupWindow {
                     context.dismissOperatePop();
                     context.showPopWantWater();
                     turnoff();
+                    if (null != task) {
+                        task.cancel();
+                    }
                     break;
 
 
                 case Constant.MSG_CHECK_OVERFLOW:
                     //进行uI操作
-                    Toast.makeText(context,"不能超过"+BaseSharedPreferences.getInt(context,Constant.DEVICE_MAX_FLOW_KEY),Toast.LENGTH_SHORT).show();
-                    Toast.makeText(context,"超过没"+(BaseSharedPreferences.getInt(context,Constant.DEVICE_MAX_FLOW_KEY)-devUtil.get_run_waterFlow_value()),Toast.LENGTH_SHORT).show();
-                    if(BaseSharedPreferences.getInt(context,Constant.DEVICE_MAX_FLOW_KEY)-devUtil.get_run_waterFlow_value()<0){
+                    Toast.makeText(context, "不能超过" + BaseSharedPreferences.getInt(context, Constant.DEVICE_MAX_FLOW_KEY), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "超过没" + (BaseSharedPreferences.getInt(context, Constant.DEVICE_MAX_FLOW_KEY) - devUtil.get_run_waterFlow_value()), Toast.LENGTH_SHORT).show();
+                    if (BaseSharedPreferences.getInt(context, Constant.DEVICE_MAX_FLOW_KEY) - devUtil.get_run_waterFlow_value() < 0) {
                         context.dismissOperatePop();
                         turnoff();
-                        task.cancel();
-                    }
-                    else{
-                        Log.e("没有超过","没有超过");
+                        if (null != task) {
+                            task.cancel();
+                        }
+                    } else {
+
+                        LogUtils.e("没有超过", "没有超过");
                     }
 
                     break;
@@ -129,6 +135,7 @@ public class PopRightOperate extends PopupWindow {
         // 这里也可以从contentView中获取到控件，并为它们绑定控件
 
         hotwater = (TextView) contentView.findViewById(R.id.hot_water);
+
         hotwater.setOnClickListener(onclick);
         //温水控制
         warmwater = (TextView) contentView.findViewById(R.id.warm_water);
@@ -208,21 +215,20 @@ public class PopRightOperate extends PopupWindow {
                 Toast.makeText(context, "通讯启动", Toast.LENGTH_SHORT).show();
                 comThread.setActive(false);
             }
-            if(null==DispenserCache.userIdTemp){
+            if (null == DispenserCache.userIdTemp) {
 
-            }
-            else{
+            } else {
                 waterSaleRecordAO.setUserId(Integer.parseInt(DispenserCache.userIdTemp));
             }
-            if(0 == BaseSharedPreferences.getInt(context,Constant.DEVICE_ID_KEY)){
+            if (0 == BaseSharedPreferences.getInt(context, Constant.DEVICE_ID_KEY)) {
 
-            }else{
-                waterSaleRecordAO.setDeviceId(BaseSharedPreferences.getInt(context,Constant.DEVICE_ID_KEY));
+            } else {
+                waterSaleRecordAO.setDeviceId(BaseSharedPreferences.getInt(context, Constant.DEVICE_ID_KEY));
             }
             //支付模式饮水
 //            if (Integer.parseInt(TestJSON.getSaletYpe()) == 1) {
 //            }
-            waterSaleRecordAO.setProductChargMode(BaseSharedPreferences.getInt(context,Constant.DRINK_MODE_KEY));
+            waterSaleRecordAO.setProductChargMode(BaseSharedPreferences.getInt(context, Constant.DRINK_MODE_KEY));
             switch (v.getId()) {
                 case R.id.hot_water:
                     if (CommonUtil.isFastClick()) {
@@ -424,20 +430,22 @@ public class PopRightOperate extends PopupWindow {
             int nocupflag = devUtil.get_run_bCup_value();
             if (01 == nocupflag) {
                 waterSaleRecordAO.setWaterRecordIsCup(1);
+                waterSaleRecordAO.setWaterRecordCupNum(1);
             } else {
                 //缺纸杯
                 waterSaleRecordAO.setWaterRecordIsCup(0);
+                waterSaleRecordAO.setWaterRecordCupNum(0);
             }
             //获取售水量
-            waterSaleRecordAO.setWaterFlow(devUtil.get_run_waterFlow_value());
             //设置纸杯数量
-            waterSaleRecordAO.setWaterRecordCupNum(2);
+            Toast.makeText(context, "waimian" + devUtil.get_run_waterFlow_value(), Toast.LENGTH_SHORT).show();
+            waterSaleRecordAO.setWaterFlow(devUtil.get_run_waterFlow_value());
             //开始监听出水量
             Time warningTime = new Time();
             warningTime.setToNow();
 //            final  MyHandler myHandler = new MyHandler();
 //            Date waringTimeUpdate = TimeRun.tasktime(warningTime.hour, warningTime.minute, warningTime.second);
-             task = new TimerTask() {
+            task = new TimerTask() {
                 @Override
                 public void run() {
                     Message msg = new Message();
@@ -453,62 +461,72 @@ public class PopRightOperate extends PopupWindow {
                 //所有的设置为不可用
                 //重新设置各种过滤设备的数值
                 //重新设置pp棉制水量
-                Toast.makeText(context,"水量"+devUtil.get_run_waterFlow_value(),Toast.LENGTH_SHORT).show();
-                BaseSharedPreferences.setInt(context,Constant.DEVICE_PP_FLOW_KEY,BaseSharedPreferences.getInt(context, Constant.DEVICE_PP_FLOW_KEY)-waterSaleRecordAO.getWaterFlow());
+
+                Toast.makeText(context, "水量" + devUtil.get_run_waterFlow_value(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "水量get" + waterSaleRecordAO.getWaterFlow(), Toast.LENGTH_SHORT).show();
+                BaseSharedPreferences.setInt(context, Constant.DEVICE_PP_FLOW_KEY, BaseSharedPreferences.getInt(context, Constant.DEVICE_PP_FLOW_KEY) - waterSaleRecordAO.getWaterFlow());
                 //重新设置
-                BaseSharedPreferences.setInt(context,Constant.DEVICE_GRAIN_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_GRAIN_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+                BaseSharedPreferences.setInt(context, Constant.DEVICE_GRAIN_CARBON_KEY, BaseSharedPreferences.getInt(context, Constant.DEVICE_GRAIN_CARBON_KEY) - waterSaleRecordAO.getWaterFlow());
 
-                BaseSharedPreferences.setInt(context,Constant.DEVICE_PRESS_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_PRESS_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+                BaseSharedPreferences.setInt(context, Constant.DEVICE_PRESS_CARBON_KEY, BaseSharedPreferences.getInt(context, Constant.DEVICE_PRESS_CARBON_KEY) - waterSaleRecordAO.getWaterFlow());
 
-                BaseSharedPreferences.setInt(context,Constant.DEVICE_POSE_CARBON_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_POSE_CARBON_KEY)-waterSaleRecordAO.getWaterFlow());
+                BaseSharedPreferences.setInt(context, Constant.DEVICE_POSE_CARBON_KEY, BaseSharedPreferences.getInt(context, Constant.DEVICE_POSE_CARBON_KEY) - waterSaleRecordAO.getWaterFlow());
 
-                BaseSharedPreferences.setInt(context,Constant.DEVICE_RO_FLOW_KEY,BaseSharedPreferences.getInt(context,Constant.DEVICE_RO_FLOW_KEY)-waterSaleRecordAO.getWaterFlow());
+                BaseSharedPreferences.setInt(context, Constant.DEVICE_RO_FLOW_KEY, BaseSharedPreferences.getInt(context, Constant.DEVICE_RO_FLOW_KEY) - waterSaleRecordAO.getWaterFlow());
                 //上传售水记录
                 String salewater;
-                if(operateType=="1"){
-                    salewater  = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
+                if (operateType == "1") {
+                    Toast.makeText(context, "喝水" + devUtil.get_run_waterFlow_value(), Toast.LENGTH_SHORT).show();
+                    salewater = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                             "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
-                            "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + waterSaleRecordAO.getWaterFlow() +
+                            "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + devUtil.get_run_waterFlow_value() +
                             "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
 
-                }else{
-                     salewater = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
+                } else {
+                    Toast.makeText(context, "出杯" + devUtil.get_run_waterFlow_value(), Toast.LENGTH_SHORT).show();
+                    salewater = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                             "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
                             "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + 0 +
                             "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
                 }
-                if(operateType=="2"){
-                }else{
-                    context.dismissOperatePop();
-                    context.showPopWantWater();
-                }
-                if(null == timer){
-                }else{
+
+                if (null == timer) {
+                } else {
                     timer.cancel();
                 }
 
+
                 String salewaterString = JSON.toJSONString(waterSaleRecordAO);
-                Log.e("salewaterString", "salewaterString" + salewaterString);
+                LogUtils.e("salewaterString", "salewaterString" + salewaterString);
                 OkHttpUtils.getAsyn(salewater, new OkHttpUtils.StringCallback() {
                     @Override
                     public void onFailure(int errCode, Request request, IOException e) {
 //                        Toast.makeText(context,request.toString(), Toast.LENGTH_LONG).show();
-                        Log.e("responsea", "errCode = " + errCode + "response" + request.toString());
+                        LogUtils.e("responsea", "errCode = " + errCode + "response" + request.toString());
                     }
+
                     @Override
                     public void onResponse(String response) {
 //                        Toast.makeText(context,response, Toast.LENGTH_LONG).show();
-                        Log.e("response", "response" + response);
+                        LogUtils.e("response", "response" + response);
                     }
                 });
 
+                if (operateType == "2") {
+
+                } else {
+                    context.dismissOperatePop();
+                    context.showPopWantWater();
+                }
+                DispenserCache.userIdTemp = null;
+
 
             } else {
-                Log.e("操作中", "操作中");
+                LogUtils.e("操作中", "操作中");
                 Date time = TimeRun.tasktime(warningTime.hour, warningTime.minute, warningTime.second);
                 timer = new Timer(true);
                 timer.schedule(task, time, 3000);
-
+                DispenserCache.userIdTemp = null;
             }
 
 
@@ -521,29 +539,34 @@ public class PopRightOperate extends PopupWindow {
      * 1、使用静态的handler，对外部类不保持对象的引用
      * 2、但Handler需要与Activity通信，所以需要增加一个对Activity的弱引用
      */
-    public class MyHandler extends android.os.Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {    //获取消息，更新UI
-                case 0:
-                    //进行uI操作
-
-                    if(BaseSharedPreferences.getInt(context,Constant.DEVICE_MAX_FLOW_KEY)-devUtil.get_run_waterFlow_value()<0){
-                        context.dismissOperatePop();
-                        turnoff();
-                        task.cancel();
-                    }
-                    else{
-                        Log.e("没有超过","没有超过");
-                    }
-
-                    break;
-            }
-        }
-    }
+//    public class MyHandler extends android.os.Handler {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            switch (msg.what) {    //获取消息，更新UI
+//                case 0:
+//                    //进行uI操作
+//
+//                    if(BaseSharedPreferences.getInt(context,Constant.DEVICE_MAX_FLOW_KEY)-devUtil.get_run_waterFlow_value()<0){
+//                        context.dismissOperatePop();
+//                        turnoff();
+//                        if (null != task) {
+//                          task.cancel();
+//                        }
+//                    }
+//                    else{
+//                        LogUtils.e("没有超过","没有超过");
+//                    }
+//
+//                    break;
+//            }
+//        }
+//    }
 
     public void turnoff(){
+
+
+        Toast.makeText(context,"二次扣款",Toast.LENGTH_SHORT).show();
         coolwater.setBackgroundResource(R.drawable.cool_water);
         coolwater.setText(context.getString(R.string.coolwater));
         warmwater.setText(context.getString(R.string.warm_water));
@@ -582,27 +605,26 @@ public class PopRightOperate extends PopupWindow {
 
             }
             //自动扣费
-            waterSaleRecordAO.setWaterRecordType(waterRecordType);
+            // waterSaleRecordAO.setWaterRecordType(waterRecordType);
             //售水中是否缺纸杯
             int nocupflag = devUtil.get_run_bCup_value();
             if (01 == nocupflag) {
                 waterSaleRecordAO.setWaterRecordIsCup(1);
+                waterSaleRecordAO.setWaterRecordCupNum(1);
             } else {
                 //缺纸杯
                 waterSaleRecordAO.setWaterRecordIsCup(0);
+                waterSaleRecordAO.setWaterRecordCupNum(0);
             }
-
             //获取售水量
             waterSaleRecordAO.setWaterFlow(devUtil.get_run_waterFlow_value());
             //设置纸杯数量
-            waterSaleRecordAO.setWaterRecordCupNum(2);
             String saleWater;
             if(operateType=="1"){
                  saleWater  = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                         "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
-                        "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + waterSaleRecordAO.getWaterFlow() +
-                        "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
-
+                        "&waterRecordIsCup=" + waterSaleRecordAO.getWaterRecordIsCup() + "&waterFlow=" + devUtil.get_run_waterFlow_value()+
+                        "&waterRecordCupNum=" + 0;
             }else{
                 saleWater = RestUtils.getUrl(UriConstant.WATERSALE) + "?userId=" + waterSaleRecordAO.getUserId() + "&deviceId=" + waterSaleRecordAO.getDeviceId() +
                         "&productChargMode=" + waterSaleRecordAO.getProductChargMode() + "&waterRecordType=" + waterSaleRecordAO.getWaterRecordType() +
@@ -610,31 +632,26 @@ public class PopRightOperate extends PopupWindow {
                         "&waterRecordCupNum=" + waterSaleRecordAO.getWaterRecordCupNum();
             }
 
-            OkHttpUtils.getAsyn(saleWater, new OkHttpUtils.StringCallback() {
-                @Override
-                public void onFailure(int errCode, Request request, IOException e) {
-//                        Toast.makeText(context,request.toString(), Toast.LENGTH_LONG).show();
-                    Log.e("responsea", "errCode = " + errCode + "response" + request.toString());
-                }
-                @Override
-                public void onResponse(String response) {
-//                        Toast.makeText(context,response, Toast.LENGTH_LONG).show();
-                    Log.e("response", "response" + response);
-                }
-            });
+            if(null == DispenserCache.userIdTemp)
+            {
 
-
+            }else{
+                OkHttpUtils.getAsyn(saleWater, new OkHttpUtils.StringCallback() {
+                    @Override
+                    public void onFailure(int errCode, Request request, IOException e) {
+                    LogUtils.e("responsea", "errCode = " + errCode + "response" + request.toString());
+                    }
+                    @Override
+                    public void onResponse(String response) {
+                    LogUtils.e("response", "response" + response);
+                    }
+                });
+            }
         } catch (Exception e) {
             Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
         } finally {
             comThread.setActive(true);
         }
-
     }
-//   public class  Ha
-
-
-
-
 
 }

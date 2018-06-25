@@ -3,7 +3,7 @@ package newwater.com.newwater.constants;
 import android.os.Environment;
 
 public class UriConstant {
-
+//    public static String IP = "39.104.72.178";
 //    public static String IP = "192.168.0.200";//外网服务器
 //    public static String IP="192.168.0.61";//季工的ip
 //    public static String IP = "192.168.0.51";//韦英
@@ -52,14 +52,14 @@ public class UriConstant {
 
     //用户登录信息
     public final static String GET_USER_INFO = "/api/v1/user/login/";
-
-
     // 根目录
     public static final String APP_ROOT_PATH = "/mnt/sdcard/xhh/";
 //    Environment.getExternalStorageDirectory().getPath()
 
     // 日志文件夹
     public static final String LOG_DIR = "log/";
+
+    public static final String CRASH_DIR = "log/crash/";
 
     // 视频文件夹
     public static final String VIDEO_DIR = "video/";

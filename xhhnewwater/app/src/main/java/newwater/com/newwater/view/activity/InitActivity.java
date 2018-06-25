@@ -55,6 +55,7 @@ import newwater.com.newwater.interfaces.DownloadCallback;
 import newwater.com.newwater.manager.DownloadManager;
 import newwater.com.newwater.utils.BaseSharedPreferences;
 import newwater.com.newwater.utils.Create2QR2;
+import newwater.com.newwater.utils.LogUtils;
 import newwater.com.newwater.utils.OkHttpUtils;
 import newwater.com.newwater.utils.RestUtils;
 import newwater.com.newwater.utils.TimeUtils;
@@ -122,13 +123,14 @@ public class InitActivity extends AppCompatActivity {
     }
 
     private void initData() {
+//        int a = 1/0;
         mContext = InitActivity.this;
         adList = new ArrayList<>();
         initPermission();
 
         if(BaseSharedPreferences.getInt(InitActivity.this,Constant.DEVICE_ID_KEY)!=0){
             moveToMainActivity();
-            Log.e(TAG,"已激活，直接跳转至主页！");
+            LogUtils.e(TAG,"已激活，直接跳转至主页！");
             return;
         }
         initPush();
@@ -165,8 +167,8 @@ public class InitActivity extends AppCompatActivity {
         XGPushManager.registerPush(this, new XGIOperateCallback() {
             @Override
             public void onSuccess(final Object data, int flag) {
-                //token在设备卸载重装的时候有可能会变
-                Log.i(TAG, "TPush: " + "注册成功，设备token为：" + data);
+                //Android在清理掉本地缓存或者卸载重装的时候重新注册会下发新的token
+                LogUtils.i(TAG, "TPush: " + "注册成功，设备token为：" + data);
 
                 //String data = XGPushConfig.getToken(MainActivity.this);
                 runOnUiThread(new Runnable() {
@@ -181,7 +183,7 @@ public class InitActivity extends AppCompatActivity {
 
             @Override
             public void onFail(Object data, int errCode, String msg) {
-                Log.i(TAG, "TPush: " + "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+                LogUtils.i(TAG, "TPush: " + "注册失败，错误码：" + errCode + ",错误信息：" + msg);
             }
         });
 
@@ -219,29 +221,29 @@ public class InitActivity extends AppCompatActivity {
         @Override
         public void onTextMessage(Context context, XGPushTextMessage xgPushTextMessage) {
 
-            Log.d(TAG, "onTextMessage: receive new push");
+            LogUtils.d(TAG, "onTextMessage: receive new push");
             String pushString = xgPushTextMessage.getContent();
-            Log.e(TAG, "onTextMessage: 收到消息: " + pushString);
+            LogUtils.e(TAG, "onTextMessage: 收到消息: " + pushString);
             PushEntity pushEntity = JSONObject.parseObject(pushString, PushEntity.class);
             if (null == pushEntity) {
-                Log.d(TAG, "onTextMessage: 推送为空！");
+                LogUtils.d(TAG, "onTextMessage: 推送为空！");
                 return;
             }
             // 获取内容
             String content = pushEntity.getOperationContent();
             if (TextUtils.isEmpty(content)) {
-                Log.d(TAG, "onTextMessage: 推送内容为空！");
-                Log.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
+                LogUtils.d(TAG, "onTextMessage: 推送内容为空！");
+                LogUtils.d(TAG, "onTextMessage: pushEntity = " + pushEntity.toString());
                 return;
             }
-            Log.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
+            LogUtils.d(TAG, "onTextMessage: 操作类型：" + pushEntity.getOperationType());
             switch (pushEntity.getOperationType()) {
                 case Constant.PUSH_OPERATION_TYPE_UPDATE_APK:
-                    Log.d(TAG, "onTextMessage: 收到更新APK的推送");
+                    LogUtils.d(TAG, "onTextMessage: 收到更新APK的推送");
                     // TODO: 2018/6/20 0020 更新apk
                     break;
                 case Constant.PUSH_OPERATION_TYPE_UPDATE_ID:
-                    Log.d(TAG, "onTextMessage: 收到信鸽Id的推送");
+                    LogUtils.d(TAG, "onTextMessage: 收到信鸽Id的推送");
                     JSONObject jsonObject = JSON.parseObject(pushString);
                     int deviceId = jsonObject.getInteger("deviceId");
                     if (deviceId == 0) {
@@ -271,7 +273,7 @@ public class InitActivity extends AppCompatActivity {
         OkHttpUtils.getAsyn(RestUtils.getUrl(UriConstant.GET_DEVICE_CONFIG + deviceId), new OkHttpUtils.StringCallback() {
             @Override
             public void onFailure(int errCode, Request request, IOException e) {
-                Log.e(TAG, "onFailure: get device info by id -- failed! " +
+                LogUtils.e(TAG, "onFailure: get device info by id -- failed! " +
                         "errCode = " + errCode + ", request = " + request.toString());
                 dealDeviceConfigResponseError();
             }
@@ -280,25 +282,25 @@ public class InitActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 JSONObject jsonObject = JSONObject.parseObject(response);
                 if (null == jsonObject) {
-                    Log.e(TAG, "onResponse: get device info by id -- response cannot parse to JsonObject!");
+                    LogUtils.e(TAG, "onResponse: get device info by id -- response cannot parse to JsonObject!");
                     dealDeviceConfigResponseError();
                     return;
                 }
                 if (0 == jsonObject.getInteger("code")) {
                     String data = jsonObject.getString("data");
                     if (TextUtils.isEmpty(data)) {
-                        Log.e(TAG, "onResponse: get device info by id -- data in response is empty!");
+                        LogUtils.e(TAG, "onResponse: get device info by id -- data in response is empty!");
                         dealDeviceConfigResponseError();
                         return;
                     }
-                    Log.d(TAG, "onResponse: get device info by id -- response ok!");
+                    LogUtils.d(TAG, "onResponse: get device info by id -- response ok!");
                     BaseSharedPreferences.setString(mContext, Constant.DEVICE_CONFIG_STRING_KEY, data);
                     SysDeviceMonitorConfig deviceConfig = JSONObject.parseObject(data, SysDeviceMonitorConfig.class);
                     if (checkConfigAndSave(deviceConfig)) {
                         getInitVideo();
                     }
                 } else {
-                    Log.e(TAG, "onResponse: get device info by id -- code in response is not 0!");
+                    LogUtils.e(TAG, "onResponse: get device info by id -- code in response is not 0!");
                     dealDeviceConfigResponseError();
                 }
 
@@ -313,7 +315,7 @@ public class InitActivity extends AppCompatActivity {
      */
     private boolean checkConfigAndSave(SysDeviceMonitorConfig config) {
         if (null == config) {
-            Log.e(TAG, "checkConfigAndSave: config is null!");
+            LogUtils.e(TAG, "checkConfigAndSave: config is null!");
             return false;
         }
         Integer drinkMode = config.getProductChargMode();
@@ -389,34 +391,34 @@ public class InitActivity extends AppCompatActivity {
         OkHttpUtils.postAsyn(RestUtils.getUrl(UriConstant.GET_INIT_AD_VIDEO_LIST), new OkHttpUtils.StringCallback() {
             @Override
             public void onFailure(int errCode, Request request, IOException e) {
-                Log.d(TAG, "onFailure: get init video: 获取视频策略失败！errCode = " + errCode +
+                LogUtils.d(TAG, "onFailure: get init video: 获取视频策略失败！errCode = " + errCode +
                         ", response = " + request.toString());
                 dealInitVideoResponseError();
             }
 
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "onResponse: get init video: 获取视频策略成功！ response = " + response);
+                LogUtils.d(TAG, "onResponse: get init video: 获取视频策略成功！ response = " + response);
                 JSONObject jsonObject = JSONObject.parseObject(response);
                 if (null == jsonObject) {
-                    Log.d(TAG, "onResponse: get init video: 视频策略获取response数据错误！");
+                    LogUtils.d(TAG, "onResponse: get init video: 视频策略获取response数据错误！");
                     dealInitVideoResponseError();
                     return;
                 }
                 Object data = jsonObject.get("data");
                 if (null == data) {
-                    Log.d(TAG, "onResponse: get init video: 视频策略获取response的data数据错误！");
+                    LogUtils.d(TAG, "onResponse: get init video: 视频策略获取response的data数据错误！");
                     dealInitVideoResponseError();
                     return;
                 }
                 try {
                     adList = JSONArray.parseArray(data.toString(), AdvsVideo.class);
                 } catch (JSONException e) {
-                    Log.d(TAG, "onResponse: get init video: 推送数据无法转换成 AdvsVideo！");
+                    LogUtils.d(TAG, "onResponse: get init video: 推送数据无法转换成 AdvsVideo！");
                     dealInitVideoResponseError();
                 }
                 if (null == adList || 0 == adList.size()) {
-                    Log.d(TAG, "onResponse: get init video: 推送数据有误！");
+                    LogUtils.d(TAG, "onResponse: get init video: 推送数据有误！");
                     dealInitVideoResponseError();
                     return;
                 }
@@ -430,7 +432,7 @@ public class InitActivity extends AppCompatActivity {
      * 获取设备信息时回应的数据有问题时的处理
      */
     private void dealDeviceConfigResponseError() {
-        Log.d(TAG, "dealDeviceConfigResponseError: 获取设备参数失败");
+        LogUtils.d(TAG, "dealDeviceConfigResponseError: 获取设备参数失败");
         moveToBreakDownActivity(getString(R.string.break_down_reason_no_device_config));
     }
 
@@ -438,14 +440,14 @@ public class InitActivity extends AppCompatActivity {
      * 获取初始视频时回应的数据有问题时的处理
      */
     private void dealInitVideoResponseError() {
-        Log.d(TAG, "dealInitVideoResponseError: 获取初始视频失败");
+        LogUtils.d(TAG, "dealInitVideoResponseError: 获取初始视频失败");
         moveToBreakDownActivity(getString(R.string.break_down_reason_no_init_video));
     }
 
     private void downloadInitVideo(List<AdvsVideo> adList) {
         // 下载完毕，则去同步各种数据
         if (dlIndex >= adList.size()) {
-            Log.d(TAG, "downloadInitVideo: dl_info: 全部视频状态为已下载，return");
+            LogUtils.d(TAG, "downloadInitVideo: dl_info: 全部视频状态为已下载，return");
             handler.sendEmptyMessageDelayed(Constant.MSG_ALL_DOWN_COMPLETE, Constant.ALL_DOWN_WAIT_TIME);
             return;
         }
@@ -453,14 +455,14 @@ public class InitActivity extends AppCompatActivity {
         AdvsVideo ad = adList.get(dlIndex);
         // 如果为空，则下载下一个
         if (null == ad) {
-            Log.d(TAG, "downloadInitVideo: dl_info: 本条广告为空，return");
+            LogUtils.d(TAG, "downloadInitVideo: dl_info: 本条广告为空，return");
             dlIndex++;
             downloadInitVideo(adList);
             return;
         }
         // 下载地址为空，上报地址错误
         if (TextUtils.isEmpty(ad.getAdvsVideoDownloadPath())) {
-            Log.d(TAG, "onError: dl_info: URL为空！");
+            LogUtils.d(TAG, "onError: dl_info: URL为空！");
             saveWrongUrlNotice(ad);
             adList.remove(ad);
             return;
@@ -470,7 +472,7 @@ public class InitActivity extends AppCompatActivity {
 
     private void downloadVideo(final AdvsVideo ad) {
         if (isDownloading) {
-            Log.d(TAG, "downloadVideo: dl_info: 正在下载，return..");
+            LogUtils.d(TAG, "downloadVideo: dl_info: 正在下载，return..");
             if (handler.hasMessages(Constant.MSG_WAITING_THEN_DOWNLOAD)) {
                 handler.removeMessages(Constant.MSG_WAITING_THEN_DOWNLOAD);
             }
@@ -479,19 +481,19 @@ public class InitActivity extends AppCompatActivity {
             return;
         }
         String downloadPath = ad.getAdvsVideoDownloadPath();
-        Log.d(TAG, "downloadVideo: dl_info: 开始下载广告视频 dlIndex = " + dlIndex + ", url = " + downloadPath);
+        LogUtils.d(TAG, "downloadVideo: dl_info: 开始下载广告视频 dlIndex = " + dlIndex + ", url = " + downloadPath);
         isDownloading = true;
         DownloadManager dlManager = DownloadManager.getInstance();
         dlManager.setDownloadCallback(new DownloadCallback() {
             @Override
             public void onProgress(int progress) {
-                Log.d(TAG, "onProgress: dl_info: 正在下载.. progress = " + progress);
+                LogUtils.d(TAG, "onProgress: dl_info: 正在下载.. progress = " + progress);
 
             }
 
             @Override
             public void onComplete(String localPath) {
-                Log.d(TAG, "downloadInitVideo: dl_info: 第" + dlIndex + "个初始视频下载完成。localPath -- " + localPath);
+                LogUtils.d(TAG, "downloadInitVideo: dl_info: 第" + dlIndex + "个初始视频下载完成。localPath -- " + localPath);
                 isDownloading = false;
                 AdvsVideo ad = adList.get(dlIndex);
                 ad.setLocal(true);
@@ -503,17 +505,17 @@ public class InitActivity extends AppCompatActivity {
 
             @Override
             public void onError(String msg) {
-                Log.d(TAG, "onError: dl_info: 下载错误！msg -- " + msg);
+                LogUtils.d(TAG, "onError: dl_info: 下载错误！msg -- " + msg);
                 isDownloading = false;
                 // 网址错误则上报错误信息；其他错误则放在最后再下
                 if (msg.contains(Constant.DOWN_ERROR_MSG_WRONG_URL) || msg.contains(Constant.DOWN_ERROR_MSG_WRONG_BASE_URL)) {
-                    Log.d(TAG, "onError: dl_info: URL有误！");
+                    LogUtils.d(TAG, "onError: dl_info: URL有误！");
                     saveWrongUrlNotice(adList.get(dlIndex));
                     adList.remove(dlIndex);
                     downloadInitVideo(adList);
                     return;
                 }
-                Log.d(TAG, "onError: dl_info: 将本广告视频移动至list最后");
+                LogUtils.d(TAG, "onError: dl_info: 将本广告视频移动至list最后");
                 AdvsVideo advsVideo = adList.get(dlIndex);
                 adList.remove(dlIndex);
                 adList.add(advsVideo);
@@ -526,9 +528,10 @@ public class InitActivity extends AppCompatActivity {
             }
         });
         String s = downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1);
-        Log.d(TAG, "downloadVideo: dl_info: baseUrl = " + s);
-        dlManager.startDown(Constant.DOWNLOADAPK_ID, downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1),
-                downloadPath, UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
+        LogUtils.d(TAG, "downloadVideo: dl_info: baseUrl = " + s);
+        dlManager.startDown(mContext, Constant.DOWNLOADAPK_ID,
+                downloadPath.substring(0, downloadPath.lastIndexOf('/') + 1), downloadPath,
+                UriConstant.APP_ROOT_PATH + UriConstant.VIDEO_DIR);
     }
 
     /**
@@ -550,7 +553,7 @@ public class InitActivity extends AppCompatActivity {
 
     private void refreshAllAdVideoData() {
         DbManager dbManager = new XutilsInit(mContext).getDb();
-        Log.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
+        LogUtils.d(TAG, "refreshAllAdVideoData: 开始更新数据库及缓存list");
         // 同步数据到数据库
         try {
             dbManager.delete(AdvsVideo.class);
@@ -613,11 +616,11 @@ public class InitActivity extends AppCompatActivity {
      */
     public void showStep(int step) {
         if (step == STEP_UNACTIVATE) {
-            Log.d(TAG, "showStep: STEP_UNACTIVATE");
+            LogUtils.d(TAG, "showStep: STEP_UNACTIVATE");
             firstStep.setVisibility(View.VISIBLE);
             secondStep.setVisibility(View.GONE);
         } else if (step == STEP_ACTIVATED) {
-            Log.d(TAG, "showStep: STEP_ACTIVATED");
+            LogUtils.d(TAG, "showStep: STEP_ACTIVATED");
             firstStep.setVisibility(View.GONE);
             secondStep.setVisibility(View.VISIBLE);
         }

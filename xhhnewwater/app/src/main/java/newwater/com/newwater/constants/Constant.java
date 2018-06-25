@@ -6,6 +6,7 @@ public class Constant {
     public static final int DOWNLOAD_MAX_RETRY_TIME = 3;  //
     public static final String DOWN_ERROR_MSG_WRONG_URL = "404 Not Found";
     public static final String DOWN_ERROR_MSG_WRONG_BASE_URL = "Incorrect BaseUrl";
+    public static final String DOWN_ERROR_MSG_WRONG_NETWORK_UNAVAIL = "Network Unavailable";
     public static final String DOWN_ERROR_MSG_WRONG_NO_MISTAKE = "下载出错，下载被停止了";
 
     public static final String VIDEO_PUSH_HANDLE_DOING = "1";  // push文件第一个字符存储的状态：正在处理
@@ -62,6 +63,10 @@ public class Constant {
     public static final String DEVICE_OPERATE_FLUSH = "1";
     public static final String DEVICE_OPERATE_UNCAP = "2";
     public static final String DEVICE_OPERATE_ON_OFF = "3";
+    public static final  String DO_HOTTING = "7";//允许加热
+    public static final String DO_TURNOFFHOTTING = "8";//禁止加热
+    public static final String DO_COOLING = "9";//允许制冷
+    public static final String DO_TURNOFFCOOLING = "10";//禁止制冷
 
     /*预警级别*/
     public static final int NOTICE_LEVEL_ABNORMAL = 0;
@@ -144,10 +149,6 @@ public class Constant {
 
     /*百分比*/
     public static final double PERCENT = 0.9;
-
-    /*存放日志文件*/
-    public static final String LOG_DIRPATH = "/log";
-    public static final String LOG_FILENAME = "log.txt";
 
     /*打印*/
     public static final String OVERFLOW ="超过流量";

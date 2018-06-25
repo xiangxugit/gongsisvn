@@ -15,6 +15,7 @@ import newwater.com.newwater.R;
 import newwater.com.newwater.beans.ViewShow;
 import newwater.com.newwater.broadcast.UpdateBroadcast;
 import newwater.com.newwater.interfaces.OnUpdateUI;
+import newwater.com.newwater.utils.ImageUtils;
 import newwater.com.newwater.view.activity.BaseActivity;
 
 /**
@@ -80,6 +81,8 @@ public class PopLeftOperate extends PopupWindow {
         ppm = (TextView)contentView.findViewById(R.id.ppm);
 
         hotico = (ImageView) contentView.findViewById(R.id.hot_ico);
+        ImageUtils imageUtils = new ImageUtils();
+        imageUtils.setFlickerAnimation(hotico);
         hotornot = (TextView)contentView.findViewById(R.id.hot_or_not);
         coolico = (ImageView) contentView.findViewById(R.id.cool_ico);
         cooltext = (TextView)contentView.findViewById(R.id.cooltext);

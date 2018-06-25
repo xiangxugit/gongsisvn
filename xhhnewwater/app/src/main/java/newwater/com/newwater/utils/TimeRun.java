@@ -35,6 +35,8 @@ import okhttp3.Request;
 
 public class TimeRun {
 
+    private static final String TAG = "TimeRun";
+
     //    https://blog.csdn.net/qinde025/article/details/6828723
     public TimerTask task;
     private DevUtil devUtil = null;
@@ -143,7 +145,7 @@ public class TimeRun {
                         dbManager.save(sysDeviceWaterQualityAO);
 //                        List<SysDeviceWaterQualityAO> deviceEntityList = dbManager.findAll(SysDeviceWaterQualityAO.class);
 
-//                        Log.e("deviceentityList","deviceentityList"+deviceEntityList.toString());
+//                        LogUtils.e(TAG, "deviceentityList: "+ deviceEntityList.toString());
                     } catch (DbException e) {
                         e.printStackTrace();
                     }
@@ -201,27 +203,29 @@ public class TimeRun {
                         sysDeviceNoticeAO.setDeviceNoticeSubject("设备维护");
                         breakDown();
                     }
-                    //滤芯过了
-                    boolean filterflag = filterOver();
-                    if (false == filterflag) {
-                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_LESS_FILTER);
-                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_ABNORMAL);
-                        sysDeviceNoticeAO.setDeviceNoticeContent("滤芯用完");
-                        sysDeviceNoticeAO.setDeviceNoticeSubject("设备维护");
-                        updateflag = true;
 
-                    }
-                    //滤芯是否用完
-                    boolean filterend = filterend();
-                    if (false == filterend) {
-                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_NO_FILTER);
-                        operateflag = true;
-                        updateflag = true;
-                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
-                        sysDeviceNoticeAO.setDeviceNoticeContent("滤芯是否用完");
-                        sysDeviceNoticeAO.setDeviceNoticeSubject("设备维护");
-                        breakDown();
-                    }
+
+                      //滤芯过了
+//                    boolean filterflag = filterOver();
+//                    if (false == filterflag) {
+//                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_LESS_FILTER);
+//                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_ABNORMAL);
+//                        sysDeviceNoticeAO.setDeviceNoticeContent("滤芯用完");
+//                        sysDeviceNoticeAO.setDeviceNoticeSubject("设备维护");
+//                        updateflag = true;
+//
+//                    }
+//                    //滤芯是否用完
+//                    boolean filterend = filterend();
+//                    if (false == filterend) {
+//                        sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_NO_FILTER);
+//                        operateflag = true;
+//                        updateflag = true;
+//                        sysDeviceNoticeAO.setDeviceNoticeLeve(Constant.NOTICE_LEVEL_BREAK_DOWN);
+//                        sysDeviceNoticeAO.setDeviceNoticeContent("滤芯是否用完");
+//                        sysDeviceNoticeAO.setDeviceNoticeSubject("设备维护");
+//                        breakDown();
+//                    }
                     //水质是否异常
                     if (Constant.TDSERROR > devUtil.get_run_oTDS_value()) {
                         sysDeviceNoticeAO.setDeviceNoticeType(Constant.NOTICE_TYPE_WATER_QUALITY_UNUSUAL);
@@ -269,7 +273,7 @@ public class TimeRun {
                     sysDeviceNoticeAO.setAdminUserId(0);
 
                     try {
-                        Log.e("执行水质保存","执行水质保存");
+                        LogUtils.e(TAG,"执行水质保存");
 //                        dbManager.dropTable(SysDeviceNoticeAO.class);
                         dbManager.save(sysDeviceNoticeAO);
 //                        dbManager.save(test);
